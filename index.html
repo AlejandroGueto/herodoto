@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ΙΣΤΟΡΙΑΙ: El Telar de Heródoto | Griego Antiguo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           VARIABLES Y ESTÉTICA HELÉNICA
+           ========================================================================== */
+        :root {
+            --aegean-dark: #071521;
+            --aegean-blue: #0f3052;
+            --marble: #f4f0e6;
+            --gold: #d4af37;
+            --clay: #b85c38;
+            --sparta-red: #8b0000;
+            --athens-blue: #4a90e2;
+        }
+
+        body {
+            background-color: var(--aegean-dark);
+            color: var(--marble);
+            font-family: 'Cormorant Garamond', serif;
+            overflow: hidden;
+            user-select: none;
+            margin: 0; padding: 0;
+        }
+
+        /* Tipografías Específicas */
+        .font-greek { font-family: 'Noto Serif', serif; line-height: 1.8; letter-spacing: 0.5px; }
+        .font-title { font-family: 'Cinzel Decorative', serif; }
+
+        /* Animaciones Premium */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulseGlow { 0%, 100% { filter: drop-shadow(0 0 5px var(--gold)); } 50% { filter: drop-shadow(0 0 25px var(--gold)); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes ripple { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); } 100% { box-shadow: 0 0 0 30px rgba(212, 175, 55, 0); } }
+
+        .animate-fade { animation: fadeIn 1s ease-in forwards; }
+        .animate-glow { animation: pulseGlow 3s infinite; }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        /* Paneles de Cristal (Glassmorphism) */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(15, 48, 82, 0.8), rgba(7, 21, 33, 0.95));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
+            backdrop-filter: blur(16px);
+        }
+
+        /* Botones Griegos */
+        .btn-hellenic {
+            background: rgba(7, 21, 33, 0.8);
+            border: 1px solid var(--gold); color: var(--gold);
+            font-family: 'Cinzel Decorative', serif; text-transform: uppercase; letter-spacing: 3px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
+            border-radius: 4px;
+        }
+        .btn-hellenic::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+            transition: all 0.5s;
+        }
+        .btn-hellenic:hover::before { left: 100%; }
+        .btn-hellenic:hover { background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); text-shadow: 0 0 8px var(--gold); transform: translateY(-2px); }
+
+        /* Nodos del Mapa interactivo */
+        .map-node { cursor: pointer; transition: all 0.3s; transform-origin: center; }
+        .map-node:hover circle:first-child { fill: var(--gold); r: 12; }
+        .map-node:hover text { fill: #fff; font-weight: bold; text-shadow: 0 0 10px var(--gold); font-size: 20px; }
+        .map-node.completed circle:first-child { fill: var(--gold); filter: drop-shadow(0 0 10px var(--gold)); }
+        
+        .pulse-ring { animation: ripple 2s infinite; border-radius: 50%; }
+
+        /* Estructura del Códice Dividido (Piedra Rosetta) */
+        .dual-codex { display: flex; flex-direction: column; height: 100%; }
+        @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
+        
+        .codex-pane { flex: 1; padding: 2rem; overflow-y: auto; position: relative; }
+        .pane-greek { background: #1a1a24; color: #e2e8f0; border-right: 2px solid var(--gold); }
+        .pane-spanish { background: #fdfbf7; color: #2c241b; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+        .drop-cap-greek::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.1em 0 0; line-height: 0.8; color: var(--gold); text-shadow: 0 0 10px rgba(212,175,55,0.5); }
+        .drop-cap-spanish::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.1em 0 0; line-height: 0.8; color: var(--aegean-blue); font-family: 'Cinzel Decorative'; }
+
+        /* Inputs Puzle */
+        .oracle-input {
+            background: transparent; border: none; border-bottom: 2px solid var(--gold);
+            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 1.5rem;
+            text-align: center; text-transform: uppercase; outline: none; width: 100%;
+            letter-spacing: 4px; transition: all 0.3s;
+        }
+        .oracle-input:focus { border-color: #fff; box-shadow: 0 10px 10px -10px var(--gold); }
+
+        /* Capa de red de constelaciones */
+        #constellation-canvas { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <!-- RED DE CONSTELACIONES Y POLVO DE ESTRELLAS -->
+    <canvas id="constellation-canvas"></canvas>
+
+    <!-- ==========================================================================
+         PANTALLA DE INICIO
+         ========================================================================== -->
+    <div id="screen-intro" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] transition-opacity duration-1000 p-4">
+        <div class="text-center max-w-5xl p-8 glass-panel rounded-2xl animate-fade w-full">
+            <h3 class="text-[var(--gold)] text-lg md:text-2xl tracking-[0.4em] uppercase mb-4 font-title opacity-90">
+                ΗΡΟΔΟΤΟΣ ΑΛΙΚΑΡΝΗΣΣΕΥΣ
+            </h3>
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 font-title drop-shadow-[0_0_30px_rgba(212,175,55,0.6)]">
+                El Telar de Heródoto
+            </h1>
+            <p class="text-xl md:text-3xl text-gray-200 text-font mb-10 italic leading-relaxed px-4 md:px-12">
+                "Esta es la exposición de las investigaciones de Heródoto de Halicarnaso, para que los hechos de los hombres no se desvanezcan con el tiempo..."
+            </p>
+            
+            <button onclick="Game.initMap()" class="btn-hellenic px-10 py-5 text-2xl md:text-3xl font-bold rounded shadow-[0_0_40px_rgba(212,175,55,0.3)]">
+                Desplegar el Mapa del Egeo
+            </button>
+            
+            <div class="mt-10 flex flex-col md:flex-row items-center justify-center gap-4 text-[var(--gold)] font-sans tracking-widest uppercase text-xs md:text-sm">
+                <span class="flex items-center gap-2"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 18v-5m-4 0h8m-4-8a4 4 0 110 8 4 4 0 010-8z"/></svg> Textos Bilingües Reales</span>
+                <span class="hidden md:inline">|</span>
+                <span class="flex items-center gap-2"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg> Sintetizador de Lira</span>
+                <span class="hidden md:inline">|</span>
+                <span class="flex items-center gap-2"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg> Oráculo en Red (API)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         PANTALLA 2: EL MAPA INTERACTIVO DEL EGEO
+         ========================================================================== -->
+    <div id="screen-map" class="absolute inset-0 z-20 flex flex-col hidden opacity-0 transition-opacity duration-1000">
+        
+        <!-- UI Header -->
+        <header class="h-20 glass-panel flex items-center justify-between px-8 z-30 border-b border-[var(--gold)]">
+            <div class="flex items-center gap-6">
+                <div class="relative w-12 h-12 flex items-center justify-center">
+                    <svg class="w-full h-full text-[var(--gold)] animate-[spin_12s_linear_infinite]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="50" cy="50" r="45" stroke-dasharray="15 10"/>
+                        <circle cx="50" cy="50" r="35" stroke-dasharray="5 5" opacity="0.5"/>
+                    </svg>
+                    <span id="relic-count" class="absolute text-2xl font-bold font-title text-white">0</span>
+                </div>
+                <div>
+                    <h2 class="font-title text-2xl text-[var(--gold)] tracking-widest m-0 leading-none">Reliquias</h2>
+                    <span class="text-gray-400 text-font italic text-lg">Resuelve los mitos para obtenerlas</span>
+                </div>
+            </div>
+            <div class="font-title text-3xl tracking-[0.3em] text-white opacity-50 hidden md:block">
+                ΘΑΛΑΣΣΑ
+            </div>
+        </header>
+
+        <!-- Contenedor del Mapa SVG -->
+        <main class="flex-1 relative bg-[#040b12] overflow-hidden" id="map-container">
+            <!-- El mapa se renderiza por JS aquí -->
+        </main>
+    </div>
+
+    <!-- ==========================================================================
+         PANTALLA 3: EL CÓDICE BILINGÜE Y EL ORÁCULO
+         ========================================================================== -->
+    <div id="screen-codex" class="absolute inset-0 z-40 bg-black/95 backdrop-blur-xl hidden opacity-0 transition-opacity duration-700 flex-col">
+        
+        <!-- Barra de herramientas del Códice -->
+        <div class="h-16 border-b border-[var(--gold)] bg-[#0a0a0f] flex items-center justify-between px-6 z-10 shrink-0">
+            <h2 id="codex-title" class="font-title text-2xl text-[var(--gold)]">Título</h2>
+            <div class="flex gap-4">
+                <button onclick="TTS.readSpanish()" class="btn-hellenic px-4 py-2 text-sm flex items-center gap-2" title="Escuchar traducción">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z" /></svg>
+                    <span class="hidden md:inline">Escuchar</span>
+                </button>
+                <button onclick="Game.closeCodex()" class="text-gray-400 hover:text-white text-3xl font-bold cursor-pointer transition-colors px-2">✕</button>
+            </div>
+        </div>
+
+        <!-- Área Central del Códice -->
+        <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+            
+            <!-- PANEL IZQUIERDO: GRIEGO ANTIGUO -->
+            <div class="codex-pane pane-greek custom-scrollbar">
+                <h3 class="font-title text-[var(--gold)] text-center text-2xl mb-8 border-b border-[var(--gold)] pb-4">ΕΛΛΗΝΙΚΗ ΓΛΩΣΣΑ</h3>
+                <div id="text-greek" class="font-greek text-2xl md:text-3xl text-justify leading-loose">
+                    <!-- Texto Griego Inyectado -->
+                </div>
+            </div>
+
+            <!-- PANEL DERECHO: ESPAÑOL -->
+            <div class="codex-pane pane-spanish custom-scrollbar">
+                <h3 class="font-title text-[var(--aegean-blue)] text-center text-2xl mb-8 border-b border-[var(--aegean-blue)] pb-4">CASTELLANO</h3>
+                <div id="text-spanish" class="text-font text-xl md:text-2xl text-justify leading-loose">
+                    <!-- Texto Español Inyectado -->
+                </div>
+
+                <!-- API FETCH: ORÁCULO DE WIKIPEDIA -->
+                <div class="mt-12 p-6 bg-[#e8e2d5] border-l-4 border-[var(--aegean-blue)] rounded shadow-inner">
+                    <div class="flex items-center gap-3 mb-4">
+                        <svg class="w-8 h-8 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        <h4 class="font-title text-[var(--aegean-blue)] font-bold text-xl uppercase">El Oráculo de la Red (Contexto)</h4>
+                    </div>
+                    <div id="wiki-context" class="text-font text-lg text-gray-800 italic">
+                        Invocando los saberes del éter...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PANEL FLOTANTE INFERIOR: EL PUZLE -->
+            <div class="absolute bottom-0 left-0 right-0 glass-panel border-t border-[var(--gold)] p-6 z-20 transform translate-y-full transition-transform duration-500" id="puzzle-drawer">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h3 class="font-title text-[var(--gold)] text-2xl mb-2">El Juicio de las Moiras</h3>
+                    <p id="puzzle-desc" class="text-font text-xl text-white mb-6">Lee ambas lenguas y responde al acertijo.</p>
+                    
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-4">
+                        <input type="text" id="puzzle-input" class="oracle-input md:w-1/2" placeholder="Respuesta..." autocomplete="off" spellcheck="false">
+                        <button onclick="Puzzle.check()" class="btn-hellenic px-8 py-3 text-xl w-full md:w-auto">Sellar Destino</button>
+                    </div>
+                    <p id="puzzle-feedback" class="h-6 text-[var(--sparta-red)] text-lg font-bold mt-4"></p>
+                </div>
+            </div>
+            
+            <!-- Botón para subir el cajón del puzle -->
+            <button onclick="Puzzle.toggleDrawer()" id="btn-toggle-puzzle" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 btn-hellenic px-8 py-3 text-lg z-10 shadow-[0_0_20px_rgba(212,175,55,0.5)] animate-float">
+                Enfrentar el Acertijo ▼
+            </button>
+
+        </div>
+    </div>
+
+
+    <!-- ==========================================================================
+         MOTOR DEL JUEGO (JAVASCRIPT)
+         ========================================================================== -->
+    <script>
+        // --- 1. BASE DE DATOS BILINGÜE: HERÓDOTO (10 Historias Épicas) ---
+        // Contiene el título, coordenadas del mapa, texto en griego (auténtico), español, el término de Wikipedia a invocar, y el puzle.
+        const HERODOTUS_DB = [
+            {
+                id: 'creso', title: 'Creso y Solón', x: 75, y: 40, wiki: 'Creso', pass: 'felicidad',
+                greek: "«Σόλων, τίς ὀλβιώτατος;» Ὁ δὲ Σόλων οὐδὲν ὑποθωπεύσας, ἀλλὰ τῷ ἐόντι χρησάμενος λέγει· «Ὦ βασιλεῦ, Τέλλος ὁ Ἀθηναῖος.»... σκοπέειν δὲ χρὴ παντὸς χρήματος τὴν τελευτήν, κῇ ἀποβήσεται· πολλοῖσι γὰρ δὴ ὑποδέξας ὄλβον ὁ θεὸς προῤῥίζους ἀνέτρεψε.",
+                spanish: "Creso, rey de Lidia, mostrando sus inmensos tesoros al sabio ateniense Solón, le preguntó: «Solón, ¿quién es el hombre más feliz que has conocido?». Solón, sin adularle en absoluto y ateniéndose a la verdad, respondió: «Oh rey, Telo de Atenas»... Y añadió: «Es necesario observar el final de cada cosa, cómo terminará; pues a muchos la divinidad les ha mostrado la dicha para luego arruinarlos de raíz».",
+                puzzle: "¿Cuál es el concepto central sobre el que debaten Creso y Solón? (Pista: Lo que Creso creía tener gracias a su oro, pero Solón mide al final de la vida)."
+            },
+            {
+                id: 'leonidas', title: 'Leónidas en las Termópilas', x: 45, y: 45, wiki: 'Batalla_de_las_Termópilas', pass: 'espartanos',
+                greek: "Ὦ ξεῖν', ἀγγέλλειν Λακεδαιμονίοις ὅτι τῇδε κείμεθα τοῖς κείνων ῥήμασι πειθόμενοι. Διηνέκης ὁ Σπαρτιάτης, πυθόμενος ὅτι ἐπεὰν οἱ Μῆδοι τοξεύωσι τὸν ἥλιον ὑπὸ τοῦ πλήθεος τῶν ὀϊστῶν ἀποκρύπτουσι, εἶπε· «ἀγαθὸν τὸ ἄγγελμα· ὑπὸ σκιῇ γὰρ ἡ μάχη ἔσται.»",
+                spanish: "El epitafio grabado en la piedra rezaba: «Extranjero, anuncia a los lacedemonios (espartanos) que aquí yacemos, obedeciendo sus leyes». Se cuenta que el espartano Diéneces, al escuchar a un traquinio decir que cuando los medos disparasen sus arcos ocultarían el sol por la multitud de flechas, no se inmutó y respondió: «Excelente noticia; así la batalla será a la sombra».",
+                puzzle: "¿A qué pueblo (lacedemonios) va dirigido el epitafio que ruega al extranjero que dé la noticia de su sacrificio?"
+            },
+            {
+                id: 'rampsinito', title: 'El Ladrón de Rampsinito', x: 80, y: 85, wiki: 'Rampsinito', pass: 'cabeza',
+                greek: "Βασιλέα Ραμψίνιτον... τοῦ δὲ ἑτέρου ἐγκαταλειπομένου καὶ ὡς ἐπύθετο ἐν οἵῳ κακῷ ἦν, ἰθὺς καλέσαντα τὸν ἀδελφεὸν λέγειν μιν τάδε... «τάμον μου τὴν κεφαλήν.»",
+                spanish: "El faraón Rampsinito mandó construir una cámara de piedra inexpugnable. Pero dos hermanos ladrones entraron. Cuando uno quedó atrapado en el lazo del rey, viendo en qué desgracia se hallaba, llamó a su hermano y le dijo: «Para que no me reconozcan y te maten a ti también, córtame la cabeza y llévatela».",
+                puzzle: "Traduce o deduce del texto español: ¿Qué es lo que el hermano atrapado pide que le corten («τὴν κεφαλήν») para salvar a su cómplice?"
+            },
+            {
+                id: 'hipoclides', title: 'La Boda de Hipoclides', x: 55, y: 60, wiki: 'Hipoclides', pass: 'boda',
+                greek: "Ὁ δὲ Ἱπποκλείδης... ἐκέλευσε τὸν αὐλητὴν αὐλῆσαι ἐμμέλειαν... ὀρχέετο. Κλεισθένης δὲ εἶπε· «Ὦ παῖ Τισάνδρου, ἀπορχήσαό γε μὲν τὸν γάμον.» Ὁ δὲ Ἱπποκλείδης ὑπολαβὼν εἶπε· «Οὐ φροντὶς Ἱπποκλείδῃ.»",
+                spanish: "Hipoclides, el pretendiente favorito, tras beber en exceso, ordenó al flautista tocar una melodía y se puso a bailar sobre la mesa, e incluso hizo gestos con las piernas en el aire. El tirano Clístenes, enfurecido por tal falta de decoro, gritó: «¡Hijo de Tisandro, has bailado y perdido tu matrimonio!». A lo que él, desde el suelo, contestó la famosa frase: «¡A Hipoclides le da igual!»",
+                puzzle: "El verbo «ἀπορχήσαό» significa 'perder bailando'. ¿Qué es exactamente lo que perdió Hipoclides («τὸν γάμον») por su ridículo baile?"
+            },
+            {
+                id: 'policrates', title: 'El Anillo de Polícrates', x: 80, y: 65, wiki: 'Polícrates_de_Samos', pass: 'anillo',
+                greek: "Πολυκράτης... σφρηγὶς ἣν ἐφόρεε χρυσόδετος, σμαράγδου μὲν λίθου ἐοῦσα... ταύτην δὴ ὦν ἐδόκεέ οἱ ἀποβαλεῖν. Ἀναγαγὼν δὲ ἐς τὸ πέλαγος περιελόμενος τὴν σφρηγῖδα ῥίπτει ἐς τὴν θάλασσαν.",
+                spanish: "El tirano Polícrates de Samos tenía una suerte tan antinatural que su aliado le aconsejó deshacerse de lo que más valoraba para evitar la envidia de los dioses. Él eligió su sello, que llevaba engarzado en oro y era de esmeralda. Embarcándose mar adentro, se quitó el sello y lo arrojó al mar. Pero días después, un pescador le regaló un gran pez al tirano. Al abrirlo, los cocineros hallaron la joya en su estómago.",
+                puzzle: "La palabra griega «σφρηγὶς» (sphregis) se refiere a la joya que Polícrates arrojó al mar. ¿De qué objeto se trata en la historia?"
+            },
+            {
+                id: 'arion', title: 'Arión y el Delfín', x: 45, y: 65, wiki: 'Arión_de_Lesbos', pass: 'musica',
+                greek: "Ἀρίονα τὸν Μηθυμναῖον... κιθαρῳδὸν τῶν τότε ἐόντων οὐδενὸς δεύτερον... Τὸν δὲ ἐνδύντα τε πᾶσαν τὴν σκευὴν καὶ λαβόντα τὴν κιθάρην... ῥῖψαι μιν ἐς τὴν θάλασσαν ἑωυτόν. Καὶ τοὺς μὲν ἀποπλεῖν, τὸν δὲ δελφῖνα λέγουσι ὑπολαβόντα ἐξενεῖκαι ἐπὶ Ταίναρον.",
+                spanish: "Arión de Metimna, un citaredo (tañedor de cítara) que no era segundo de nadie en su tiempo, fue asaltado por los marineros de su propio barco para robarle. Pidió como último deseo cantar una vez más. Vestido con sus mejores galas y tomando su lira, cantó majestuosamente y luego se arrojó al mar. Pero, según cuentan, un delfín, atraído por la belleza del canto, lo recogió en su lomo y lo llevó a salvo a Ténaro.",
+                puzzle: "¿Qué disciplina artística dominaba Arión, cuyo poder fue capaz de atraer incluso a las bestias del mar para salvarlo?"
+            },
+            {
+                id: 'giges', title: 'Giges y Candaules', x: 85, y: 45, wiki: 'Giges_de_Lidia', pass: 'reina',
+                greek: "Κανδαύλης ἤρα τῆς ἑωυτοῦ γυναικός... Γύγῃ τῷ Δασκύλου (οὗτος γάρ οἱ ἦν τῶν αἰχμοφόρων ἀρεσκόμενος μάλιστα)... «Γύγη, οὐ γάρ σε δοκέω πείθεσθαί μοι λέγοντι περὶ τοῦ εἴδεος τῆς γυναικός... ποίεε ὅκως ἐκείνην θεήσεαι γυμνήν.»",
+                spanish: "El rey Candaules estaba locamente enamorado de su propia esposa. Pensando que era la mujer más hermosa del mundo, se lo comentaba a Giges, su guardia de mayor confianza. Un día le dijo: «Giges, como creo que no me crees cuando te hablo de la belleza de la reina, haré que la veas desnuda a escondidas». La reina lo descubrió, y obligó a Giges a elegir: o morir, o matar al rey y quedarse con ella y el trono.",
+                puzzle: "Candaules obligó a Giges a ver desnuda a su esposa, lo que provocó su perdición. ¿Cuál es el título real o estatus de esta mujer traicionada?"
+            },
+            {
+                id: 'maraton', title: 'La Batalla de Maratón', x: 60, y: 55, wiki: 'Batalla_de_Maratón', pass: 'atenienses',
+                greek: "Ἀθηναῖοι δὲ ἐπείτε ἀπείθησαν... δρόμῳ ἵεντο ἐς τοὺς βαρβάρους. Πέρσαι δὲ ὁρέοντες δρόμῳ ἐπιόντας παρεσκευάζοντο ὡς δεξόμενοι... μανίην τε τοῖσι Ἀθηναίοισι ἐπέφερον καὶ πάγχυ ὀλεθρίην, ὁρέοντες αὐτοὺς ὀλίγους καὶ τούτους δρόμῳ ἐπειγομένους οὔτε ἵππου ὑπαρχούσης.",
+                spanish: "Cuando los atenienses recibieron la orden de ataque en la llanura de Maratón, se lanzaron a la carrera contra los bárbaros persas. Los persas, al verlos avanzar a la carrera, se prepararon para recibirlos, pero pensaron que los griegos estaban poseídos por una locura destructiva, pues veían que eran pocos, avanzaban corriendo y no tenían caballería. Sin embargo, los griegos chocaron con tal fiereza que ganaron la batalla.",
+                puzzle: "¿A qué ciudadanos o ejército (nacionalidad) creyeron locos los persas por atacar corriendo y sin caballería en Maratón?"
+            },
+            {
+                id: 'artemisia', title: 'Artemisia en Salamina', x: 85, y: 65, wiki: 'Artemisia_I_de_Caria', pass: 'hombres',
+                greek: "Ξέρξης... μαθὼν τὸ ἔργον... εἶπε· «Οἱ μὲν ἄνδρες γεγόνασί μοι γυναῖκες, αἱ δὲ γυναῖκες ἄνδρες.» Ταῦτα μὲν Ξέρξην φασὶ εἰπεῖν.",
+                spanish: "Durante la gran batalla naval de Salamina, la reina Artemisia, que luchaba del lado persa, se vio acorralada. Con gran astucia, hundió una nave de su propio bando para que los griegos creyeran que ella era aliada y la dejaran escapar. El rey persa Jerjes, viendo a lo lejos cómo Artemisia hundía un barco (creyendo que era enemigo), exclamó maravillado de su valor: «Mis hombres se han convertido en mujeres, y mis mujeres en varones».",
+                puzzle: "Jerjes, asombrado por el supuesto valor de Artemisia, exclama que sus soldados varones se han convertido en mujeres, y sus mujeres en..."
+            },
+            {
+                id: 'cambises', title: 'La Locura de Cambises', x: 80, y: 90, wiki: 'Cambises_II', pass: 'dios',
+                greek: "Καμβύσης δὲ... ἐσπασμένος τὸ ἐγχειρίδιον, παίειν βουλόμενος τὸν Ἆπιν τὴν γαστέρα... καί μιν ἐπιγελάσας εἶπε· «Ὦ κακαὶ κεφαλαί, τοιοῦτοι θεοὶ γίνονται, ἔναιμοί τε καὶ σαρκώδεες καὶ ἐπαΐοντες σιδήρου;»",
+                spanish: "El rey persa Cambises, habiendo enloquecido en Egipto, sacó su espada y, queriendo golpear en el vientre al toro Apis (el dios viviente de los egipcios), le hirió en el muslo. Luego, echándose a reír, les dijo a los sacerdotes: «¡Miserables!, ¿acaso los dioses son así, de carne y hueso, y vulnerables al hierro?». El toro murió, y los egipcios afirmaron que, por este sacrilegio, Cambises se volvió completamente demente.",
+                puzzle: "El toro Apis no era un animal cualquiera para los egipcios. Cambises se burla de ellos preguntando si los de carne y hueso pueden ser un..."
+            }
+        ];
+
+        // --- 2. SISTEMA DE AUDIO (Lira de Apolo - Web Audio API) ---
+        const AudioFX = {
+            ctx: null, isReady: false,
+            init() {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if(AudioContext) {
+                        this.ctx = new AudioContext();
+                        if(this.ctx.state === 'suspended') this.ctx.resume();
+                        this.isReady = true;
+                    }
+                } catch(e) { console.warn("Audio no soportado"); }
+            },
+            // Síntesis matemática de una cuerda percutida (Lira)
+            playLyre(freq, vol = 0.5) {
+                if(!this.isReady || !this.ctx) return;
+                const dur = 2.5;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                // Mezcla de Sawtooth y Sine para imitar cuerda antigua
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                
+                // Envolvente tipo "Pluck" (Percusión aguda, cola larga)
+                gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+                
+                // Filtro para suavizar
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = "lowpass";
+                filter.frequency.setValueAtTime(2000, this.ctx.currentTime);
+                filter.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + dur);
+                
+                osc.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + dur);
+            },
+            click() { this.playLyre(440, 0.2); }, // A4
+            hover() { this.playLyre(587.33, 0.05); }, // D5 (muy suave)
+            success() { 
+                this.playLyre(440, 0.3); // A4
+                setTimeout(() => this.playLyre(554.37, 0.3), 150); // C#5
+                setTimeout(() => this.playLyre(659.25, 0.5), 300); // E5
+            },
+            error() { this.playLyre(150, 0.4); setTimeout(()=>this.playLyre(140, 0.4), 150); }
+        };
+
+        // --- 3. MOTOR VISUAL: CONSTELACIONES Y POLVO ESPACIAL ---
+        const VisualFX = {
+            canvas: null, ctx: null, particles: [], animId: null,
+            init() {
+                this.canvas = document.getElementById('constellation-canvas');
+                if(!this.canvas) return;
+                this.ctx = this.canvas.getContext('2d');
+                this.resize(); window.addEventListener('resize', () => this.resize());
+                for(let i=0; i<60; i++) this.particles.push(this.createParticle());
+                this.loop();
+            },
+            resize() { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; },
+            createParticle() {
+                return {
+                    x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+                    r: Math.random() * 2 + 0.5
+                };
+            },
+            loop() {
+                if(!this.ctx) return;
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.fillStyle = "rgba(212, 175, 55, 0.8)";
+                this.ctx.strokeStyle = "rgba(212, 175, 55, 0.15)";
+                this.ctx.lineWidth = 1;
+
+                for(let i=0; i<this.particles.length; i++) {
+                    let p = this.particles[i];
+                    p.x += p.vx; p.y += p.vy;
+                    if(p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
+                    if(p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+                    
+                    this.ctx.beginPath(); this.ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); this.ctx.fill();
+                    
+                    // Conectar partículas cercanas (Efecto Constelación)
+                    for(let j=i+1; j<this.particles.length; j++) {
+                        let p2 = this.particles[j];
+                        let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                        if(dist < 150) {
+                            this.ctx.globalAlpha = 1 - (dist / 150);
+                            this.ctx.beginPath(); this.ctx.moveTo(p.x, p.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+                        }
+                    }
+                }
+                this.ctx.globalAlpha = 1; // reset
+                this.animId = requestAnimationFrame(() => this.loop());
+            }
+        };
+
+        // --- 4. MOTOR LÓGICO DEL JUEGO ---
+        const State = {
+            relics: [], currentStory: null
+        };
+
+        const MapEngine = {
+            render() {
+                const container = document.getElementById('map-container');
+                let svg = `<svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));">`;
+                
+                // Silueta abstracta estilizada del Egeo (Grecia, Asia Menor, Creta, Egipto)
+                svg += `
+                    <!-- Mar -->
+                    <rect width="100" height="100" fill="var(--aegean-blue)" opacity="0.4"/>
+                    <!-- Tierra Firme (Grecia/Macedonia) -->
+                    <path d="M 0 0 L 40 0 L 50 30 L 45 40 L 30 45 L 20 60 L 40 65 L 50 80 L 10 90 L 0 90 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
+                    <!-- Asia Menor -->
+                    <path d="M 100 0 L 70 0 L 65 20 L 75 40 L 85 60 L 100 70 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
+                    <!-- Peloponeso -->
+                    <path d="M 30 70 L 40 65 L 55 75 L 45 85 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
+                    <!-- Creta -->
+                    <path d="M 50 90 L 60 88 L 70 92 L 55 95 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
+                    <!-- Egipto (Abajo derecha) -->
+                    <path d="M 70 100 L 100 80 L 100 100 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
+                `;
+
+                // Renderizar los Nodos (Historias)
+                HERODOTUS_DB.forEach(story => {
+                    const isCompleted = State.relics.includes(story.id);
+                    const statusClass = isCompleted ? 'completed' : '';
+                    svg += `
+                        <g class="map-node ${statusClass}" transform="translate(${story.x}, ${story.y})" onclick="Game.openStory('${story.id}')" onmouseenter="AudioFX.hover()">
+                            ${!isCompleted ? `<circle cx="0" cy="0" r="15" fill="none" stroke="var(--gold)" stroke-width="0.5" class="pulse-ring"/>` : ''}
+                            <circle cx="0" cy="0" r="${isCompleted ? '6' : '4'}" fill="${isCompleted ? 'var(--gold)' : '#fff'}"/>
+                            <text x="0" y="-12" fill="var(--marble)" font-family="Cinzel Decorative" font-size="3" text-anchor="middle" opacity="0.9" style="text-shadow: 0 2px 4px #000;">${story.title}</text>
+                        </g>
+                    `;
+                });
+
+                svg += `</svg>`;
+                container.innerHTML = svg;
+            }
+        };
+
+        const Codex = {
+            async open(storyId) {
+                const story = HERODOTUS_DB.find(s => s.id === storyId);
+                State.currentStory = story;
+
+                // Configurar textos
+                document.getElementById('codex-title').innerText = story.title;
+                document.getElementById('text-greek').innerHTML = `<p class="drop-cap-greek">${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`;
+                document.getElementById('text-spanish').innerHTML = `<p class="drop-cap-spanish">${story.spanish.charAt(0)}</p><p>${story.spanish.substring(1)}</p>`;
+                
+                // Configurar puzle
+                document.getElementById('puzzle-desc').innerText = story.puzzle;
+                document.getElementById('puzzle-input').value = "";
+                document.getElementById('puzzle-feedback').innerText = "";
+                
+                // Ocultar cajón del puzle
+                document.getElementById('puzzle-drawer').classList.add('translate-y-full');
+                document.getElementById('btn-toggle-puzzle').style.display = 'block';
+
+                // Mostrar pantalla
+                document.getElementById('screen-map').classList.add('hidden', 'opacity-0');
+                const screenCodex = document.getElementById('screen-codex');
+                screenCodex.style.display = 'flex';
+                setTimeout(() => screenCodex.classList.remove('opacity-0'), 50);
+
+                AudioFX.playLyre(329.63, 0.4); // E4 acorde apertura
+
+                // ================= API FETCH: WIKIPEDIA =================
+                const wikiContainer = document.getElementById('wiki-context');
+                wikiContainer.innerHTML = '<span class="animate-pulse">Invocando a los oráculos de la red...</span>';
+                
+                try {
+                    const url = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(story.wiki)}&format=json&origin=*`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    const pages = data.query.pages;
+                    const pageId = Object.keys(pages)[0];
+                    
+                    if (pageId !== "-1" && pages[pageId].extract) {
+                        // Tomamos solo las primeras 2-3 frases (aprox 300 caracteres)
+                        let extract = pages[pageId].extract;
+                        let shortExtract = extract.substring(0, 350) + "...";
+                        wikiContainer.innerHTML = `<strong>${pages[pageId].title}:</strong> ${shortExtract} <br><span class="text-xs text-gray-500 mt-2 block">Fuente: Wikipedia API</span>`;
+                    } else {
+                        wikiContainer.innerHTML = "Los oráculos guardan silencio sobre este nombre.";
+                    }
+                } catch(e) {
+                    wikiContainer.innerHTML = "El éter está perturbado. No se pudo contactar con el Oráculo (Error de Red).";
+                }
+            }
+        };
+
+        const Puzzle = {
+            toggleDrawer() {
+                AudioFX.click();
+                const drawer = document.getElementById('puzzle-drawer');
+                drawer.classList.toggle('translate-y-full');
+                document.getElementById('btn-toggle-puzzle').style.display = drawer.classList.contains('translate-y-full') ? 'block' : 'none';
+                if(!drawer.classList.contains('translate-y-full')) {
+                    setTimeout(()=>document.getElementById('puzzle-input').focus(), 300);
+                }
+            },
+            check() {
+                const story = State.currentStory;
+                const input = document.getElementById('puzzle-input').value.trim().toLowerCase();
+                
+                // Normalizar acentos
+                const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                if (normalize(input).includes(normalize(story.pass))) {
+                    AudioFX.success();
+                    if(!State.relics.includes(story.id)) {
+                        State.relics.push(story.id);
+                        document.getElementById('relic-count').innerText = State.relics.length;
+                    }
+                    
+                    const feedback = document.getElementById('puzzle-feedback');
+                    feedback.innerText = "¡RESPUESTA REVELADA! El hilo del destino ha sido hilado.";
+                    feedback.style.color = "var(--ghost-green)";
+                    
+                    setTimeout(() => Game.closeCodex(), 2000);
+                } else {
+                    AudioFX.error();
+                    const fb = document.getElementById('puzzle-feedback');
+                    fb.innerText = "Los dioses rechazan tu ofrenda. Lee de nuevo.";
+                    fb.style.color = "var(--sparta-red)";
+                    
+                    const drawer = document.getElementById('puzzle-drawer');
+                    drawer.classList.add('animate-shake');
+                    setTimeout(() => drawer.classList.remove('animate-shake'), 400);
+                }
+            }
+        };
+
+        const TTS = {
+            readSpanish() {
+                if(!State.currentStory) return;
+                AudioFX.click();
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel(); // Parar audios anteriores
+                    const utterance = new SpeechSynthesisUtterance(State.currentStory.spanish);
+                    utterance.lang = 'es-ES';
+                    utterance.pitch = 0.9;
+                    utterance.rate = 0.95; // Voz calmada y narrativa
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    alert("Tu navegador no soporta la lectura en voz alta.");
+                }
+            }
+        };
+
+        const Game = {
+            init() {
+                VisualFX.init();
+            },
+            initMap() {
+                AudioFX.init();
+                AudioFX.success(); // Acorde de inicio
+                
+                const intro = document.getElementById('screen-intro');
+                intro.classList.add('opacity-0');
+                
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    MapEngine.render();
+                    const mapScreen = document.getElementById('screen-map');
+                    mapScreen.style.display = 'flex';
+                    setTimeout(() => mapScreen.classList.remove('opacity-0', 'hidden'), 50);
+                }, 1000);
+            },
+            openStory(id) {
+                AudioFX.click();
+                Codex.open(id);
+            },
+            closeCodex() {
+                AudioFX.click();
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel(); // Callar TTS si está hablando
+
+                const screenCodex = document.getElementById('screen-codex');
+                screenCodex.classList.add('opacity-0');
+                setTimeout(() => {
+                    screenCodex.style.display = 'none';
+                    const screenMap = document.getElementById('screen-map');
+                    screenMap.classList.remove('hidden');
+                    MapEngine.render(); // Refrescar nodos (por si hay completados)
+                    setTimeout(() => screenMap.classList.remove('opacity-0'), 50);
+                    
+                    // Comprobar victoria final
+                    if(State.relics.length === HERODOTUS_DB.length) {
+                        setTimeout(() => this.triggerVictory(), 1000);
+                    }
+                }, 700);
+            },
+            triggerVictory() {
+                AudioFX.success(); setTimeout(()=>AudioFX.success(), 1000);
+                document.body.innerHTML = `
+                    <div class="absolute inset-0 bg-black flex flex-col items-center justify-center p-10 text-center animate-fade z-50">
+                        <h1 class="text-6xl md:text-9xl text-[var(--gold)] font-title mb-8 drop-shadow-[0_0_50px_rgba(212,175,55,1)]">
+                            ΙΣΤΟΡΙΑΙ
+                        </h1>
+                        <h2 class="text-3xl md:text-5xl text-white font-title mb-6">El Telar ha sido Completado</h2>
+                        <p class="text-xl md:text-2xl text-gray-300 font-greek max-w-4xl leading-relaxed italic">
+                            Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te saludan.
+                        </p>
+                        <button onclick="location.reload()" class="mt-12 btn-hellenic px-10 py-4 text-2xl">Reiniciar Ciclo</button>
+                    </div>
+                `;
+            }
+        };
+
+        // Inputs globales
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter' && !document.getElementById('puzzle-drawer').classList.contains('translate-y-full')) {
+                Puzzle.check();
+            }
+        });
+
+        // Inicializar
+        window.addEventListener('DOMContentLoaded', () => Game.init());
+
+    </script>
+</body>
+</html>
