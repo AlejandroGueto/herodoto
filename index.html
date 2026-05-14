@@ -37,7 +37,7 @@
             background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
         }
 
-        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.4; letter-spacing: 0.5px; }
+        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.6; letter-spacing: 0.5px; }
         .font-title { font-family: 'Cinzel Decorative', serif; }
 
         /* Animaciones Épicas */
@@ -124,36 +124,42 @@
         .drop-cap-spanish::first-letter { font-size: 4.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
 
         /* ==========================================================================
-           INTERACTIVIDAD LÉXICA Y ANÁLISIS MORFOLÓGICO
+           INTERACTIVIDAD LÉXICA Y ANÁLISIS MORFOLÓGICO PROFUNDO
            ========================================================================== */
         .word-interactive {
             display: inline-block; cursor: pointer; transition: all 0.2s ease;
-            border-bottom: 2px dotted rgba(212, 175, 55, 0.2); padding: 0 4px; border-radius: 4px;
+            border-bottom: 2px dotted rgba(212, 175, 55, 0.15); padding: 0 4px; border-radius: 4px;
         }
         .word-interactive:hover {
             color: var(--gold-light); text-shadow: 0 0 10px var(--gold);
             background: rgba(212, 175, 55, 0.15); border-bottom: 2px solid var(--gold);
         }
-        .glossary-word { border-bottom: 2px dashed var(--gold-light); }
+        .glossary-word { border-bottom: 2px dashed var(--gold-light); font-weight: bold; }
 
-        /* Lexicon Tooltip */
+        /* Lexicon Tooltip Premium */
         #lexicon-tooltip {
             position: fixed; z-index: 9999; pointer-events: none; opacity: 0;
             background: rgba(4, 10, 16, 0.98); border: 2px solid var(--gold);
-            color: var(--marble); padding: 20px; border-radius: 8px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.95), 0 0 20px rgba(212,175,55,0.3);
-            backdrop-filter: blur(15px); transform: translate(-50%, 10px);
-            transition: opacity 0.2s, transform 0.2s; min-width: 300px;
+            color: var(--marble); padding: 25px; border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.95), 0 0 25px rgba(212,175,55,0.4);
+            backdrop-filter: blur(20px); transform: translate(-50%, 10px);
+            transition: opacity 0.2s, transform 0.2s; min-width: 350px; max-width: 450px;
         }
         #lexicon-tooltip.visible { opacity: 1; transform: translate(-50%, -10px); pointer-events: auto; }
 
-        .morph-tag { display: inline-block; background: var(--aegean-blue); color: var(--gold-light); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; font-family: 'Cinzel Decorative'; letter-spacing: 1px; margin-bottom: 8px; }
+        .morph-tag { 
+            display: inline-block; background: var(--aegean-blue); color: var(--gold-light); 
+            padding: 4px 12px; border-radius: 12px; font-size: 0.9rem; font-family: 'Cinzel Decorative'; 
+            letter-spacing: 1px; margin-bottom: 12px; border: 1px solid var(--gold);
+        }
         
+        .lexicon-lemma { color: #888; font-style: italic; font-size: 1.2rem; margin-top: 5px; }
+
         /* Oráculo Modal Independiente */
         #oracle-modal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
             z-index: 3000; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto;
+            width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto;
         }
         #oracle-modal.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
 
@@ -182,9 +188,30 @@
         }
         .oracle-input:focus { border-color: #fff; box-shadow: 0 0 25px rgba(212,175,55,0.5); background: rgba(0,0,0,0.8); }
 
-        .immersive-mode .pane-greek { display: none; }
-        .immersive-mode .pane-spanish { padding: 5rem 20% 20rem 20%; font-size: 1.3em; }
-        .immersive-mode .top-bar { opacity: 0; pointer-events: none; }
+        /* MODO ZEN BILINGÜE AVANZADO */
+        .zen-toolbar {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%); z-index: 3000;
+            background: rgba(4, 10, 16, 0.95); border: 1px solid var(--gold); border-radius: 0 0 15px 15px;
+            padding: 15px 30px; display: flex; gap: 20px; transition: top 0.5s ease;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+        }
+        .immersive-mode .zen-toolbar { top: 0; }
+        .immersive-mode .top-bar { display: none !important; }
+        .immersive-mode .pane-greek, .immersive-mode .pane-spanish { transition: all 0.8s ease; }
+        
+        /* Layouts de Zen Mode */
+        .zen-layout-es .pane-greek { display: none; }
+        .zen-layout-es .pane-spanish { padding: 8rem 20% 20rem 20%; font-size: 1.4em; border-left: none; }
+        
+        .zen-layout-gr .pane-spanish { display: none; }
+        .zen-layout-gr .pane-greek { padding: 8rem 20% 20rem 20%; font-size: 1.4em; border-right: none; }
+        
+        .zen-layout-dual .pane-greek { padding: 8rem 4rem 20rem 4rem; }
+        .zen-layout-dual .pane-spanish { padding: 8rem 4rem 20rem 4rem; }
+
+        .zen-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 16px; border-radius: 4px; font-family: 'Cinzel Decorative'; transition: all 0.3s; }
+        .zen-btn.active { background: var(--aegean-blue); border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 15px rgba(212,175,55,0.3); }
+
     </style>
 </head>
 <body>
@@ -193,29 +220,29 @@
          PANTALLA DE INICIO
          ========================================================================== -->
     <div id="screen-intro" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] transition-opacity duration-1000 p-4">
-        <div class="text-center max-w-6xl p-12 glass-panel rounded-xl animate-fade w-full relative overflow-hidden">
+        <div class="text-center max-w-7xl p-16 glass-panel rounded-xl animate-fade w-full relative overflow-hidden">
             <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/ancient-map.png')]"></div>
             
-            <h3 class="text-[var(--gold)] text-2xl md:text-4xl tracking-[0.6em] uppercase mb-8 font-title opacity-90">
+            <h3 class="text-[var(--gold)] text-3xl md:text-5xl tracking-[0.6em] uppercase mb-8 font-title opacity-90">
                 ΗΡΟΔΟΤΟΣ
             </h3>
-            <h1 class="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-12 font-title text-shine drop-shadow-[0_0_50px_rgba(212,175,55,0.5)]">
+            <h1 class="text-6xl md:text-8xl lg:text-[10rem] font-black text-white mb-12 font-title text-shine drop-shadow-[0_0_50px_rgba(212,175,55,0.5)]">
                 Historias
             </h1>
-            <p class="text-2xl md:text-4xl text-gray-200 text-font mb-16 italic leading-relaxed px-4 md:px-16 relative z-10 font-light">
+            <p class="text-3xl md:text-5xl text-gray-200 text-font mb-16 italic leading-relaxed px-4 md:px-16 relative z-10 font-light">
                 "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
             </p>
             
-            <button onclick="Game.initMap()" class="btn-hellenic px-16 py-6 text-3xl md:text-4xl font-bold rounded shadow-[0_0_60px_rgba(212,175,55,0.5)] relative z-10">
+            <button onclick="Game.initMap()" class="btn-hellenic px-20 py-8 text-4xl md:text-5xl font-bold rounded shadow-[0_0_60px_rgba(212,175,55,0.5)] relative z-10">
                 Desplegar el Egeo
             </button>
             
-            <div class="mt-16 flex flex-col md:flex-row items-center justify-center gap-8 text-[var(--gold)] font-sans tracking-widest uppercase text-sm relative z-10">
-                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Traducción Interactiva Avanzada</span>
+            <div class="mt-20 flex flex-col md:flex-row items-center justify-center gap-10 text-[var(--gold)] font-sans tracking-widest uppercase text-base relative z-10">
+                <span class="flex items-center gap-3"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Morfosintáctico</span>
                 <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Fluido</span>
+                <span class="flex items-center gap-3"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Fluido</span>
                 <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"/></svg> Oráculo en Red</span>
+                <span class="flex items-center gap-3"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"/></svg> Vuelo Cinematográfico</span>
             </div>
         </div>
     </div>
@@ -235,8 +262,8 @@
                     <span id="relic-count" class="absolute text-4xl font-bold font-title text-white">0</span>
                 </div>
                 <div>
-                    <h2 class="font-title text-4xl text-[var(--gold)] tracking-widest m-0 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">El Telar de Heródoto</h2>
-                    <span class="text-gray-400 text-font italic text-2xl">Selecciona un enclave en el mapa</span>
+                    <h2 class="font-title text-5xl text-[var(--gold)] tracking-widest m-0 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">El Telar de Heródoto</h2>
+                    <span class="text-gray-400 text-font italic text-3xl">Selecciona un enclave en el mapa</span>
                 </div>
             </div>
             <div class="font-title text-6xl tracking-[0.4em] text-white opacity-10 hidden lg:block">
@@ -251,34 +278,43 @@
          ========================================================================== -->
     <div id="screen-codex" class="absolute inset-0 z-40 bg-black flex-col hidden opacity-0 transition-opacity duration-700">
         
-        <!-- Toolbar -->
-        <div class="top-bar h-24 border-b-2 border-[var(--gold)] glass-panel flex items-center justify-between px-10 z-10 shrink-0 transition-opacity duration-500">
-            <h2 id="codex-title" class="font-title text-4xl text-[var(--gold)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)]">Título</h2>
-            <div class="flex gap-4">
-                <button onclick="Oracle.open()" class="btn-hellenic px-6 py-3 text-xl flex items-center gap-2 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <!-- Toolbar Normal -->
+        <div class="top-bar h-28 border-b-2 border-[var(--gold)] glass-panel flex items-center justify-between px-12 z-10 shrink-0 transition-opacity duration-500">
+            <h2 id="codex-title" class="font-title text-5xl text-[var(--gold)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)]">Título</h2>
+            <div class="flex gap-6">
+                <button onclick="Oracle.open()" class="btn-hellenic px-8 py-4 text-2xl flex items-center gap-3 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span class="hidden xl:inline">Oráculo</span>
                 </button>
-                <button onclick="Game.toggleImmersive()" class="btn-hellenic px-6 py-3 text-xl flex items-center gap-2" title="Modo Lectura Inmersiva">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span class="hidden xl:inline">Zen</span>
+                <button onclick="Game.toggleImmersive()" class="btn-hellenic px-8 py-4 text-2xl flex items-center gap-3" title="Modo Lectura Inmersiva">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="hidden xl:inline">Modo Zen</span>
                 </button>
-                <button onclick="Game.closeCodex()" class="btn-hellenic px-8 py-3 text-xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
-                    ✕ Mapa
+                <button onclick="Game.closeCodex()" class="btn-hellenic px-10 py-4 text-2xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
+                    ✕ Volver
                 </button>
             </div>
         </div>
 
+        <!-- ZEN TOOLBAR (Aparece sólo en modo Zen) -->
+        <div class="zen-toolbar">
+            <button onclick="Game.setZenLayout('dual')" id="zen-btn-dual" class="zen-btn active text-lg">Bilingüe</button>
+            <button onclick="Game.setZenLayout('gr')" id="zen-btn-gr" class="zen-btn text-lg">Solo Griego</button>
+            <button onclick="Game.setZenLayout('es')" id="zen-btn-es" class="zen-btn text-lg">Solo Español</button>
+            <div class="w-px bg-gray-600 mx-2"></div>
+            <button onclick="Game.toggleImmersive()" class="zen-btn text-lg hover:text-[var(--sparta-red)] hover:border-[var(--sparta-red)]">✕ Salir de Zen</button>
+        </div>
+
         <!-- Área Central Bilingüe -->
-        <div class="dual-codex w-full relative">
+        <div id="dual-codex-container" class="dual-codex zen-layout-dual w-full relative">
             <div class="codex-pane pane-greek custom-scrollbar">
-                <h3 class="font-title text-[var(--gold)] text-center text-4xl mb-12 border-b-2 border-gray-800 pb-6 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
+                <h3 class="font-title text-[var(--gold)] text-center text-5xl mb-16 border-b-2 border-gray-800 pb-8 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
                 <div id="text-greek" class="font-greek text-3xl lg:text-4xl text-justify leading-loose">
                     <!-- Texto Inyectado Interactivo -->
                 </div>
             </div>
             <div class="codex-pane pane-spanish parchment-panel custom-scrollbar">
-                <h3 class="font-title text-[var(--sparta-red)] text-center text-4xl mb-12 border-b-2 border-gray-400 pb-6 tracking-widest">VERSIÓN CASTELLANA</h3>
+                <h3 class="font-title text-[var(--sparta-red)] text-center text-5xl mb-16 border-b-2 border-gray-400 pb-8 tracking-widest">VERSIÓN CASTELLANA</h3>
                 <div id="text-spanish" class="text-font text-3xl lg:text-4xl text-justify leading-relaxed">
                     <!-- Texto Inyectado -->
                 </div>
@@ -286,19 +322,19 @@
             
             <!-- EL CAJÓN DEL ACERTIJO -->
             <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-12 z-20 transform translate-y-full transition-transform duration-700 shadow-[0_-20px_50px_rgba(0,0,0,0.9)]" id="puzzle-drawer">
-                <button onclick="Puzzle.toggleDrawer()" class="absolute top-6 right-6 text-gray-400 hover:text-white font-bold text-3xl">✕</button>
+                <button onclick="Puzzle.toggleDrawer()" class="absolute top-6 right-6 text-gray-400 hover:text-white font-bold text-4xl">✕</button>
                 <div class="max-w-6xl mx-auto text-center">
-                    <h3 class="font-title text-[var(--gold-light)] text-5xl mb-6 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">El Acertijo de las Moiras</h3>
-                    <p id="puzzle-desc" class="text-font text-3xl text-white mb-12">...</p>
+                    <h3 class="font-title text-[var(--gold-light)] text-6xl mb-8 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">El Acertijo de las Moiras</h3>
+                    <p id="puzzle-desc" class="text-font text-4xl text-white mb-12">...</p>
                     <div class="flex flex-col lg:flex-row justify-center items-center gap-8">
                         <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3" placeholder="Tu respuesta..." autocomplete="off" spellcheck="false">
                         <button onclick="Puzzle.check()" class="btn-hellenic px-12 py-5 text-3xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black">Sellar Destino</button>
                     </div>
-                    <p id="puzzle-feedback" class="h-10 text-[var(--sparta-red)] text-2xl font-bold mt-8"></p>
+                    <p id="puzzle-feedback" class="h-10 text-[var(--sparta-red)] text-3xl font-bold mt-8"></p>
                 </div>
             </div>
             
-            <button onclick="Puzzle.toggleDrawer()" id="btn-toggle-puzzle" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 btn-hellenic px-12 py-5 text-2xl z-10 shadow-[0_0_40px_rgba(212,175,55,0.8)] bg-[var(--aegean-blue)] animate-float">
+            <button onclick="Puzzle.toggleDrawer()" id="btn-toggle-puzzle" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 btn-hellenic px-12 py-5 text-3xl z-10 shadow-[0_0_40px_rgba(212,175,55,0.8)] bg-[var(--aegean-blue)] animate-float">
                 Enfrentar el Acertijo ▼
             </button>
         </div>
@@ -306,70 +342,73 @@
         <!-- REPRODUCTOR (EL AEDO) -->
         <div id="audio-player" class="audio-player">
             <div class="flex flex-col">
-                <span class="font-title text-[var(--gold)] text-lg uppercase tracking-widest mb-1">El Aedo</span>
-                <div class="flex items-center gap-3">
-                    <button onclick="TTS.toggleLang()" id="btn-tts-lang" class="text-sm border border-gray-500 rounded px-2 py-1 text-gray-300 hover:text-white hover:border-white transition-colors w-16 text-center">
+                <span class="font-title text-[var(--gold)] text-xl uppercase tracking-widest mb-1">El Aedo</span>
+                <div class="flex items-center gap-4">
+                    <button onclick="TTS.toggleLang()" id="btn-tts-lang" class="text-lg border border-gray-500 rounded px-3 py-1 text-gray-300 hover:text-white hover:border-white transition-colors w-24 text-center font-bold">
                         🇪🇸 ESP
                     </button>
                     <button onclick="TTS.togglePlay()" id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-colors transform hover:scale-110">
-                        <svg width="36" height="36" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
+                        <svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
                     </button>
                     <button onclick="TTS.stop()" class="text-gray-400 hover:text-white transition-colors">
-                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
+                        <svg width="28" height="28" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
                     </button>
                 </div>
             </div>
-            <div id="visualizer" class="visualizer flex items-end gap-1 h-8 px-2 border-l border-gray-700 ml-2">
+            <div id="visualizer" class="visualizer flex items-end gap-1.5 h-10 px-3 border-l border-gray-700 ml-3">
                 <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
             </div>
         </div>
     </div>
 
-    <!-- TOOLTIP DICCIONARIO (Lexicon) -->
+    <!-- TOOLTIP DICCIONARIO (Lexicon Premium) -->
     <div id="lexicon-tooltip">
-        <div class="flex justify-between items-start mb-2">
-            <h4 id="lexicon-greek" class="font-greek text-3xl text-[var(--gold)] m-0">Λέξις</h4>
+        <div class="flex justify-between items-start mb-3">
+            <h4 id="lexicon-greek" class="font-greek text-4xl text-[var(--gold)] m-0">Λέξις</h4>
             <span id="lexicon-morph" class="morph-tag">Análisis</span>
         </div>
-        <p id="lexicon-spanish" class="text-font text-2xl text-white m-0 leading-relaxed mb-4">Traducción...</p>
-        <div class="border-t border-gray-700 pt-3 text-center">
-            <a id="lexicon-link" href="#" target="_blank" class="inline-block text-lg text-[var(--aegean-blue)] bg-[var(--gold)] text-black px-4 py-1 rounded hover:bg-white font-title transition-colors pointer-events-auto">Profundizar en Logeion ↗</a>
+        <div id="lexicon-lemma" class="lexicon-lemma mb-2"></div>
+        <p id="lexicon-spanish" class="text-font text-3xl text-white m-0 leading-relaxed mb-6">Traducción...</p>
+        <div class="border-t border-gray-700 pt-4 text-center">
+            <!-- Túnel de Traducción para Logeion (Google Translate Proxy) -->
+            <a id="lexicon-link" href="#" target="_blank" class="inline-block text-xl text-[var(--aegean-blue)] bg-[var(--gold)] text-black px-6 py-2 rounded hover:bg-white font-title transition-colors pointer-events-auto shadow-lg">
+                Traducir Logeion al Español ↗
+            </a>
         </div>
     </div>
 
     <!-- ORÁCULO MODAL (Wikipedia) -->
-    <div id="oracle-modal" class="glass-panel rounded-xl p-12 border-2 border-[var(--aegean-blue)] shadow-[0_0_80px_rgba(8,22,36,1)]">
-        <button onclick="Oracle.close()" class="absolute top-6 right-6 text-gray-400 hover:text-white font-bold text-4xl">✕</button>
-        <div class="flex items-center gap-6 mb-8 border-b border-gray-700 pb-6">
-            <svg class="w-12 h-12 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <h3 class="font-title text-4xl text-white tracking-widest uppercase">El Oráculo de la Red</h3>
+    <div id="oracle-modal" class="glass-panel rounded-xl p-16 border-2 border-[var(--aegean-blue)] shadow-[0_0_80px_rgba(8,22,36,1)]">
+        <button onclick="Oracle.close()" class="absolute top-8 right-8 text-gray-400 hover:text-white font-bold text-5xl">✕</button>
+        <div class="flex items-center gap-6 mb-10 border-b border-gray-700 pb-8">
+            <svg class="w-16 h-16 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <h3 class="font-title text-5xl text-white tracking-widest uppercase">El Oráculo de la Red</h3>
         </div>
-        <div id="oracle-content" class="text-font text-3xl text-gray-300 leading-relaxed text-justify">
+        <div id="oracle-content" class="text-font text-4xl text-gray-300 leading-relaxed text-justify">
             Invocando los saberes del éter...
         </div>
     </div>
-
-    <!-- BOTÓN SALIR MODO INMERSIVO -->
-    <button onclick="Game.toggleImmersive()" id="btn-exit-zen" class="fixed top-8 right-8 z-[100] btn-hellenic px-6 py-3 text-xl bg-black/50 hidden">Salir del Modo Zen</button>
 
     <!-- ==========================================================================
          MOTOR DEL JUEGO (JAVASCRIPT)
          ========================================================================== -->
     <script>
-        // --- 1. BASE DE DATOS LITERARIA MASIVA ---
+        // --- 1. BASE DE DATOS LITERARIA MASIVA (Textos Expandidos) ---
         const HERODOTUS_DB = [
             {
                 id: 'creso', title: 'Creso y Solón', lat: 38.48, lng: 28.04, wiki: 'Creso', pass: 'felicidad',
                 greek: `«Σόλων, τίς ὀλβιώτατος;» Ὁ δὲ Σόλων οὐδὲν ὑποθωπεύσας, ἀλλὰ τῷ ἐόντι χρησάμενος λέγει· «Ὦ βασιλεῦ, Τέλλος ὁ Ἀθηναῖος.» Ἀποθωμάσας δὲ Κροῖσος τὸ λεχθὲν εἴρετο ἐπιστρεφέως· «Κοίῃ δὴ κρίνεις Τέλλον εἶναι ὀλβιώτατον;»<br><br>
                 Ὁ δὲ εἶπε· «Τέλλῳ τοῦτο μὲν τῆς πόλιος εὖ ἡκούσης παῖδες ἦσαν καλοί τε κἀγαθοί, καί σφι εἶδε ἅπασι τέκνα ἐκγενόμενα καὶ πάντα παραμείναντα· τοῦτο δὲ τοῦ βίου εὖ ἥκοντι, ὡς τὰ παρ’ ἡμῖν, τελευτὴ τοῦ βίου λαμπροτάτη ἐπεγένετο· γενομένης γὰρ Ἀθηναίοισι μάχης πρὸς τοὺς ἀστυγείτονας ἐν Ἐλευσῖνι, βοηθήσας καὶ τροπὴν ποιήσας τῶν πολεμίων ἀπέθανε κάλλιστα, καί μιν Ἀθηναῖοι δημοσίῃ τε ἔθαψαν αὐτοῦ τῇ περ ἔπεσε καὶ ἐτίμησαν μεγάλως.»<br><br>
                 Ὡς δὲ τὰ κατὰ τὸν Τέλλον προετρέψατο ὁ Σόλων τὸν Κροῖσον εἴπας πολλὰ καὶ ὄλβια, ἐπειρώτα τίνα δεύτερον μετ' ἐκεῖνον ἴδοι, δοκέων πάγχυ δευτερεῖα γῶν οἴσεσθαι. Ὁ δ' εἶπε· «Κλέοβίν τε καὶ Βίτωνα.» Τούτοισι γὰρ ἐοῦσι γένος Ἀργείοισι βίος τε ἀρκέων ὑπῆν, καὶ πρὸς τούτῳ ῥώμη σώματος τοιήδε· ἀεθλοφόροι τε ἀμφότεροι ὁμοίως ἦσαν, καὶ δὴ καὶ λέγεται ὅδε ὁ λόγος. Ἐούσης ὁρτῆς τῇ Ἥρῃ τοῖσι Ἀργείοισι ἔδεε πάντως τὴν μητέρα αὐτῶν ζεύγεϊ κομισθῆναι ἐς τὸ ἱρόν, οἱ δέ σφι βόες ἐκ τοῦ ἀγροῦ οὐ παρεγίνοντο ἐν ὥρῃ· ἐκκληϊόμενοι δὲ τῇ ὥρῃ οἱ νεηνίαι ὑποδύντες αὐτοὶ ὑπὸ τὴν ζεύγλην εἷλκον τὴν ἅμαξαν, ἐπὶ τῆς ἁμάξης δέ σφι ὠχέετο ἡ μήτηρ, σταδίους δὲ πέντε καὶ τεσσεράκοντα διακομίσαντες ἀπίκοντο ἐς τὸ ἱρόν.<br><br>
+                Ταῦτα δέ σφι ποιήσασι καὶ ὀφθεῖσι ὑπὸ τῆς πανηγύριος τελευτὴ τοῦ βίου ἀρίστη ἐπεγένετο, διέδεξέ τε ἐν τούτοισι ὁ θεὸς ὡς ἄμεινον εἴη ἀνθρώπῳ τεθνάναι μᾶλλον ἢ ζώειν. Ἀργεῖοι μὲν γὰρ περιστάντες ἐμακάριζον τῶν νεηνιέων τὴν ῥώμην, αἱ δὲ Ἀργεῖαι τὴν μητέρα αὐτῶν, οἵων τέκνων ἐκύρησε· ἡ δὲ μήτηρ περιχαρὴς ἐοῦσα τῷ τε ἔργῳ καὶ τῇ φήμῃ, στᾶσα ἀντίον τοῦ ἀγάλματος εὔχετο Κλεόβι τε καὶ Βίτωνι τοῖσι ἑωυτῆς τέκνοισι, οἵ μιν ἐτίμησαν μεγάλως, τὴν θεὸν δοῦναι τὸ ἀνθρώπῳ τυχεῖν ἄριστον ἐστί.<br><br>
+                Μετὰ ταύτην δὲ τὴν εὐχὴν ὡς ἔθυσάν τε καὶ εὐωχήθησαν, κατακοιμηθέντες ἐν αὐτῷ τῷ ἱρῷ οἱ νεηνίαι οὐκέτι ἀνέστησαν ἀλλ' ἐν τέλεϊ τούτῳ ἔσχοντο.<br><br>
                 Μετεξέτεροι δὲ λέγουσι ὡς Κροῖσος, ἁλοὺς ὑπὸ Κύρου, ἐπὶ πυρὴν ἀναβιβασθεὶς καὶ ὑπὸ τοῦ πυρὸς φλεγόμενος, ἀνενειχθεὶς ἐς τρὶς ὠνόμασε τὸ τοῦ Σόλωνος οὔνομα. Κῦρος δὲ ἀκούσας, μεταμεληθεὶς καὶ ἐννοήσας ὅτι καὶ αὐτὸς ἄνθρωπος ἐὼν ἄνθρωπον ἄλλον, οὐδὲν ἑωυτοῦ ὄλβῳ ἔλασσον γενόμενον, ζώοντα πυρὶ διδοίη, ἐκέλευε σβεννύναι τὴν ταχίστην τὸ καιόμενον πῦρ.<br><br>
                 Σκοπέειν δὲ χρὴ παντὸς χρήματος τὴν τελευτήν, κῇ ἀποβήσεται· πολλοῖσι γὰρ δὴ ὑποδέξας ὄλβον ὁ θεὸς προῤῥίζους ἀνέτρεψε.`,
                 spanish: `Creso, rey de Lidia, creyéndose el hombre más dichoso de la tierra por sus inmensas riquezas, ordenó a sus sirvientes que mostraran todos sus tesoros al sabio ateniense Solón. Tras la visita, le preguntó: «Solón, huésped ateniense, dime: ¿quién es el hombre más feliz que has conocido en tus viajes?». Solón, sin adularle en absoluto y ateniéndose estrictamente a la verdad, respondió: «Oh rey, Telo de Atenas». Creso, asombrado e indignado por la respuesta, le preguntó con viveza: «¿Por qué juzgas que un simple ciudadano como Telo es el más feliz?».<br><br>
                 Solón respondió: «Porque, en primer lugar, en una ciudad próspera y libre, tuvo hijos hermosos y virtuosos, y vio nacer nietos de todos ellos, y todos le sobrevivieron; y, en segundo lugar, tras gozar de una vida próspera según la medida humana, tuvo un final gloriosísimo. Pues durante una batalla de los atenienses contra sus vecinos en Eleusis, acudió en ayuda de los suyos, puso en fuga a los enemigos y murió en el campo de batalla de la forma más heroica. Los atenienses lo enterraron a expensas públicas en el mismo lugar donde cayó y le rindieron honores inmortales».<br><br>
                 Creso, pensando que al menos obtendría el segundo lugar, preguntó quién era el siguiente. Solón respondió: «Cleobis y Bitón. Eran de Argos, tenían medios suficientes para vivir y una fuerza física extraordinaria, habiendo ganado ambos premios en los juegos. Durante la festividad de Hera, su madre debía ser llevada al templo en un carro, pero los bueyes no llegaron a tiempo del campo. Los jóvenes, viendo que se hacía tarde, se uncieron ellos mismos al yugo y tiraron del carro durante cuarenta y cinco estadios (unos 8 kilómetros) hasta el templo».<br><br>
-                «Toda la multitud alabó su fuerza, y las mujeres felicitaron a la madre. Ella, llena de orgullo, se plantó ante la estatua de la diosa y rogó que concediera a sus hijos el mayor bien que un mortal pudiera recibir. Tras la oración y el banquete, los jóvenes se quedaron dormidos en el mismo templo y ya no despertaron. Los dioses demostraron así que la muerte es mejor que la vida para el ser humano».<br><br>
-                Muchos afirman que, años después, Creso, capturado por Ciro el Grande, fue subido a una pira funeraria. Mientras el fuego ardía, Creso recordó las palabras del sabio y, suspirando profundamente, pronunció tres veces el nombre de Solón. Ciro, al escuchar la historia y comprender que él también era un simple mortal a punto de quemar vivo a otro rey antes igual a él en fortuna, se arrepintió y ordenó apagar el fuego de inmediato.<br><br>
+                «Toda la multitud alabó su fuerza, y las mujeres felicitaron a la madre. Ella, llena de orgullo por la hazaña y la fama de sus hijos, se plantó ante la estatua de la diosa y rogó que concediera a Cleobis y Bitón el mayor bien que un mortal pudiera recibir. Tras esta plegaria, ofrecieron sacrificios, participaron en el banquete y los jóvenes se quedaron dormidos en el mismo templo. Ya no despertaron nunca más; encontraron en el sueño su final. Los dioses demostraron así que la muerte es mejor que la vida para el ser humano».<br><br>
+                Muchos afirman que, años después, Creso, capturado por Ciro el Grande tras la caída de Sardes, fue subido a una inmensa pira funeraria. Mientras el fuego ardía y las llamas comenzaban a lamerle, Creso recordó las palabras del sabio y, suspirando profundamente desde el fondo de su alma, pronunció tres veces el nombre de Solón. Ciro, al escuchar la historia a través de sus intérpretes y comprender que él también era un simple mortal a punto de quemar vivo a otro rey antes igual a él en fortuna, temió la venganza divina. Se arrepintió y ordenó apagar el fuego de inmediato, salvando la vida de Creso.<br><br>
                 Como había advertido Solón: «Es necesario, pues, observar el final de cada vida, cómo terminará; pues a muchos hombres la divinidad les ha mostrado un destello de dicha para luego arruinarlos de raíz».`,
                 puzzle: "Creso creía que su inmenso oro le garantizaba el primer puesto en la lista de Solón. ¿Qué concepto central (aquello que anhela el ser humano y que Solón mide sólo al final de la vida) están debatiendo?"
             },
@@ -591,21 +630,28 @@
                 const morphTag = document.getElementById('lexicon-morph');
                 const spanishDesc = document.getElementById('lexicon-spanish');
                 const link = document.getElementById('lexicon-link');
+                const lemmaCont = document.getElementById('lexicon-lemma');
                 
                 const wordText = target.textContent;
                 const cleanWord = target.dataset.clean;
                 
                 greekTitle.textContent = wordText;
-                link.href = `https://logeion.uchicago.edu/${encodeURIComponent(cleanWord)}`;
+                
+                // Túnel de Traducción a Logeion a través de Google Translate (Inglés -> Español)
+                const logeionUrl = `https://logeion.uchicago.edu/${encodeURIComponent(cleanWord)}`;
+                link.href = `https://translate.google.com/translate?hl=es&sl=en&tl=es&u=${encodeURIComponent(logeionUrl)}`;
                 
                 if (target.classList.contains('glossary-word')) {
                     spanishDesc.textContent = target.dataset.trans;
-                    morphTag.textContent = target.dataset.morph;
+                    morphTag.textContent = "Analizado";
+                    lemmaCont.textContent = target.dataset.morph;
                     morphTag.style.display = 'inline-block';
+                    lemmaCont.style.display = 'block';
                     spanishDesc.style.color = "var(--gold-light)";
                 } else {
-                    spanishDesc.textContent = `Forma de la raíz «${cleanWord}».`;
+                    spanishDesc.textContent = `Palabra no catalogada en la memoria local.`;
                     morphTag.style.display = 'none';
+                    lemmaCont.style.display = 'none';
                     spanishDesc.style.color = "white";
                 }
                 
@@ -740,6 +786,17 @@
 
                     marker.on('click', () => { 
                         AudioFX.click();
+                        // Sonido inmersivo de viaje
+                        const sfx = new AudioContext();
+                        const noise = sfx.createBufferSource();
+                        const buffer = sfx.createBuffer(1, sfx.sampleRate * 2, sfx.sampleRate);
+                        const data = buffer.getChannelData(0);
+                        for (let i = 0; i < buffer.length; i++) data[i] = Math.random() * 2 - 1;
+                        noise.buffer = buffer;
+                        const filter = sfx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 400;
+                        const gain = sfx.createGain(); gain.gain.setValueAtTime(0, sfx.currentTime); gain.gain.linearRampToValueAtTime(0.1, sfx.currentTime + 1); gain.gain.linearRampToValueAtTime(0, sfx.currentTime + 2);
+                        noise.connect(filter); filter.connect(gain); gain.connect(sfx.destination); noise.start();
+                        
                         this.map.flyTo([story.lat, story.lng], 8, { duration: 1.5, easeLinearity: 0.25 });
                         setTimeout(() => Codex.open(story.id), 1500);
                     });
@@ -770,7 +827,6 @@
             isPlaying: false, currentLang: 'es', chunks: [], currentChunk: 0, hasGreekVoice: false,
             init() {
                 if(!window.speechSynthesis) return;
-                // Comprobamos si el navegador tiene voz en griego (el-GR)
                 window.speechSynthesis.onvoiceschanged = () => {
                     const voices = window.speechSynthesis.getVoices();
                     this.hasGreekVoice = voices.some(v => v.lang.includes('el'));
@@ -789,7 +845,6 @@
                 AudioFX.click();
                 if(this.isPlaying) this.pause(); else this.play();
             },
-            // Fallback brutal: Si no hay voz griega, convertimos a fonemas latinos para que la lea la voz en español.
             phoneticGreek(greekStr) {
                 const map = {
                     'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'ds', 'η': 'e',
@@ -817,16 +872,13 @@
                     textToRead = State.currentStory.spanish.replace(/<[^>]*>?/gm, '');
                 } else {
                     let cleanHTML = State.currentStory.greek.replace(/<[^>]*>?/gm, '');
-                    // Si el navegador tiene voz griega, quitamos los acentos para que no deletree.
                     if (this.hasGreekVoice) {
                         textToRead = cleanHTML.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                     } else {
-                        // Si NO tiene voz griega, lo pasamos a fonemas para la voz en español.
                         textToRead = this.phoneticGreek(cleanHTML);
                     }
                 }
                 
-                // Chunking por oraciones
                 this.chunks = textToRead.match(/[^.!?;\n]+[.!?;\n]+/g) || [textToRead];
                 this.currentChunk = 0;
                 
@@ -844,7 +896,7 @@
                 if (this.currentLang === 'es') {
                     utterance.lang = 'es-ES';
                 } else {
-                    utterance.lang = this.hasGreekVoice ? 'el-GR' : 'es-ES'; // Usa español si es fonético
+                    utterance.lang = this.hasGreekVoice ? 'el-GR' : 'es-ES'; 
                 }
                 
                 utterance.pitch = 0.75; 
@@ -872,10 +924,10 @@
                 const btn = document.getElementById('btn-tts-play');
                 if(isPlaying) {
                     vis.classList.add('playing');
-                    btn.innerHTML = '<svg width="36" height="36" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg>';
+                    btn.innerHTML = '<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg>';
                 } else {
                     vis.classList.remove('playing');
-                    btn.innerHTML = '<svg width="36" height="36" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>';
+                    btn.innerHTML = '<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>';
                 }
             },
             showPlayer(show) {
@@ -895,7 +947,6 @@
 
                 document.getElementById('codex-title').innerText = story.title;
                 
-                // Procesar el texto griego y adjuntarlo al DOM sin romper eventos
                 const greekContainer = document.getElementById('text-greek');
                 greekContainer.innerHTML = ''; 
                 const interactiveGreekNodes = parseGreekText(`<p class="drop-cap-greek">${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`);
@@ -1003,17 +1054,24 @@
                 AudioFX.click();
                 this.isImmersive = !this.isImmersive;
                 const codex = document.getElementById('screen-codex');
-                const btnZen = document.getElementById('btn-exit-zen');
                 
                 if(this.isImmersive) {
                     codex.classList.add('immersive-mode');
-                    btnZen.style.display = 'block';
                     AudioFX.playDrone();
+                    this.setZenLayout('dual'); // Por defecto bilingüe
                 } else {
                     codex.classList.remove('immersive-mode');
-                    btnZen.style.display = 'none';
+                    codex.className = "absolute inset-0 z-40 bg-black flex-col flex opacity-100 transition-opacity duration-700"; // Reset classes
                     AudioFX.stopDrone();
                 }
+            },
+            setZenLayout(layout) {
+                AudioFX.hover();
+                const container = document.getElementById('dual-codex-container');
+                container.className = `dual-codex w-full relative zen-layout-${layout}`;
+                
+                document.querySelectorAll('.zen-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(`zen-btn-${layout}`).classList.add('active');
             },
             triggerVictory() {
                 AudioFX.success(); setTimeout(()=>AudioFX.success(), 1000);
@@ -1034,7 +1092,7 @@
             }
         };
 
-        // Inputs globales para comodidad en el aula
+        // Inputs globales para comodidad
         document.addEventListener('keydown', (e) => {
             if(e.key === 'Enter' && !document.getElementById('puzzle-drawer').classList.contains('translate-y-full')) Puzzle.check();
             if(e.key === 'Escape') Oracle.close();
@@ -1042,4 +1100,4 @@
 
     </script>
 </body>
-</html>
+</html
