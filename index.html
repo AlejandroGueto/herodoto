@@ -1,429 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lectura interactiva: Historias, de Heródoto</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Leaflet CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --aegean-dark: #02060a;
-            --aegean-blue: #081624;
-            --marble: #f4f0e6;
-            --gold: #d4af37;
-            --gold-light: #f9d976;
-            --clay: #b85c38;
-            --sparta-red: #8b0000;
-        }
-
-        body {
-            background-color: var(--aegean-dark); color: var(--marble);
-            font-family: 'Cormorant Garamond', serif;
-            overflow: hidden; margin: 0; padding: 0;
-            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
-        }
-
-        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.8; letter-spacing: 0.8px; }
-        .font-title { font-family: 'Cinzel Decorative', serif; }
-
-        /* GESTIÓN DE PANTALLAS (VISIBILITY EN LUGAR DE DISPLAY PARA NO ROMPER LEAFLET) */
-        .game-screen {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-        .game-screen.is-active {
-            visibility: visible;
-            opacity: 1;
-            z-index: 50;
-        }
-
-        /* ANIMACIONES */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes pulseMarker { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); } 70% { box-shadow: 0 0 0 35px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
-        @keyframes shineText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-        @keyframes crawl { 0% { transform: translateY(100vh); opacity: 0; } 10% { opacity: 0.3; } 90% { opacity: 0.3; } 100% { transform: translateY(-200vh); opacity: 0; } }
-        @keyframes audioBar { 0% { height: 5px; } 50% { height: 35px; } 100% { height: 5px; } }
-
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        .animate-crawl { animation: crawl 40s linear infinite; }
-        .text-shine {
-            background: linear-gradient(to right, #d4af37 20%, #fff 40%, #fff 60%, #d4af37 80%);
-            background-size: 200% auto;
-            color: #000; background-clip: text; text-fill-color: transparent; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: shineText 7s linear infinite;
-        }
-
-        /* PANELES UI */
-        .glass-panel {
-            background: linear-gradient(135deg, rgba(8, 22, 36, 0.85), rgba(2, 6, 10, 0.95));
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.95), inset 0 0 40px rgba(212, 175, 55, 0.1);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        }
-
-        .parchment-panel {
-            background-color: #f4ecd8;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" opacity="0.08"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="5"/></filter><rect width="300" height="300" filter="url(%23n)"/></svg>');
-            color: #2a2218; box-shadow: inset 0 0 100px rgba(139,69,19,0.25);
-        }
-
-        .btn-hellenic {
-            background: rgba(2, 6, 10, 0.9); border: 1px solid var(--gold); color: var(--gold);
-            font-family: 'Cinzel Decorative', serif; text-transform: uppercase; letter-spacing: 4px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
-            border-radius: 4px; cursor: pointer; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        .btn-hellenic:hover { 
-            background: rgba(212, 175, 55, 0.2); box-shadow: 0 0 30px rgba(212, 175, 55, 0.6); 
-            text-shadow: 0 0 12px var(--gold-light); transform: translateY(-3px); color: #fff; border-color: var(--gold-light); 
-        }
-
-        /* MAPA LEAFLET */
-        #map-wrapper { background: var(--aegean-dark); height: 100%; width: 100%; position: relative; flex: 1; }
-        #map-container { height: 100%; width: 100%; position: absolute; inset: 0; z-index: 10; }
-        .leaflet-container { font-family: 'Cinzel Decorative', serif; }
-        
-        .custom-marker {
-            width: 34px; height: 34px; background: radial-gradient(circle, var(--gold-light) 0%, var(--gold) 100%);
-            border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 25px var(--gold);
-            animation: pulseMarker 2.5s infinite; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .custom-marker:hover { transform: scale(1.6); background: #fff; border-color: var(--gold); z-index: 1000 !important; }
-        .custom-marker.completed { background: var(--aegean-blue); border-color: var(--gold); box-shadow: 0 0 20px var(--aegean-blue); animation: none; }
-        
-        .premium-tooltip {
-            background: rgba(8, 22, 36, 0.9) !important; border: 1px solid var(--gold) !important;
-            color: var(--gold-light) !important; font-family: 'Cinzel Decorative', serif;
-            font-size: 20px; font-weight: bold; text-shadow: 2px 2px 8px #000;
-            border-radius: 6px; padding: 10px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.95) !important;
-            backdrop-filter: blur(8px); white-space: nowrap; z-index: 1000 !important;
-        }
-        .story-path { stroke: var(--gold); stroke-width: 5; stroke-dasharray: 15, 15; opacity: 0.8; animation: dash 30s linear infinite; filter: drop-shadow(0 0 8px var(--gold)); }
-        @keyframes dash { to { stroke-dashoffset: 1000; } }
-
-        /* CÓDICE BILINGÜE */
-        .dual-codex { display: flex; flex-direction: column; flex: 1; overflow: hidden; transition: all 0.8s ease; }
-        @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
-        
-        .codex-pane { 
-            flex: 1; height: 100%; overflow-y: auto; position: relative; scroll-behavior: smooth; 
-            padding: 4rem 2rem 25rem 2rem; 
-        }
-        @media (min-width: 768px) { .codex-pane { padding: 6rem 5rem 30rem 5rem; } }
-        
-        .pane-greek { background: #060a10; color: #e2e8f0; border-bottom: 2px solid var(--gold); }
-        @media (min-width: 1024px) { .pane-greek { border-bottom: none; border-right: 3px solid var(--gold); } }
-        .pane-spanish { border-top: 1px solid rgba(0,0,0,0.1); }
-        @media (min-width: 1024px) { .pane-spanish { border-top: none; border-left: 1px solid rgba(0,0,0,0.1); } }
-        
-        .custom-scrollbar::-webkit-scrollbar { width: 14px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 8px;}
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 8px; border: 2px solid #000; }
-
-        .drop-cap-greek::first-letter { font-size: 5.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--gold-light); text-shadow: 0 0 30px rgba(212,175,55,0.9); }
-        .drop-cap-spanish::first-letter { font-size: 5.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
-
-        /* LÉXICO INTERACTIVO */
-        .word-interactive {
-            display: inline-block; cursor: pointer; transition: all 0.2s ease;
-            border-bottom: 2px dotted rgba(212, 175, 55, 0.3); padding: 0 5px; border-radius: 4px;
-        }
-        .word-interactive:hover {
-            color: var(--gold-light); text-shadow: 0 0 20px var(--gold);
-            background: rgba(212, 175, 55, 0.25); border-bottom: 2px solid var(--gold); transform: scale(1.05);
-        }
-        .glossary-word { border-bottom: 2px dashed var(--gold-light); font-weight: 700; color: #fdf5d3; }
-
-        #lexicon-tooltip {
-            position: fixed; z-index: 9999; pointer-events: none; opacity: 0; display: none;
-            background: rgba(4, 10, 16, 0.98); border: 2px solid var(--gold);
-            color: var(--marble); padding: 35px; border-radius: 12px;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.95), 0 0 45px rgba(212,175,55,0.6);
-            backdrop-filter: blur(25px); transform: translate(-50%, 15px);
-            transition: opacity 0.3s, transform 0.3s; width: 90%; max-width: 500px;
-        }
-        #lexicon-tooltip.visible { display: block; opacity: 1; transform: translate(-50%, -15px); pointer-events: auto; }
-
-        .morph-tag { 
-            display: inline-block; background: var(--aegean-blue); color: var(--gold-light); 
-            padding: 8px 18px; border-radius: 20px; font-size: 1.2rem; font-family: 'Cinzel Decorative'; 
-            letter-spacing: 2px; margin-bottom: 16px; border: 1px solid var(--gold); box-shadow: 0 5px 20px rgba(0,0,0,0.6);
-        }
-        .lexicon-lemma { color: #b8b8b8; font-style: italic; font-size: 1.6rem; margin-top: 5px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif;}
-
-        /* ORÁCULO MODAL */
-        #oracle-modal {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
-            z-index: 10000; opacity: 0; pointer-events: none; display: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 95%; max-width: 1000px; max-height: 85vh; overflow-y: auto;
-        }
-        #oracle-modal.visible { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
-
-        /* REPRODUCTOR DE AUDIO */
-        .audio-player {
-            position: fixed; bottom: 40px; right: 40px; z-index: 9000;
-            display: flex; align-items: center; gap: 25px; padding: 25px 40px;
-            border-radius: 60px; background: rgba(2, 6, 10, 0.95); border: 2px solid var(--gold);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 40px rgba(212, 175, 55, 0.4);
-            backdrop-filter: blur(20px); transform: translateY(200%); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .audio-player.visible { transform: translateY(0); }
-        .visualizer-bar { width: 6px; height: 8px; background: var(--gold); border-radius: 3px; transition: height 0.1s; }
-        .visualizer.playing .visualizer-bar { animation: audioBar 1s infinite alternate; }
-        .visualizer.playing .visualizer-bar:nth-child(1) { animation-delay: 0.1s; }
-        .visualizer.playing .visualizer-bar:nth-child(2) { animation-delay: 0.3s; }
-        .visualizer.playing .visualizer-bar:nth-child(3) { animation-delay: 0.2s; }
-        .visualizer.playing .visualizer-bar:nth-child(4) { animation-delay: 0.5s; }
-        .visualizer.playing .visualizer-bar:nth-child(5) { animation-delay: 0.4s; }
-
-        /* PUZLE */
-        .oracle-input {
-            background: rgba(0,0,0,0.6); border: 2px solid var(--gold); border-radius: 8px;
-            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 2.5rem;
-            text-align: center; text-transform: uppercase; outline: none; width: 100%;
-            letter-spacing: 8px; transition: all 0.3s; padding: 15px;
-        }
-        .oracle-input:focus { border-color: #fff; box-shadow: 0 0 35px rgba(212,175,55,0.6); background: rgba(0,0,0,0.9); }
-
-        /* MODO ZEN BILINGÜE AVANZADO */
-        .zen-toolbar {
-            position: fixed; top: -150px; left: 50%; transform: translateX(-50%); z-index: 6000;
-            background: rgba(4, 10, 16, 0.95); border: 1px solid var(--gold); border-radius: 0 0 25px 25px;
-            padding: 25px 50px; display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; transition: top 0.6s ease;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.95); backdrop-filter: blur(15px); width: auto;
-        }
-        .zen-layout-es .pane-greek { display: none; }
-        .zen-layout-es .pane-spanish { padding: 12rem 22% 30rem 22%; font-size: 1.6em; border-left: none; }
-        .zen-layout-gr .pane-spanish { display: none; }
-        .zen-layout-gr .pane-greek { padding: 12rem 22% 30rem 22%; font-size: 1.6em; border-right: none; }
-        .zen-layout-dual .pane-greek { padding: 12rem 6rem 30rem 6rem; }
-        .zen-layout-dual .pane-spanish { padding: 12rem 6rem 30rem 6rem; }
-
-        .zen-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 12px 25px; border-radius: 8px; font-family: 'Cinzel Decorative'; font-size: 1.4rem; transition: all 0.3s; cursor: pointer; }
-        .zen-btn.active { background: var(--aegean-blue); border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 25px rgba(212,175,55,0.5); }
-    </style>
 </head>
+
 <body>
-
-    <!-- ==========================================================================
-         PANTALLA 1: INICIO (.game-screen.is-active)
-         ========================================================================== -->
-    <div id="screen-intro" class="game-screen is-active items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] p-4">
-        
-        <!-- Prólogo flotante -->
-        <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-20 z-0">
-            <div class="font-greek text-2xl md:text-4xl text-[var(--gold)] whitespace-pre-line text-center animate-crawl" style="width: 150%; margin-left: -25%;">
-                ΗΡΟΔΟΤΟΥ ΑΛΙΚΑΡΝΗΣΣΕΟΣ ΙΣΤΟΡΙΗΣ ΑΠΟΔΕΞΙΣ ΗΔΕ
-                ΩΣ ΜΗΤΕ ΤΑ ΓΕΝΟΜΕΝΑ ΕΞ ΑΝΘΡΩΠΩΝ ΤΩ ΧΡΟΝΩ ΕΞΙΤΗΛΑ ΓΕΝΗΤΑΙ
-                ΜΗΤΕ ΕΡΓΑ ΜΕΓΑΛΑ ΤΕ ΚΑΙ ΘΩΜΑΣΤΑ
-                ΤΑ ΜΕΝ ΕΛΛΗΣΙ ΤΑ ΔΕ ΒΑΡΒΑΡΟΙΣΙ ΑΠΟΔΕΧΘΕΝΤΑ ΑΚΛΕΑ ΓΕΝΗΤΑΙ
-                ΤΑ ΤΕ ΑΛΛΑ ΚΑΙ ΔΙ ΗΝ ΑΙΤΙΗΝ ΕΠΟΛΕΜΗΣΑΝ ΑΛΛΗΛΟΙΣΙ
-                ...
-                ΗΡΟΔΟΤΟΥ ΑΛΙΚΑΡΝΗΣΣΕΟΣ ΙΣΤΟΡΙΗΣ ΑΠΟΔΕΞΙΣ ΗΔΕ
-                ΩΣ ΜΗΤΕ ΤΑ ΓΕΝΟΜΕΝΑ ΕΞ ΑΝΘΡΩΠΩΝ ΤΩ ΧΡΟΝΩ ΕΞΙΤΗΛΑ ΓΕΝΗΤΑΙ
-            </div>
+    <div id="screen-intro">
+        <div>
+            <div>&Eta;&Rho;&Omicron;&Delta;&Omicron;&Tau;&Omicron;&Upsilon; &Alpha;&Lambda;&Iota;&Kappa;&Alpha;&Rho;&Nu;&Eta;&Sigma;&Sigma;&Epsilon;&Omicron;&Sigma; &Iota;&Sigma;&Tau;&Omicron;&Rho;&Iota;&Eta;&Sigma; &Alpha;&Pi;&Omicron;&Delta;&Epsilon;&Xi;&Iota;&Sigma; &Eta;&Delta;&Epsilon; &Omega;&Sigma; &Mu;&Eta;&Tau;&Epsilon; &Tau;&Alpha; &Gamma;&Epsilon;&Nu;&Omicron;&Mu;&Epsilon;&Nu;&Alpha; &Epsilon;&Xi; &Alpha;&Nu;&Theta;&Rho;&Omega;&Pi;&Omega;&Nu; &Tau;&Omega; &Chi;&Rho;&Omicron;&Nu;&Omega; &Epsilon;&Xi;&Iota;&Tau;&Eta;&Lambda;&Alpha; &Gamma;&Epsilon;&Nu;&Eta;&Tau;&Alpha;&Iota; &Mu;&Eta;&Tau;&Epsilon; &Epsilon;&Rho;&Gamma;&Alpha; &Mu;&Epsilon;&Gamma;&Alpha;&Lambda;&Alpha; &Tau;&Epsilon; &Kappa;&Alpha;&Iota; &Theta;&Omega;&Mu;&Alpha;&Sigma;&Tau;&Alpha; &Tau;&Alpha; &Mu;&Epsilon;&Nu; &Epsilon;&Lambda;&Lambda;&Eta;&Sigma;&Iota; &Tau;&Alpha; &Delta;&Epsilon; &Beta;&Alpha;&Rho;&Beta;&Alpha;&Rho;&Omicron;&Iota;&Sigma;&Iota; &Alpha;&Pi;&Omicron;&Delta;&Epsilon;&Chi;&Theta;&Epsilon;&Nu;&Tau;&Alpha; &Alpha;&Kappa;&Lambda;&Epsilon;&Alpha; &Gamma;&Epsilon;&Nu;&Eta;&Tau;&Alpha;&Iota; &Tau;&Alpha; &Tau;&Epsilon; &Alpha;&Lambda;&Lambda;&Alpha; &Kappa;&Alpha;&Iota; &Delta;&Iota; &Eta;&Nu; &Alpha;&Iota;&Tau;&Iota;&Eta;&Nu; &Epsilon;&Pi;&Omicron;&Lambda;&Epsilon;&Mu;&Eta;&Sigma;&Alpha;&Nu; &Alpha;&Lambda;&Lambda;&Eta;&Lambda;&Omicron;&Iota;&Sigma;&Iota; ... &Eta;&Rho;&Omicron;&Delta;&Omicron;&Tau;&Omicron;&Upsilon; &Alpha;&Lambda;&Iota;&Kappa;&Alpha;&Rho;&Nu;&Eta;&Sigma;&Sigma;&Epsilon;&Omicron;&Sigma; &Iota;&Sigma;&Tau;&Omicron;&Rho;&Iota;&Eta;&Sigma; &Alpha;&Pi;&Omicron;&Delta;&Epsilon;&Xi;&Iota;&Sigma; &Eta;&Delta;&Epsilon; &Omega;&Sigma; &Mu;&Eta;&Tau;&Epsilon; &Tau;&Alpha; &Gamma;&Epsilon;&Nu;&Omicron;&Mu;&Epsilon;&Nu;&Alpha; &Epsilon;&Xi; &Alpha;&Nu;&Theta;&Rho;&Omega;&Pi;&Omega;&Nu; &Tau;&Omega; &Chi;&Rho;&Omicron;&Nu;&Omega; &Epsilon;&Xi;&Iota;&Tau;&Eta;&Lambda;&Alpha; &Gamma;&Epsilon;&Nu;&Eta;&Tau;&Alpha;&Iota;</div>
         </div>
-
-        <div id="intro-card" class="text-center max-w-7xl p-8 md:p-20 glass-panel rounded-2xl w-[95%] max-h-[90vh] overflow-y-auto custom-scrollbar relative z-10 shadow-[0_0_80px_rgba(0,0,0,1)]">
-            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/ancient-map.png')]"></div>
-            
-            <h3 class="text-[var(--gold)] text-xl md:text-5xl tracking-[0.4em] md:tracking-[0.8em] uppercase mb-6 md:mb-10 font-title opacity-90">
-                ΗΡΟΔΟΤΟΣ
-            </h3>
-            <h1 class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-black text-white mb-8 md:mb-16 font-title text-shine drop-shadow-[0_0_60px_rgba(212,175,55,0.6)]">
-                Historias
-            </h1>
-            <p class="text-xl md:text-5xl text-gray-200 text-font mb-10 md:mb-20 italic leading-relaxed px-4 md:px-20 relative z-10 font-light">
-                "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
-            </p>
-            
-            <button id="btn-start" class="btn-hellenic px-10 py-5 md:px-24 md:py-10 text-2xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all hover:scale-105">
-                Desplegar el Egeo
-            </button>
-            
-            <div class="mt-12 md:mt-24 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-[var(--gold)] font-sans tracking-widest uppercase text-xs md:text-xl relative z-10">
-                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Filológico Masivo</span>
-                <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Épico</span>
-                <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"/></svg> Túnel Proxy Logeion</span>
-            </div>
+        <div id="intro-card">
+            <div><br></div>
+            <h3>&Eta;&Rho;&Omicron;&Delta;&Omicron;&Tau;&Omicron;&Sigma;</h3>
+            <h1>Historias</h1>
+            <p>&quot;Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria...&quot;</p><button id="btn-start">&nbsp;Desplegar el Egeo&nbsp;</button>
+            <div><span><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg> An&aacute;lisis Filol&oacute;gico Masivo</span> <span>|</span> <span><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"></path>
+                    </svg> Aedo Biling&uuml;e &Eacute;pico</span> <span>|</span> <span><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"></path>
+                    </svg> T&uacute;nel Proxy Logeion</span></div>
         </div>
     </div>
-
-    <!-- ==========================================================================
-         PANTALLA 2: MAPA INTERACTIVO (.game-screen)
-         ========================================================================== -->
-    <div id="screen-map" class="game-screen bg-[#02060a]">
-        <header class="h-auto md:h-32 p-6 md:px-16 glass-panel flex flex-col md:flex-row items-center justify-between z-30 border-b-2 border-[var(--gold)] gap-4">
-            <div class="flex items-center gap-4 md:gap-10">
-                <div class="relative w-16 h-16 md:w-28 md:h-28 flex items-center justify-center shrink-0">
-                    <svg class="w-full h-full text-[var(--gold)] animate-[spin_15s_linear_infinite]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="50" cy="50" r="46" stroke-dasharray="20 10"/>
-                        <polygon points="50,10 85,75 15,75" stroke-dasharray="5 5" opacity="0.6"/>
-                    </svg>
-                    <span id="relic-count" class="absolute text-2xl md:text-6xl font-bold font-title text-white">0</span>
-                </div>
-                <div class="text-center md:text-left">
-                    <h2 class="font-title text-3xl md:text-6xl text-[var(--gold)] tracking-widest m-0 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">El Telar de Heródoto</h2>
-                    <span class="text-gray-400 text-font italic text-lg md:text-4xl">Selecciona un enclave mítico</span>
+    <div id="screen-map">
+        <header>
+            <div>
+                <div><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">&nbsp; &nbsp;</svg> <span id="relic-count">0</span></div>
+                <div>
+                    <h2>El Telar de Her&oacute;doto</h2><span>Selecciona un enclave m&iacute;tico</span>
                 </div>
             </div>
-            
-            <div class="flex gap-2 md:gap-4 z-40 bg-black/50 p-2 md:p-3 rounded-lg border border-[var(--gold)] mt-2 md:mt-0">
-                <button id="btn-layer-sat" class="text-white hover:text-[var(--gold)] px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider cursor-pointer transition-colors">Satélite</button>
-                <div class="w-px bg-gray-600"></div>
-                <button id="btn-layer-pap" class="text-[var(--gold-light)] font-bold px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider cursor-pointer transition-colors">Papiro</button>
+            <div><button id="btn-layer-sat">Sat&eacute;lite</button>
+                <div><br></div><button id="btn-layer-pap">Papiro</button>
             </div>
         </header>
-        
         <div id="map-wrapper">
-            <main id="map-container"></main>
+            <main id="map-container"><br></main>
         </div>
     </div>
-
-    <!-- ==========================================================================
-         PANTALLA 3: EL CÓDICE (.game-screen)
-         ========================================================================== -->
-    <div id="screen-codex" class="game-screen bg-black relative">
-        
-        <!-- Toolbar Superior -->
-        <div id="top-bar" class="h-auto md:h-32 p-4 md:px-16 border-b-2 border-[var(--gold)] glass-panel flex flex-col md:flex-row items-center justify-between z-10 shrink-0 transition-opacity duration-500 gap-4">
-            <h2 id="codex-title" class="font-title text-4xl md:text-6xl text-[var(--gold-light)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)] text-center">Título</h2>
-            <div class="flex flex-wrap justify-center gap-3 md:gap-8">
-                <button id="btn-open-oracle" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="hidden xl:inline">Oráculo</span>
-                </button>
-                <button id="btn-zen-mode" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4" title="Modo Lectura Inmersiva">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span class="hidden xl:inline">Modo Zen</span>
-                </button>
-                <button id="btn-close-codex" class="btn-hellenic px-4 py-2 md:px-12 md:py-5 text-sm md:text-3xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
-                    ✕ Volver
-                </button>
-            </div>
+    <div id="screen-codex">
+        <div id="top-bar">
+            <h2 id="codex-title">T&iacute;tulo</h2>
+            <div><button id="btn-open-oracle" title="Contexto Histórico">&nbsp;<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg> <span>Or&aacute;culo</span>&nbsp;</button> <button id="btn-zen-mode" title="Modo Lectura Inmersiva">&nbsp;<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg> <span>Modo Zen</span>&nbsp;</button> <button id="btn-close-codex">&nbsp;✕ Volver&nbsp;</button></div>
         </div>
-
-        <!-- ZEN TOOLBAR (Absoluto y controlado por JS) -->
-        <div id="zen-toolbar" class="zen-toolbar">
-            <button id="zen-btn-dual" class="zen-btn active">Bilingüe</button>
-            <button id="zen-btn-gr" class="zen-btn">Griego Antiguo</button>
-            <button id="zen-btn-es" class="zen-btn">Español</button>
-            <div class="w-px bg-gray-600 mx-4"></div>
-            <button id="zen-btn-exit" class="zen-btn hover:text-[var(--sparta-red)] hover:border-[var(--sparta-red)] font-bold">✕ Salir de Zen</button>
+        <div id="zen-toolbar"><button id="zen-btn-dual">Biling&uuml;e</button> <button id="zen-btn-gr">Griego Antiguo</button> <button id="zen-btn-es">Espa&ntilde;ol</button>
+            <div><br></div><button id="zen-btn-exit">✕ Salir de Zen</button>
         </div>
-
-        <!-- Área Central Bilingüe -->
-        <div id="dual-codex-container" class="dual-codex zen-layout-dual w-full relative">
-            <div class="codex-pane pane-greek custom-scrollbar">
-                <h3 class="font-title text-[var(--gold)] text-center text-6xl mb-20 border-b-2 border-gray-800 pb-10 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
-                <div id="text-greek" class="font-greek text-4xl lg:text-5xl text-justify leading-loose pb-10">
-                    <!-- Texto Inyectado Interactivo -->
-                </div>
+        <div id="dual-codex-container">
+            <div>
+                <h3>&Epsilon;&Lambda;&Lambda;&Eta;&Nu;&Iota;&Kappa;&Omicron;&Nu; &Pi;&Rho;&Omega;&Tau;&Omicron;&Tau;&Upsilon;&Pi;&Omicron;&Nu;</h3>
+                <div id="text-greek"><br></div>
             </div>
-            <div class="codex-pane pane-spanish parchment-panel custom-scrollbar">
-                <h3 class="font-title text-[var(--sparta-red)] text-center text-6xl mb-20 border-b-2 border-gray-400 pb-10 tracking-widest font-bold drop-shadow-md">VERSIÓN CASTELLANA</h3>
-                <div id="text-spanish" class="text-font text-4xl lg:text-5xl text-justify leading-relaxed pb-10 font-medium">
-                    <!-- Texto Inyectado -->
-                </div>
+            <div>
+                <h3>VERSI&Oacute;N CASTELLANA</h3>
+                <div id="text-spanish"><br></div>
             </div>
-            
-            <!-- EL CAJÓN DEL ACERTIJO -->
-            <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-12 md:p-20 z-[5000] transform translate-y-full transition-transform duration-700 shadow-[0_-20px_60px_rgba(0,0,0,0.95)]" id="puzzle-drawer">
-                <button id="btn-close-puzzle-drawer" class="absolute top-10 right-12 text-gray-400 hover:text-sparta-red font-bold text-6xl transition-colors cursor-pointer">✕</button>
-                <div class="max-w-7xl mx-auto text-center">
-                    <h3 class="font-title text-[var(--gold-light)] text-5xl md:text-7xl mb-12 drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">El Acertijo de las Moiras</h3>
-                    <p id="puzzle-desc" class="text-font text-3xl md:text-5xl text-white mb-20 leading-relaxed">...</p>
-                    <div class="flex flex-col lg:flex-row justify-center items-center gap-12">
-                        <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3 h-20 md:h-28 text-3xl md:text-5xl" placeholder="Escribe tu ofrenda..." autocomplete="off" spellcheck="false">
-                        <button id="btn-check-puzzle" class="btn-hellenic px-10 py-6 md:px-20 md:py-8 text-3xl md:text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)]">Sellar Destino</button>
-                    </div>
-                    <p id="puzzle-feedback" class="h-16 text-[var(--sparta-red)] text-3xl md:text-5xl font-bold mt-12"></p>
+            <div id="puzzle-drawer"><button id="btn-close-puzzle-drawer">✕</button>
+                <div>
+                    <h3>El Acertijo de las Moiras</h3>
+                    <p id="puzzle-desc">...</p>
+                    <div><input type="text" id="puzzle-input" placeholder="Escribe tu ofrenda..." autocomplete="off" spellcheck="false"> <button id="btn-check-puzzle">Sellar Destino</button></div>
+                    <p id="puzzle-feedback"><br></p>
                 </div>
-            </div>
-            
-            <button id="btn-toggle-puzzle" class="absolute bottom-16 left-1/2 transform -translate-x-1/2 btn-hellenic px-12 py-5 md:px-20 md:py-8 text-3xl md:text-5xl z-[4000] shadow-[0_0_60px_rgba(212,175,55,0.9)] bg-[var(--aegean-blue)] animate-float border-2 border-white">
-                Enfrentar el Acertijo ▼
-            </button>
+            </div><button id="btn-toggle-puzzle">&nbsp;Enfrentar el Acertijo ▼&nbsp;</button>
         </div>
-        
-        <!-- REPRODUCTOR (EL AEDO BILINGÜE) -->
-        <div id="audio-player" class="audio-player">
-            <div class="flex flex-col">
-                <span class="font-title text-[var(--gold)] text-2xl md:text-3xl uppercase tracking-widest mb-3">El Aedo</span>
-                <div class="flex items-center gap-8">
-                    <button id="btn-tts-lang" class="text-2xl md:text-3xl border-2 border-gray-500 rounded-lg px-6 py-3 text-gray-200 hover:text-white hover:border-white transition-all w-40 text-center font-bold bg-black/50 cursor-pointer">
-                        🇪🇸 ESP
-                    </button>
-                    <button id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-transform transform hover:scale-125 cursor-pointer">
-                        <svg width="56" height="56" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
-                    </button>
-                    <button id="btn-tts-stop" class="text-gray-400 hover:text-[var(--sparta-red)] transition-colors cursor-pointer">
-                        <svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
-                    </button>
-                </div>
+        <div id="audio-player">
+            <div><span>El Aedo</span>
+                <div><button id="btn-tts-lang">&nbsp;🇪🇸 ESP&nbsp;</button> <button id="btn-tts-play">&nbsp;<svg width="56" height="56" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M6 4l10 6-10 6V4z"></path>
+                        </svg>&nbsp;</button> <button id="btn-tts-stop">&nbsp;<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 5h10v10H5z"></path>
+                        </svg>&nbsp;</button></div>
             </div>
-            <div id="visualizer" class="visualizer flex items-end gap-3 h-16 px-6 border-l-2 border-gray-700 ml-6">
-                <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
+            <div id="visualizer">
+                <div><br></div>
+                <div><br></div>
+                <div><br></div>
+                <div><br></div>
+                <div><br></div>
             </div>
         </div>
     </div>
-
-    <!-- TOOLTIP DICCIONARIO (Lexicon Premium + Túnel Google Translate) -->
     <div id="lexicon-tooltip">
-        <div class="flex justify-between items-start mb-6">
-            <h4 id="lexicon-greek" class="font-greek text-6xl text-[var(--gold)] m-0 drop-shadow-[0_2px_5px_#000]">Λέξις</h4>
-            <span id="lexicon-morph" class="morph-tag mt-3">Análisis</span>
+        <div>
+            <h4 id="lexicon-greek">&Lambda;έ&xi;&iota;&sigmaf;</h4><span id="lexicon-morph">An&aacute;lisis</span>
         </div>
-        <div id="lexicon-lemma" class="lexicon-lemma mb-6 text-2xl"></div>
-        <p id="lexicon-spanish" class="text-font text-4xl text-white m-0 leading-relaxed mb-10">Traducción...</p>
-        <div class="border-t border-gray-700 pt-8 text-center">
-            <a id="lexicon-link" href="#" target="_blank" class="inline-block text-2xl md:text-3xl text-[var(--aegean-blue)] bg-[var(--gold-light)] font-bold text-black px-10 py-4 rounded-xl hover:bg-white font-title transition-all pointer-events-auto shadow-[0_0_30px_var(--gold)]">
-                Traducir Logeion al Español ↗
-            </a>
-            <p class="text-gray-500 text-lg mt-4 font-sans">Se abrirá el proxy de G-Translate.</p>
+        <div id="lexicon-lemma"><br></div>
+        <p id="lexicon-spanish">Traducci&oacute;n...</p>
+        <div><a id="lexicon-link" href="#" target="_blank">&nbsp;Traducir Logeion al Espa&ntilde;ol ↗&nbsp;</a>
+            <p>Se abrir&aacute; el proxy de G-Translate.</p>
         </div>
     </div>
-
-    <!-- ORÁCULO MODAL -->
-    <div id="oracle-modal" class="glass-panel rounded-3xl p-10 md:p-20 border-2 border-[var(--aegean-blue)] shadow-[0_0_100px_rgba(8,22,36,1)]">
-        <button id="btn-close-oracle" class="absolute top-10 right-10 text-gray-400 hover:text-[var(--sparta-red)] font-bold text-6xl transition-colors cursor-pointer">✕</button>
-        <div class="flex items-center gap-8 mb-12 border-b-2 border-gray-700 pb-10">
-            <svg class="w-20 h-20 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <h3 class="font-title text-4xl md:text-6xl text-[var(--gold-light)] tracking-widest uppercase text-shadow-md">El Oráculo de la Red</h3>
+    <div id="oracle-modal"><button id="btn-close-oracle">✕</button>
+        <div><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            <h3>El Or&aacute;culo de la Red</h3>
         </div>
-        <div id="oracle-content" class="text-font text-3xl md:text-5xl text-gray-300 leading-relaxed text-justify h-[60vh] overflow-y-auto custom-scrollbar pr-6">
-            Invocando los saberes del éter...
-        </div>
+        <div id="oracle-content">Invocando los saberes del &eacute;ter...</div>
     </div>
-
-    <!-- PANTALLA VICTORIA SEGURA (.game-screen) -->
-    <div id="screen-victory" class="game-screen flex-col items-center justify-center p-10 text-center bg-black bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
-        <h1 class="text-7xl md:text-9xl text-[var(--gold)] font-title mb-8 drop-shadow-[0_0_60px_rgba(212,175,55,1)]">ΙΣΤΟΡΙΑΙ</h1>
-        <h2 class="text-4xl md:text-6xl text-white font-title mb-8 text-shine">El Telar ha sido Completado</h2>
-        <p class="text-2xl md:text-4xl text-gray-300 font-greek max-w-5xl leading-relaxed italic mb-16">Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te otorgan la Inmortalidad de la Memoria.</p>
-        <button id="btn-restart" class="btn-hellenic px-16 py-6 text-3xl font-bold bg-white text-black hover:bg-[var(--gold)]">Regresar a la Modernidad</button>
+    <div id="screen-victory">
+        <h1>&Iota;&Sigma;&Tau;&Omicron;&Rho;&Iota;&Alpha;&Iota;</h1>
+        <h2>El Telar ha sido Completado</h2>
+        <p>Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te otorgan la Inmortalidad de la Memoria.</p><button id="btn-restart">Regresar a la Modernidad</button>
     </div>
-
     <script>
         // --- GESTOR ESTRICTO DE PANTALLAS (TAB MANAGER) ---
         const UI_Manager = {
@@ -459,7 +151,7 @@
                 if(window.TTS) window.TTS.init();
             }
         };
-
+        
         // --- 1. BASE DE DATOS LITERARIA MASIVA ---
         const HERODOTUS_DB = [
             {
@@ -605,7 +297,7 @@
                 puzzle: "El toro Apis no era un animal cualquiera para los egipcios. Cambises le acuchilla y se burla de ellos preguntando si los seres de carne y hueso pueden ser un..."
             }
         ];
-
+        
         // --- DICCIONARIO INTERACTIVO (Lexicon Filológico Avanzado) ---
         const GREEK_LEXICON = {
             'ολβιωτατοσ': { trans: 'El más feliz, el más próspero.', morph: 'Adjetivo, superlativo, nom. sing. masc.' },
@@ -660,7 +352,7 @@
             'κανδαυλησ': { trans: 'Candaules (rey de Lidia).', morph: 'Sustantivo, nom. sing. masc.' },
             'γυγησ': { trans: 'Giges (guardia de Candaules).', morph: 'Sustantivo, nom. sing. masc.' }
         };
-
+        
         const parseGreekText = (html) => {
             let result = '';
             let inTag = false;
@@ -681,16 +373,16 @@
                         // Normalizamos la palabra para buscarla en el lexicón
                         const cleanW = token.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ς/g, 'σ');
                         if(GREEK_LEXICON[cleanW]) {
-                            result += `<span class="word-interactive glossary-word" data-trans="${GREEK_LEXICON[cleanW].trans}" data-morph="${GREEK_LEXICON[cleanW].morph}" data-clean="${cleanW}">${token}</span>`;
+                            result += `<span>${token}</span>`;
                         } else {
-                            result += `<span class="word-interactive" data-clean="${cleanW}">${token}</span>`;
+                            result += `<span>${token}</span>`;
                         }
                     }
                 }
             }
             return result;
         };
-
+        
         const Lexicon = {
             init() {
                 const greekContainer = document.getElementById('text-greek');
@@ -754,7 +446,7 @@
                 }
             }
         };
-
+        
         const Oracle = {
             async open() {
                 if(window.AudioFX) window.AudioFX.click();
@@ -762,9 +454,9 @@
                 const content = document.getElementById('oracle-content');
                 const story = State.currentStory;
                 
-                content.innerHTML = '<span class="animate-pulse text-[var(--gold)]">Invocando el saber del éter...</span>';
+                content.innerHTML = '<span>Invocando el saber del éter...</span>';
                 modal.classList.add('visible');
-
+        
                 try {
                     const url = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(story.wiki)}&format=json&origin=*`;
                     const res = await fetch(url);
@@ -773,7 +465,7 @@
                     const pageId = Object.keys(pages)[0];
                     
                     if (pageId !== "-1" && pages[pageId].extract) {
-                        content.innerHTML = `<strong class="text-4xl font-title text-[var(--gold-light)] block mb-6 border-b border-gray-700 pb-4">${pages[pageId].title}</strong>${pages[pageId].extract} <br><br><span class="text-sm text-gray-500 mt-6 block">Fuente extraída en vivo: API de Wikipedia</span>`;
+                        content.innerHTML = `<strong>${pages[pageId].title}</strong>${pages[pageId].extract} <br><br><span>Fuente extraída en vivo: API de Wikipedia</span>`;
                     } else {
                         content.innerHTML = "Los oráculos guardan silencio. No hay pergaminos en la biblioteca sobre este tema.";
                     }
@@ -787,7 +479,7 @@
                 if(modal) modal.classList.remove('visible');
             }
         };
-
+        
         const AudioFX = {
             ctx: null, isReady: false, droneOsc: null, noiseOsc: null,
             init() {
@@ -836,7 +528,7 @@
                     
                     this.droneOsc.connect(gain); gain.connect(this.ctx.destination);
                     this.droneOsc.start();
-
+        
                     const bufferSize = this.ctx.sampleRate * 2;
                     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
                     const data = buffer.getChannelData(0);
@@ -873,7 +565,7 @@
             success() { this.playLyre(440, 0.4); setTimeout(() => this.playLyre(554.37, 0.4), 150); setTimeout(() => this.playLyre(659.25, 0.6), 300); },
             error() { this.playLyre(150, 0.5); setTimeout(()=>this.playLyre(140, 0.5), 150); }
         };
-
+        
         const MapEngine = {
             map: null, markers: {}, pathLayer: null, dustCtx: null, dustParticles: [], dustAnim: null,
             init() {
@@ -890,11 +582,11 @@
                     this.antiqueLayer = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg', {
                         maxZoom: 9, minZoom: 5, opacity: 0.5
                     });
-
+        
                     this.darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
                         maxZoom: 9, minZoom: 5, opacity: 0.8
                     }).addTo(this.map);
-
+        
                     this.satelliteLayer.addTo(this.map);
                     
                     this.renderMarkers();
@@ -916,7 +608,7 @@
                 if(!this.map) return;
                 HERODOTUS_DB.forEach(story => {
                     const isCompleted = State.relics.includes(story.id);
-                    const markerHtml = `<div class="custom-marker ${isCompleted ? 'completed' : ''}"></div>`;
+                    const markerHtml = `<div></div>`;
                     
                     const icon = L.divIcon({ className: 'clear-marker', html: markerHtml, iconSize: [28, 28], iconAnchor: [14, 14] });
                     const marker = L.marker([story.lat, story.lng], { icon: icon }).addTo(this.map);
@@ -924,7 +616,7 @@
                     marker.bindTooltip(story.title, {
                         permanent: false, direction: 'top', className: 'premium-tooltip', offset: [0, -15]
                     });
-
+        
                     marker.on('click', () => { 
                         if(window.AudioFX) window.AudioFX.click();
                         
@@ -997,7 +689,7 @@
                 this.dustAnim = requestAnimationFrame(() => this.loopDust());
             }
         };
-
+        
         const TTS = {
             isPlaying: false, currentLang: 'es', chunks: [], currentChunk: 0, hasGreekVoice: false,
             init() {
@@ -1042,7 +734,7 @@
                     this.setPlayingState(true);
                     return;
                 }
-
+        
                 window.speechSynthesis.cancel(); 
                 
                 let textToRead = "";
@@ -1118,19 +810,19 @@
                 else { player.classList.remove('visible'); this.stop(); }
             }
         };
-
+        
         const Codex = {
             open(storyId) {
                 const story = HERODOTUS_DB.find(s => s.id === storyId);
                 State.currentStory = story;
-
+        
                 document.getElementById('codex-title').innerText = story.title;
                 
                 const greekContainer = document.getElementById('text-greek');
                 greekContainer.innerHTML = ''; 
-                greekContainer.innerHTML = parseGreekText(`<p class="drop-cap-greek">${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`);
+                greekContainer.innerHTML = parseGreekText(`<p>${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`);
                 
-                document.getElementById('text-spanish').innerHTML = `<p class="drop-cap-spanish">${story.spanish.charAt(0)}</p><p>${story.spanish.substring(1)}</p>`;
+                document.getElementById('text-spanish').innerHTML = `<p>${story.spanish.charAt(0)}</p><p>${story.spanish.substring(1)}</p>`;
                 
                 document.getElementById('puzzle-desc').innerText = story.puzzle;
                 document.getElementById('puzzle-input').value = "";
@@ -1142,12 +834,12 @@
                 if(window.Game && window.Game.isImmersive) window.Game.setZenLayout('dual');
                 
                 UI_Manager.showScreen('screen-codex');
-
+        
                 if(window.AudioFX) window.AudioFX.playLyre(329.63, 0.4);
                 if(window.TTS) window.TTS.showPlayer(true);
             }
         };
-
+        
         const Puzzle = {
             toggleDrawer() {
                 if(window.AudioFX) window.AudioFX.click();
@@ -1162,7 +854,7 @@
                 const story = State.currentStory;
                 const input = document.getElementById('puzzle-input').value.trim().toLowerCase();
                 const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
+        
                 if (normalize(input).includes(normalize(story.pass))) {
                     if(window.AudioFX) window.AudioFX.success();
                     if(!State.relics.includes(story.id)) {
@@ -1189,7 +881,7 @@
                 }
             }
         };
-
+        
         const Game = {
             isImmersive: false,
             closeCodex() {
@@ -1197,7 +889,7 @@
                 if(window.TTS) window.TTS.showPlayer(false);
                 if(window.Oracle) window.Oracle.close(); 
                 if(this.isImmersive) this.toggleImmersive(); 
-
+        
                 UI_Manager.showScreen('screen-map');
                 
                 if(window.MapEngine && window.MapEngine.map) {
@@ -1237,21 +929,21 @@
                 UI_Manager.showScreen('screen-victory');
             }
         };
-
+        
         // --- DELEGACIÓN GLOBAL DE EVENTOS (Blindaje de CSP) ---
         window.addEventListener('DOMContentLoaded', () => {
             // Seguridad: Exponer objetos si algún HTML los requiere directamente (por fallbacks)
             window.Game = Game; window.MapEngine = MapEngine; window.Codex = Codex; 
             window.Puzzle = Puzzle; window.TTS = TTS; window.Oracle = Oracle; 
             window.Lexicon = Lexicon; window.AudioFX = AudioFX; window.UI_Manager = UI_Manager;
-
+        
             // Enlazar botón principal al Tab Manager de forma segura
             const btnStart = document.getElementById('btn-start');
             if(btnStart) {
                 btnStart.removeAttribute('onclick'); 
                 btnStart.addEventListener('click', () => UI_Manager.initGame());
             }
-
+        
             // Eventos del Modo Zen
             document.getElementById('zen-btn-dual')?.addEventListener('click', () => Game.setZenLayout('dual'));
             document.getElementById('zen-btn-gr')?.addEventListener('click', () => Game.setZenLayout('gr'));
@@ -1262,7 +954,7 @@
             // Eventos de Capas del Mapa
             document.getElementById('btn-layer-sat')?.addEventListener('click', () => MapEngine.setLayer('satellite'));
             document.getElementById('btn-layer-pap')?.addEventListener('click', () => MapEngine.setLayer('antique'));
-
+        
             // Eventos del Cajón de Acertijo
             document.getElementById('btn-toggle-puzzle')?.addEventListener('click', () => Puzzle.toggleDrawer());
             document.getElementById('btn-close-puzzle-drawer')?.addEventListener('click', () => Puzzle.toggleDrawer());
@@ -1272,20 +964,20 @@
             document.getElementById('btn-tts-lang')?.addEventListener('click', () => TTS.toggleLang());
             document.getElementById('btn-tts-play')?.addEventListener('click', () => TTS.togglePlay());
             document.getElementById('btn-tts-stop')?.addEventListener('click', () => TTS.stop());
-
+        
             // Evento Oráculo
             document.getElementById('btn-open-oracle')?.addEventListener('click', () => Oracle.open());
             document.getElementById('btn-close-oracle')?.addEventListener('click', () => Oracle.close());
-
+        
             // Evento Códice
             document.getElementById('btn-close-codex')?.addEventListener('click', () => Game.closeCodex());
-
+        
             // Evento Victoria
             document.getElementById('btn-restart')?.addEventListener('click', () => location.reload());
-
+        
             // Evento Lexicon
             Lexicon.init();
-
+        
             // Controles de Teclado
             document.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') {
@@ -1298,7 +990,10 @@
                 }
             });
         });
-
+        
     </script>
+
+<div style="bottom: 10px; right: 10px; position: absolute;"><a href="https://signatureforemail.com/?utm_source=wth_free_link&utm_medium=external" target="_blank" style="font-size:11px; color: #d0d0d0;">SignatureForEmail</a></p>
 </body>
+
 </html>
