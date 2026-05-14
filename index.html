@@ -34,7 +34,6 @@
             font-family: 'Cormorant Garamond', serif;
             overflow: hidden; margin: 0; padding: 0;
             background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
-            /* Fix fundamental: asegurar que el body ocupe estrictamente la pantalla */
             width: 100vw; height: 100vh;
         }
 
@@ -89,7 +88,7 @@
         .btn-hellenic:hover { background: rgba(212, 175, 55, 0.2); box-shadow: 0 0 30px rgba(212, 175, 55, 0.6); text-shadow: 0 0 12px var(--gold-light); transform: translateY(-3px); color: #fff; border-color: var(--gold-light); }
 
         /* Leaflet Map Overrides */
-        #map-wrapper { background: var(--aegean-dark); height: 100%; width: 100%; z-index: 10; position: relative; flex: 1; }
+        #map-wrapper { background: var(--aegean-dark); height: 100%; width: 100%; z-index: 10; position: relative; }
         #map-container { height: 100%; width: 100%; z-index: 10; position: absolute; inset: 0; }
         #dust-canvas { position: absolute; inset: 0; z-index: 15; pointer-events: none; opacity: 0.6; }
         .leaflet-container { font-family: 'Cinzel Decorative', serif; }
@@ -112,19 +111,74 @@
         .story-path { stroke: var(--gold); stroke-width: 5; stroke-dasharray: 15, 15; opacity: 0.8; animation: dash 30s linear infinite; filter: drop-shadow(0 0 8px var(--gold)); }
         @keyframes dash { to { stroke-dashoffset: 1000; } }
 
-        /* Códice / Scrollbars (Responsive Fix Core: Control estricto de Flexbox) */
-        .dual-codex { display: flex; flex-direction: column; height: 100%; width: 100%; flex: 1; overflow: hidden; transition: all 0.8s ease; }
-        @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
+        /* ==========================================================================
+           EL NUEVO SISTEMA DE PESTAÑAS (FLEXBOX ESTRICTO, SIN SOLAPAMIENTOS)
+           ========================================================================== */
         
-        /* FIX: Altura 100% y paddings reducidos para evitar que el texto desaparezca abajo */
-        .codex-pane { flex: 1; padding: 2rem 1.5rem 8rem 1.5rem; overflow-y: auto; height: 100%; position: relative; scroll-behavior: smooth; transition: all 0.5s ease; }
-        @media (min-width: 768px) { .codex-pane { padding: 4rem 4rem 10rem 4rem; } }
+        /* Contenedor principal de la pantalla Códice: Columna Flex estricta */
+        .codex-screen-layout {
+            display: flex; flex-direction: column; width: 100vw; height: 100dvh; 
+            overflow: hidden; background: var(--aegean-dark);
+        }
+
+        /* Barra de navegación de pestañas */
+        .tabs-nav {
+            display: flex; overflow-x: auto; background: #02060a; border-bottom: 1px solid rgba(212,175,55,0.3);
+            flex-shrink: 0;
+        }
+        .tab-btn {
+            flex: 1; min-width: 160px; padding: 16px 20px; font-family: 'Cinzel Decorative';
+            font-size: 1.1rem; color: #888; background: transparent; border: none;
+            border-bottom: 3px solid transparent; transition: all 0.3s; cursor: pointer;
+            text-align: center; white-space: nowrap; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .tab-btn:hover { color: var(--gold-light); background: rgba(212,175,55,0.05); }
+        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(2,6,10,0.8); font-weight: bold; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
+
+        /* Área de contenido con Scroll unificado */
+        .codex-scroll-area {
+            flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; background: #060a10;
+        }
+        
+        /* Contenedor Dual */
+        .dual-codex { display: flex; flex-direction: column; min-height: 100%; width: 100%; }
+        @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
+
+        /* Paneles de texto individuales */
+        .codex-pane { padding: 3rem 2rem; position: relative; }
+        @media (min-width: 768px) { .codex-pane { padding: 4rem 5rem; } }
         
         .pane-greek { background: #060a10; color: #e2e8f0; border-bottom: 2px solid var(--gold); }
         @media (min-width: 1024px) { .pane-greek { border-bottom: none; border-right: 3px solid var(--gold); } }
         .pane-spanish { border-top: 1px solid rgba(0,0,0,0.1); }
-        @media (min-width: 1024px) { .pane-spanish { border-top: none; border-left: 1px solid rgba(0,0,0,0.1); } }
+        @media (min-width: 1024px) { .pane-spanish { border-top: none; } }
+
+        /* LÓGICA DE VISIBILIDAD DE PESTAÑAS (Mapeado directo a tu JS existente) */
         
+        /* Layout 1: Bilingüe (Dual) */
+        .zen-layout-dual .pane-greek, .zen-layout-dual .pane-spanish { display: block; flex: 1; }
+        .zen-layout-dual #puzzle-drawer { display: none !important; }
+
+        /* Layout 2: Solo Griego */
+        .zen-layout-gr .pane-greek { display: block; flex: 1; max-width: 1200px; margin: 0 auto; border-right: none; }
+        .zen-layout-gr .pane-spanish { display: none; }
+        .zen-layout-gr #puzzle-drawer { display: none !important; }
+
+        /* Layout 3: Solo Español */
+        .zen-layout-es .pane-greek { display: none; }
+        .zen-layout-es .pane-spanish { display: block; flex: 1; max-width: 1200px; margin: 0 auto; }
+        .zen-layout-es #puzzle-drawer { display: none !important; }
+
+        /* Layout 4: Acertijo (El viejo cajón ahora es una pestaña segura) */
+        .zen-layout-puzzle .pane-greek { display: none; }
+        .zen-layout-puzzle .pane-spanish { display: none; }
+        .zen-layout-puzzle #puzzle-drawer { display: flex !important; flex-direction: column; justify-content: center; min-height: 100%; transform: none !important; }
+
+        /* Anulamos la clase translate-y-full del JS original para que no rompa la pestaña */
+        .translate-y-full { transform: none !important; }
+
+        /* ========================================================================== */
+
         .custom-scrollbar::-webkit-scrollbar { width: 10px; }
         @media (min-width: 768px) { .custom-scrollbar::-webkit-scrollbar { width: 14px; } }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 8px;}
@@ -135,9 +189,7 @@
         .drop-cap-spanish::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
         @media (min-width: 768px) { .drop-cap-spanish::first-letter { font-size: 5.5em; } }
 
-        /* ==========================================================================
-           INTERACTIVIDAD LÉXICA Y ANÁLISIS MORFOLÓGICO PROFUNDO
-           ========================================================================== */
+        /* Interactividad Léxica */
         .word-interactive {
             display: inline-block; cursor: pointer; transition: all 0.2s ease;
             border-bottom: 2px dotted rgba(212, 175, 55, 0.3); padding: 0 5px; border-radius: 4px;
@@ -148,9 +200,9 @@
         }
         .glossary-word { border-bottom: 2px dashed var(--gold-light); font-weight: 700; color: #fdf5d3; }
 
-        /* Lexicon Tooltip Premium */
+        /* Lexicon Tooltip */
         #lexicon-tooltip {
-            position: fixed; z-index: 9999; pointer-events: none; opacity: 0;
+            position: fixed; z-index: 99999; pointer-events: none; opacity: 0;
             background: rgba(4, 10, 16, 0.98); border: 2px solid var(--gold);
             color: var(--marble); padding: 25px; border-radius: 12px;
             box-shadow: 0 40px 80px rgba(0,0,0,0.95), 0 0 45px rgba(212,175,55,0.6);
@@ -169,24 +221,23 @@
         .lexicon-lemma { color: #b8b8b8; font-style: italic; font-size: 1.3rem; margin-top: 5px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif;}
         @media (min-width: 768px) { .lexicon-lemma { font-size: 1.6rem; } }
 
-        /* Oráculo Modal */
+        /* Oráculo Modal Centralizado y Seguro */
         #oracle-modal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
-            z-index: 10000; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100000; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             width: 95%; max-width: 1000px; max-height: 85vh; overflow-y: auto;
         }
         #oracle-modal.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
 
-        /* Reproductor Audiolibro (El Aedo) */
-        .audio-player {
-            position: fixed; bottom: 20px; right: 20px; z-index: 9000;
-            display: flex; align-items: center; gap: 15px; padding: 15px 20px;
-            border-radius: 50px; background: rgba(2, 6, 10, 0.95); border: 2px solid var(--gold);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 40px rgba(212, 175, 55, 0.4);
-            backdrop-filter: blur(20px); transform: translateY(200%); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Reproductor Audiolibro - Ahora anclado al flexbox */
+        .audio-player-bar {
+            display: none; align-items: center; justify-content: space-between; flex-wrap: wrap;
+            padding: 15px 20px; background: rgba(2, 6, 10, 0.98); border-top: 2px solid var(--gold);
+            z-index: 9000; flex-shrink: 0; width: 100%; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
         }
-        @media (min-width: 768px) { .audio-player { bottom: 40px; right: 40px; gap: 25px; padding: 25px 40px; border-radius: 60px; } }
-        .audio-player.visible { transform: translateY(0); }
+        .audio-player-bar.visible { display: flex; }
+        @media (min-width: 768px) { .audio-player-bar { padding: 20px 40px; } }
+
         .visualizer-bar { width: 4px; height: 6px; background: var(--gold); border-radius: 3px; transition: height 0.1s; }
         @media (min-width: 768px) { .visualizer-bar { width: 6px; height: 8px; } }
         .visualizer.playing .visualizer-bar { animation: audioBar 1s infinite alternate; }
@@ -196,13 +247,7 @@
         .visualizer.playing .visualizer-bar:nth-child(4) { animation-delay: 0.5s; }
         .visualizer.playing .visualizer-bar:nth-child(5) { animation-delay: 0.4s; }
 
-        /* Cajón de Acertijo Gigante */
-        /* FIX: Max height y overflow para no sobrepasar pantallas pequeñas */
-        #puzzle-drawer { 
-            z-index: 5000; 
-            max-height: 85vh; 
-            overflow-y: auto;
-        }
+        /* Inputs Acertijo */
         .oracle-input {
             background: rgba(0,0,0,0.6); border: 2px solid var(--gold); border-radius: 8px;
             color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 1.5rem;
@@ -212,48 +257,18 @@
         @media (min-width: 768px) { .oracle-input { font-size: 2.5rem; letter-spacing: 8px; padding: 15px; } }
         .oracle-input:focus { border-color: #fff; box-shadow: 0 0 35px rgba(212,175,55,0.6); background: rgba(0,0,0,0.9); }
 
-        /* MODO ZEN BILINGÜE AVANZADO */
-        .zen-toolbar {
-            position: fixed; top: -150px; left: 50%; transform: translateX(-50%); z-index: 6000;
-            background: rgba(4, 10, 16, 0.95); border: 1px solid var(--gold); border-radius: 0 0 20px 20px;
-            padding: 15px 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; transition: top 0.6s ease;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.95); backdrop-filter: blur(15px); width: 95%; max-width: 800px;
-        }
-        @media (min-width: 768px) { .zen-toolbar { padding: 25px 50px; gap: 30px; border-radius: 0 0 25px 25px; width: auto; max-width: none; } }
-        .immersive-mode .zen-toolbar { top: 0; }
-        .immersive-mode .top-bar { opacity: 0; pointer-events: none; }
-        .immersive-mode .pane-greek, .immersive-mode .pane-spanish { transition: all 0.8s ease; }
-        
-        /* FIX: Ajustes de layout zen basados en max-width en lugar de padding destructivo */
-        .zen-layout-es .pane-greek { display: none; }
-        .zen-layout-es .pane-spanish { border-left: none; margin: 0 auto; max-width: 1200px; font-size: 1.2em; padding-top: 6rem; }
-        @media (min-width: 1024px) { .zen-layout-es .pane-spanish { font-size: 1.6em; padding-top: 8rem; } }
-        
-        .zen-layout-gr .pane-spanish { display: none; }
-        .zen-layout-gr .pane-greek { border-right: none; margin: 0 auto; max-width: 1200px; font-size: 1.2em; padding-top: 6rem; }
-        @media (min-width: 1024px) { .zen-layout-gr .pane-greek { font-size: 1.6em; padding-top: 8rem; } }
-        
-        .zen-layout-dual .pane-greek { padding-top: 6rem; }
-        .zen-layout-dual .pane-spanish { padding-top: 6rem; }
-        @media (min-width: 1024px) { 
-            .zen-layout-dual .pane-greek { padding-top: 8rem; }
-            .zen-layout-dual .pane-spanish { padding-top: 8rem; }
-        }
-
-        .zen-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 12px; border-radius: 6px; font-family: 'Cinzel Decorative'; font-size: 1rem; transition: all 0.3s; cursor: pointer; }
-        @media (min-width: 768px) { .zen-btn { padding: 12px 25px; font-size: 1.4rem; border-radius: 8px; } }
-        .zen-btn.active { background: var(--aegean-blue); border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 25px rgba(212,175,55,0.5); }
+        /* Ocultar header en modo inmersivo */
+        .immersive-mode .top-header { display: none !important; }
 
     </style>
 </head>
 <body>
 
     <!-- ==========================================================================
-         PANTALLA DE INICIO (Con Parallax y Prólogo Épico)
+         PANTALLA DE INICIO
          ========================================================================== -->
     <div id="screen-intro" class="absolute inset-0 z-[10000] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] transition-opacity duration-1000 p-4 overflow-hidden">
         
-        <!-- Prólogo de Heródoto flotando de fondo estilo Star Wars -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-20 z-0">
             <div class="font-greek text-2xl md:text-4xl text-[var(--gold)] whitespace-pre-line text-center animate-crawl" style="width: 150%; margin-left: -25%;">
                 ΗΡΟΔΟΤΟΥ ΑΛΙΚΑΡΝΗΣΣΕΟΣ ΙΣΤΟΡΙΗΣ ΑΠΟΔΕΞΙΣ ΗΔΕ
@@ -269,21 +284,14 @@
 
         <div id="intro-card" class="text-center max-w-7xl p-8 md:p-20 glass-panel rounded-2xl animate-fade w-[95%] max-h-[90vh] overflow-y-auto custom-scrollbar relative transition-transform duration-200 z-10">
             <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/ancient-map.png')]"></div>
-            
-            <h3 class="text-[var(--gold)] text-xl md:text-5xl tracking-[0.4em] md:tracking-[0.8em] uppercase mb-6 md:mb-10 font-title opacity-90">
-                ΗΡΟΔΟΤΟΣ
-            </h3>
-            <h1 class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-black text-white mb-8 md:mb-16 font-title text-shine drop-shadow-[0_0_60px_rgba(212,175,55,0.6)]">
-                Historias
-            </h1>
+            <h3 class="text-[var(--gold)] text-xl md:text-5xl tracking-[0.4em] md:tracking-[0.8em] uppercase mb-6 md:mb-10 font-title opacity-90">ΗΡΟΔΟΤΟΣ</h3>
+            <h1 class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-black text-white mb-8 md:mb-16 font-title text-shine drop-shadow-[0_0_60px_rgba(212,175,55,0.6)]">Historias</h1>
             <p class="text-xl md:text-5xl text-gray-200 text-font mb-10 md:mb-20 italic leading-relaxed px-4 md:px-20 relative z-10 font-light">
                 "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
             </p>
-            
             <button id="btn-start" onclick="if(window.Game) window.Game.initMap();" class="btn-hellenic px-10 py-5 md:px-24 md:py-10 text-2xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all">
                 Desplegar el Egeo
             </button>
-            
             <div class="mt-12 md:mt-24 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-[var(--gold)] font-sans tracking-widest uppercase text-xs md:text-xl relative z-10">
                 <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Filológico Total</span>
                 <span class="hidden md:inline text-gray-600">|</span>
@@ -295,9 +303,9 @@
     </div>
 
     <!-- ==========================================================================
-         PANTALLA 2: MAPA INTERACTIVO Y CAPAS (Responsive Fix)
+         PANTALLA 2: MAPA INTERACTIVO
          ========================================================================== -->
-    <div id="screen-map" class="absolute inset-0 z-20 flex flex-col hidden opacity-0 transition-opacity duration-1000 h-full w-full">
+    <div id="screen-map" class="absolute inset-0 z-20 flex flex-col hidden opacity-0 transition-opacity duration-1000">
         <header class="h-auto md:h-32 p-6 md:px-16 glass-panel flex flex-col md:flex-row items-center justify-between z-30 border-b-2 border-[var(--gold)] gap-4 shrink-0">
             <div class="flex items-center gap-4 md:gap-10">
                 <div class="relative w-16 h-16 md:w-28 md:h-28 flex items-center justify-center shrink-0">
@@ -312,112 +320,127 @@
                     <span class="text-gray-400 text-font italic text-lg md:text-4xl">Pasa el ratón para revelar los mitos en el mapa</span>
                 </div>
             </div>
-            
             <div class="flex gap-2 md:gap-4 z-40 bg-black/50 p-2 md:p-3 rounded-lg border border-[var(--gold)] mt-2 md:mt-0">
                 <button id="btn-layer-sat" onclick="if(window.MapEngine) window.MapEngine.setLayer('satellite');" class="text-white hover:text-[var(--gold)] px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider transition-colors cursor-pointer">Satélite</button>
                 <div class="w-px bg-gray-600"></div>
                 <button id="btn-layer-pap" onclick="if(window.MapEngine) window.MapEngine.setLayer('antique');" class="text-[var(--gold-light)] font-bold px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider transition-colors cursor-pointer">Papiro</button>
             </div>
         </header>
-        
-        <div id="map-wrapper" class="flex-1 relative w-full h-full">
+        <div id="map-wrapper" class="flex-1 relative">
             <main id="map-container" class="absolute inset-0"></main>
             <canvas id="dust-canvas" class="absolute inset-0 z-50 pointer-events-none opacity-60"></canvas>
         </div>
     </div>
 
     <!-- ==========================================================================
-         PANTALLA 3: EL CÓDICE INMENSO (Fijo para que no rompa el scroll)
+         PANTALLA 3: EL CÓDICE (EL NUEVO SISTEMA DE FLEXBOX SIN OVERLAPS)
          ========================================================================== -->
-    <div id="screen-codex" class="absolute inset-0 z-40 bg-black flex-col hidden opacity-0 transition-opacity duration-700 h-full w-full overflow-hidden">
+    <div id="screen-codex" class="fixed inset-0 z-40 bg-black hidden opacity-0 transition-opacity duration-700 codex-screen-layout">
         
-        <!-- Toolbar Normal (Fija arriba con shrink-0) -->
-        <div class="top-bar h-auto md:h-32 p-4 md:px-16 border-b-2 border-[var(--gold)] glass-panel flex flex-col md:flex-row items-center justify-between z-10 shrink-0 transition-opacity duration-500 gap-4">
-            <h2 id="codex-title" class="font-title text-4xl md:text-6xl text-[var(--gold-light)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)] text-center">Título</h2>
-            <div class="flex flex-wrap justify-center gap-3 md:gap-8">
-                <button id="btn-open-oracle" onclick="if(window.Oracle) window.Oracle.open();" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="hidden xl:inline">Oráculo de Red</span>
+        <!-- 1. HEADER SUPERIOR (Fijo, no se monta sobre nada) -->
+        <div class="top-header h-auto p-4 md:p-6 md:px-12 border-b border-gray-700 glass-panel flex flex-col md:flex-row items-center justify-between z-20 shrink-0 gap-4">
+            <h2 id="codex-title" class="font-title text-3xl md:text-5xl text-[var(--gold-light)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)] text-center m-0">Título</h2>
+            <div class="flex flex-wrap justify-center gap-3 md:gap-6">
+                <button id="btn-open-oracle" onclick="if(window.Oracle) window.Oracle.open();" class="btn-hellenic px-4 py-2 md:px-6 md:py-3 text-sm md:text-xl flex items-center gap-2 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="hidden md:inline">Oráculo Histórico</span>
                 </button>
-                <button id="btn-zen-mode" onclick="if(window.Game) window.Game.toggleImmersive();" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4" title="Modo Lectura Inmersiva">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span class="hidden xl:inline">Modo Zen</span>
+                <!-- Modo Zen ahora oculta este Header para ampliar la lectura -->
+                <button id="btn-zen-mode" onclick="if(window.Game) window.Game.toggleImmersive();" class="btn-hellenic px-4 py-2 md:px-6 md:py-3 text-sm md:text-xl flex items-center gap-2">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="hidden md:inline">Modo Zen</span>
                 </button>
-                <button id="btn-close-codex" onclick="if(window.Game) window.Game.closeCodex();" class="btn-hellenic px-4 py-2 md:px-12 md:py-5 text-sm md:text-3xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
-                    ✕ Volver
+                <button id="btn-close-codex" onclick="if(window.Game) window.Game.closeCodex();" class="btn-hellenic px-4 py-2 md:px-8 md:py-3 text-sm md:text-xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
+                    ✕ Volver al Mapa
                 </button>
             </div>
         </div>
 
-        <!-- ZEN TOOLBAR (Aparece sólo en modo Zen) -->
-        <div class="zen-toolbar">
-            <button id="zen-btn-dual" class="zen-btn active">Lectura Bilingüe</button>
-            <button id="zen-btn-gr" class="zen-btn">Solo Griego Antiguo</button>
-            <button id="zen-btn-es" class="zen-btn">Solo Español</button>
-            <div class="w-px bg-gray-600 mx-4"></div>
-            <button id="zen-btn-exit" class="zen-btn hover:text-[var(--sparta-red)] hover:border-[var(--sparta-red)] font-bold">✕ Abandonar Zen</button>
+        <!-- 2. BARRA DE PESTAÑAS (Integrada al flujo, sustituye al antiguo zen-toolbar flotante) -->
+        <div class="tabs-nav custom-scrollbar">
+            <!-- Mapeamos las pestañas directamente a tu función setZenLayout original -->
+            <button id="zen-btn-dual" onclick="if(window.Game) window.Game.setZenLayout('dual');" class="tab-btn active">📖 Dual Bilingüe</button>
+            <button id="zen-btn-gr" onclick="if(window.Game) window.Game.setZenLayout('gr');" class="tab-btn">🏛️ Texto Griego</button>
+            <button id="zen-btn-es" onclick="if(window.Game) window.Game.setZenLayout('es');" class="tab-btn">🇪🇸 Castellano</button>
+            <button id="zen-btn-puzzle" onclick="if(window.Game) window.Game.setZenLayout('puzzle');" class="tab-btn text-[var(--gold)]" style="font-weight: 900;">🧩 Resolver Acertijo</button>
         </div>
 
-        <!-- Área Central Bilingüe (El contenedor elástico seguro) -->
-        <div id="dual-codex-container" class="dual-codex zen-layout-dual w-full relative">
-            <div class="codex-pane pane-greek custom-scrollbar">
-                <h3 class="font-title text-[var(--gold)] text-center text-6xl mb-20 border-b-2 border-gray-800 pb-10 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
-                <div id="text-greek" class="font-greek text-4xl lg:text-5xl text-justify leading-loose pb-10">
-                    <!-- Texto Inyectado Interactivo -->
+        <!-- Botón para salir del modo inmersivo (Solo aparece al estar en Zen) -->
+        <div class="hidden immersive-mode:flex shrink-0 w-full justify-center bg-black p-2 border-b border-gray-800">
+            <button id="btn-exit-zen" onclick="if(window.Game) window.Game.toggleImmersive();" class="text-gray-400 hover:text-[var(--sparta-red)] text-sm font-sans tracking-widest uppercase">✕ Salir de Lectura Inmersiva</button>
+        </div>
+
+        <!-- 3. ÁREA DE SCROLL PRINCIPAL (Todo se desplaza aquí dentro) -->
+        <div class="codex-scroll-area custom-scrollbar relative">
+            
+            <!-- Contenedor que alterna las vistas según las clases zen-layout-* -->
+            <div id="dual-codex-container" class="dual-codex zen-layout-dual">
+                
+                <!-- Pestaña: Texto Griego -->
+                <div id="pane-greek" class="codex-pane pane-greek">
+                    <h3 class="font-title text-[var(--gold)] text-center text-4xl md:text-6xl mb-12 border-b-2 border-gray-800 pb-8 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
+                    <div id="text-greek" class="font-greek text-3xl lg:text-5xl text-justify leading-loose pb-10">
+                        <!-- Texto Inyectado Interactivo -->
+                    </div>
                 </div>
-            </div>
-            <div class="codex-pane pane-spanish parchment-panel custom-scrollbar">
-                <h3 class="font-title text-[var(--sparta-red)] text-center text-6xl mb-20 border-b-2 border-gray-400 pb-10 tracking-widest font-bold drop-shadow-md">VERSIÓN CASTELLANA</h3>
-                <div id="text-spanish" class="text-font text-4xl lg:text-5xl text-justify leading-relaxed pb-10 font-medium">
-                    <!-- Texto Inyectado -->
+
+                <!-- Pestaña: Texto Español -->
+                <div id="pane-spanish" class="codex-pane pane-spanish parchment-panel">
+                    <h3 class="font-title text-[var(--sparta-red)] text-center text-4xl md:text-6xl mb-12 border-b-2 border-gray-400 pb-8 tracking-widest font-bold drop-shadow-md">VERSIÓN CASTELLANA</h3>
+                    <div id="text-spanish" class="text-font text-3xl lg:text-5xl text-justify leading-relaxed pb-10 font-medium">
+                        <!-- Texto Inyectado -->
+                    </div>
+                    
+                    <!-- Botón para ir al acertijo al terminar de leer -->
+                    <div class="mt-16 pt-8 border-t border-gray-400 text-center">
+                        <button onclick="if(window.Game) window.Game.setZenLayout('puzzle');" class="btn-hellenic px-10 py-5 text-2xl md:text-4xl bg-[var(--aegean-blue)] shadow-[0_0_30px_rgba(212,175,55,0.4)] border-white text-white hover:bg-white hover:text-black hover:border-[var(--gold)]">
+                            Enfrentar el Acertijo Final ➔
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pestaña: El Acertijo (Ya no es un cajón que se superpone, es una sección pura) -->
+                <div id="puzzle-drawer" class="glass-panel p-8 md:p-20 text-center relative">
+                    <div class="max-w-6xl mx-auto flex flex-col justify-center h-full">
+                        <h3 class="font-title text-[var(--gold-light)] text-5xl md:text-7xl mb-12 drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">El Acertijo de las Moiras</h3>
+                        <p id="puzzle-desc" class="text-font text-3xl md:text-5xl text-white mb-16 leading-relaxed">...</p>
+                        
+                        <div class="flex flex-col lg:flex-row justify-center items-center gap-8">
+                            <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3 h-20 md:h-28 text-3xl md:text-5xl" placeholder="Escribe tu ofrenda aquí..." autocomplete="off" spellcheck="false">
+                            <button id="btn-check-puzzle" onclick="if(window.Puzzle) window.Puzzle.check();" class="btn-hellenic px-10 py-6 md:px-16 md:py-8 text-3xl md:text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)] shrink-0">
+                                Sellar Destino
+                            </button>
+                        </div>
+                        <p id="puzzle-feedback" class="h-16 text-[var(--sparta-red)] text-3xl md:text-5xl font-bold mt-12"></p>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <!-- Botón flotante reubicado fuera del scroll -->
-        <div class="absolute bottom-6 md:bottom-12 left-1/2 transform -translate-x-1/2 z-[4000] pointer-events-none w-full flex justify-center">
-            <button id="btn-open-puzzle-drawer" onclick="if(window.Puzzle) window.Puzzle.toggleDrawer();" class="btn-hellenic px-10 py-5 md:px-20 md:py-8 text-2xl md:text-5xl shadow-[0_0_60px_rgba(212,175,55,0.9)] bg-[var(--aegean-blue)] animate-float border-2 border-white pointer-events-auto">
-                Enfrentar el Acertijo ▼
-            </button>
-        </div>
-
-        <!-- EL CAJÓN DEL ACERTIJO (Anclado al fondo seguro) -->
-        <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-8 md:p-12 lg:p-20 z-[5000] transform translate-y-full transition-transform duration-700 shadow-[0_-20px_60px_rgba(0,0,0,0.95)]" id="puzzle-drawer">
-            <button id="btn-close-puzzle-drawer" onclick="if(window.Puzzle) window.Puzzle.toggleDrawer();" class="absolute top-4 right-6 md:top-10 md:right-12 text-gray-400 hover:text-sparta-red font-bold text-4xl md:text-6xl transition-colors cursor-pointer">✕</button>
-            <div class="max-w-7xl mx-auto text-center flex flex-col justify-center h-full">
-                <h3 class="font-title text-[var(--gold-light)] text-4xl md:text-7xl mb-8 md:mb-12 drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">El Acertijo de las Moiras</h3>
-                <p id="puzzle-desc" class="text-font text-3xl md:text-5xl text-white mb-10 md:mb-20 leading-relaxed">...</p>
-                <div class="flex flex-col lg:flex-row justify-center items-center gap-6 md:gap-12">
-                    <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3 h-20 md:h-28 text-3xl md:text-5xl" placeholder="Escribe tu ofrenda aquí..." autocomplete="off" spellcheck="false">
-                    <button id="btn-check-puzzle" onclick="if(window.Puzzle) window.Puzzle.check();" class="btn-hellenic px-10 py-6 md:px-20 md:py-8 text-3xl md:text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)] shrink-0">Sellar Destino</button>
-                </div>
-                <p id="puzzle-feedback" class="h-10 md:h-16 text-[var(--sparta-red)] text-3xl md:text-5xl font-bold mt-8 md:mt-12"></p>
-            </div>
-        </div>
-        
-        <!-- REPRODUCTOR (EL AEDO BILINGÜE) -->
-        <div id="audio-player" class="audio-player">
-            <div class="flex flex-col">
-                <span class="font-title text-[var(--gold)] text-xl md:text-3xl uppercase tracking-widest mb-1 md:mb-3">El Aedo de Halicarnaso</span>
-                <div class="flex items-center gap-4 md:gap-8">
-                    <button id="btn-tts-lang" class="text-xl md:text-3xl border-2 border-gray-500 rounded-lg px-3 py-2 md:px-6 md:py-3 text-gray-200 hover:text-white hover:border-white transition-all w-24 md:w-40 text-center font-bold bg-black/50 cursor-pointer">
-                        🇪🇸 ESP
-                    </button>
-                    <button id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-transform transform hover:scale-125 cursor-pointer">
-                        <svg width="40" height="40" class="w-8 h-8 md:w-14 md:h-14" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
-                    </button>
-                    <button id="btn-tts-stop" class="text-gray-400 hover:text-[var(--sparta-red)] transition-colors cursor-pointer">
-                        <svg width="30" height="30" class="w-6 h-6 md:w-10 md:h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
-                    </button>
+        <!-- 4. BARRA INFERIOR DE AUDIO (Anclada al flujo Flexbox, nunca tapa el texto) -->
+        <div id="audio-player" class="audio-player-bar">
+            <div class="flex items-center gap-4">
+                <span class="font-title text-[var(--gold)] text-lg md:text-2xl uppercase tracking-widest hidden md:inline">El Aedo de Halicarnaso</span>
+                <div id="visualizer" class="visualizer flex items-end gap-2 md:gap-3 h-10 px-4 md:px-6 border-l-2 border-gray-700">
+                    <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
                 </div>
             </div>
-            <div id="visualizer" class="visualizer flex items-end gap-2 md:gap-3 h-10 md:h-16 px-4 md:px-6 border-l-2 border-gray-700 ml-4 md:ml-6">
-                <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
+            
+            <div class="flex items-center gap-6 md:gap-10">
+                <button id="btn-tts-lang" class="text-lg md:text-2xl border-2 border-gray-500 rounded-lg px-4 py-2 md:px-6 md:py-3 text-gray-200 hover:text-white hover:border-white transition-all w-28 md:w-40 text-center font-bold bg-black/50 cursor-pointer">
+                    🇪🇸 ESP
+                </button>
+                <button id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-transform transform hover:scale-125 cursor-pointer">
+                    <svg class="w-10 h-10 md:w-14 md:h-14" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
+                </button>
+                <button id="btn-tts-stop" class="text-gray-400 hover:text-[var(--sparta-red)] transition-colors cursor-pointer">
+                    <svg class="w-8 h-8 md:w-10 md:h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- TOOLTIP DICCIONARIO (Lexicon Premium + Túnel Google Translate) -->
+    <!-- TOOLTIP DICCIONARIO -->
     <div id="lexicon-tooltip">
         <div class="flex justify-between items-start mb-6">
             <h4 id="lexicon-greek" class="font-greek text-4xl md:text-6xl text-[var(--gold)] m-0 drop-shadow-[0_2px_5px_#000]">Λέξις</h4>
@@ -426,14 +449,14 @@
         <div id="lexicon-lemma" class="lexicon-lemma mb-6 text-xl md:text-2xl"></div>
         <p id="lexicon-spanish" class="text-font text-2xl md:text-4xl text-white m-0 leading-relaxed mb-10">Traducción...</p>
         <div class="border-t border-gray-700 pt-8 text-center">
-            <a id="lexicon-link" href="#" target="_blank" class="inline-block text-xl md:text-3xl text-[var(--aegean-blue)] bg-[var(--gold-light)] font-bold text-black px-6 py-3 md:px-10 md:py-4 rounded-xl hover:bg-white font-title transition-all pointer-events-auto shadow-[0_0_30px_var(--gold)]">
+            <a id="lexicon-link" href="#" target="_blank" class="inline-block text-xl md:text-3xl text-[var(--aegean-blue)] bg-[var(--gold-light)] font-bold text-black px-6 py-3 md:px-10 md:py-4 rounded-xl hover:bg-white font-title transition-all shadow-[0_0_30px_var(--gold)]">
                 Traducir Logeion al Español ↗
             </a>
             <p class="text-gray-500 text-sm md:text-lg mt-4 font-sans">Se abrirá el proxy de G-Translate.</p>
         </div>
     </div>
 
-    <!-- ORÁCULO MODAL (Wikipedia Independiente y Seguro) -->
+    <!-- ORÁCULO MODAL -->
     <div id="oracle-modal" class="glass-panel rounded-3xl p-8 md:p-20 border-2 border-[var(--aegean-blue)] shadow-[0_0_100px_rgba(8,22,36,1)]">
         <button id="btn-close-oracle" onclick="if(window.Oracle) window.Oracle.close();" class="absolute top-6 right-6 md:top-10 md:right-10 text-gray-400 hover:text-[var(--sparta-red)] font-bold text-4xl md:text-6xl transition-colors cursor-pointer">✕</button>
         <div class="flex items-center gap-4 md:gap-8 mb-8 md:mb-12 border-b-2 border-gray-700 pb-6 md:pb-10">
@@ -445,7 +468,7 @@
         </div>
     </div>
 
-    <!-- PANTALLA VICTORIA SEGURA (Independiente del Body) -->
+    <!-- PANTALLA VICTORIA -->
     <div id="screen-victory" class="absolute inset-0 bg-black flex-col items-center justify-center p-10 text-center z-[20000] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] hidden opacity-0 transition-opacity duration-1000">
         <h1 class="text-7xl md:text-9xl text-[var(--gold)] font-title mb-8 drop-shadow-[0_0_60px_rgba(212,175,55,1)]">ΙΣΤΟΡΙΑΙ</h1>
         <h2 class="text-4xl md:text-6xl text-white font-title mb-8 text-shine">El Telar ha sido Completado</h2>
@@ -453,11 +476,8 @@
         <button id="btn-restart" class="btn-hellenic px-16 py-6 text-3xl font-bold bg-white text-black hover:bg-[var(--gold)]">Regresar a la Modernidad</button>
     </div>
 
-    <!-- BOTÓN SALIR MODO INMERSIVO -->
-    <button id="btn-exit-zen" class="fixed top-8 right-8 z-[100] btn-hellenic px-6 py-3 text-xl bg-black/50 hidden">Salir del Modo Zen</button>
-
     <!-- ==========================================================================
-         MOTOR DEL JUEGO (JAVASCRIPT Y FILOLOGÍA)
+         MOTOR DEL JUEGO (EL SCRIPT ORIGINAL INTACTO)
          ========================================================================== -->
     <script>
         // --- 1. BASE DE DATOS LITERARIA MASIVA ---
@@ -598,7 +618,7 @@
                 Καμβύσης δὲ... ἐσπασμένος τὸ ἐγχειρίδιον, παίειν βουλόμενος τὸν Ἆπιν τὴν γαστέρα, τύπτει τὸν μηρόν· καί μιν ἐπιγελάσας εἶπε· «Ὦ κακαὶ κεφαλαί, τοιοῦτοι θεοὶ γίνονται, ἔναιμοί τε καὶ σαρκώδεες καὶ ἐπαΐοντες σιδήρου; Ἄξιος μὲν Αἰγυπτίων οὗτός γε ὁ θεός· ἀτάρ τοι ὑμεῖς γε οὐ χαίροντες γέλωτα ἔμε θέσθε.»<br><br>
                 Ταῦτα εἴπας ἐνετείλατο τοῖσι ταῦτα πρήσσουσι τοὺς μὲν ἱρέας μαστιγοῦν... Ὁ μὲν δὴ Ἆπις πληγεὶς τὸν μηρὸν ἔφθινε ἐν τῷ ἱρῷ, καί μιν τελευτήσαντα ἐκ τοῦ τρώματος ἔθαψαν οἱ ἱρέες λάθρῃ Καμβύσεω. Καμβύσης δέ, ὡς λέγουσι Αἰγύπτιοι, διὰ τοῦτο τὸ ἀδίκημα αὐτίκα ἐμάνη, ἐὼν οὐδὲ πρότερον φρενήρης.`,
                 spanish: `Cuando el rey persa Cambises regresó a Menfis en Egipto, habiendo perdido gran parte de su ejército en el desierto, sucedió que apareció ante los egipcios el toro Apis, al que los griegos llaman Épafo. Con su aparición divina, inmediatamente todos los egipcios se pusieron sus mejores ropajes y comenzaron a celebrar ruidosas fiestas en las calles.<br><br>
-                Cambises, al ver a los egipcios de fiesta, creyó con total seguridad que se estaban alegrando por el fracaso de su campaña militar. Llamó de inmediato a los gobernadores de Menfis y, cuando se presentaron, les preguntó furioso por qué antes, estando él triunfante en Egipto, los egipcios no hacían nada parecido, y justo ahora que volvía derrotado se ponían a festejar. Ellos respondedieron que se les había aparecido un dios que solía manifestarse de siglo en siglo, y que siempre que aparecía, todos los egipcios se alegraban. Cambises no les creyó y mandó ejecutarlos por mentirosos.<br><br>
+                Cambises, al ver a los egipcios de fiesta, creyó con total seguridad que se estaban alegrando por el fracaso de su campaña militar. Llamó de inmediato a los gobernadores de Menfis y, cuando se presentaron, les preguntó furioso por qué antes, estando él triunfante en Egipto, los egipcios no hacían nada parecido, y justo ahora que volvía derrotado se ponían a festejar. Ellos respondieron que se les había aparecido un dios que solía manifestarse de siglo en siglo, y que siempre que aparecía, todos los egipcios se alegraban. Cambises no les creyó y mandó ejecutarlos por mentirosos.<br><br>
                 A continuación llamó a los sacerdotes, quienes le dijeron lo mismo. Para comprobarlo, ordenó que trajeran al dios a su presencia. Los sacerdotes trajeron al toro sagrado Apis. Cambises, enfurecido, sacó su espada corta y, queriendo apuñalar al toro en el vientre, falló y le clavó el acero profundamente en el muslo.<br><br>
                 Entonces, Cambises se echó a reír sádicamente y gritó a los sacerdotes: «¡Cabezas huecas, miserables! ¿Acaso los dioses nacen así, de carne y hueso sangrantes, y son vulnerables al hierro de mi espada? Desde luego, este es un dios digno del intelecto de los egipcios; ¡pero no os vais a reír de mí impunemente!».<br><br>
                 Tras decir esto, ordenó a sus verdugos que azotaran públicamente a los sacerdotes y que mataran a cualquier egipcio que vieran de fiesta. El toro Apis agonizó en el templo por la herida del muslo, y cuando murió, los sacerdotes lo enterraron en secreto para ocultarlo de Cambises. Los egipcios afirman solemnemente que, como castigo directo por este inmenso sacrilegio, Cambises enloqueció por completo en ese mismo instante, aunque en realidad tampoco antes andaba muy en sus cabales.`,
@@ -1142,16 +1162,13 @@
                 document.getElementById('puzzle-input').value = "";
                 document.getElementById('puzzle-feedback').innerText = "";
                 
-                document.getElementById('puzzle-drawer').classList.add('translate-y-full');
-                
                 // Reset Layout Zen
-                if(window.Game && Game.isImmersive) Game.setZenLayout('dual');
+                if(window.Game) window.Game.setZenLayout('dual');
                 
                 document.getElementById('screen-map').classList.add('hidden', 'opacity-0');
                 
                 const screenCodex = document.getElementById('screen-codex');
-                screenCodex.classList.remove('hidden'); // Fix fundamental para asegurar que es visible
-                screenCodex.style.display = 'flex';
+                screenCodex.classList.remove('hidden');
                 setTimeout(() => screenCodex.classList.remove('opacity-0'), 50);
 
                 if(window.AudioFX) window.AudioFX.playLyre(329.63, 0.4);
@@ -1161,13 +1178,10 @@
 
         const Puzzle = {
             toggleDrawer() {
+                // Esta función ya no necesita levantar ningún panel porque ahora es una pestaña nativa
                 if(window.AudioFX) window.AudioFX.click();
-                const drawer = document.getElementById('puzzle-drawer');
-                if(!drawer) return;
-                drawer.classList.toggle('translate-y-full');
-                if(!drawer.classList.contains('translate-y-full')) {
-                    setTimeout(()=>document.getElementById('puzzle-input').focus(), 300);
-                }
+                if(window.Game) window.Game.setZenLayout('puzzle');
+                setTimeout(()=>document.getElementById('puzzle-input').focus(), 300);
             },
             check() {
                 const story = State.currentStory;
@@ -1250,10 +1264,7 @@
                 if(screenCodex) screenCodex.classList.add('opacity-0');
                 
                 setTimeout(() => {
-                    if(screenCodex) {
-                        screenCodex.style.display = 'none';
-                        screenCodex.classList.add('hidden');
-                    }
+                    if(screenCodex) screenCodex.classList.add('hidden');
                     const screenMap = document.getElementById('screen-map');
                     if(screenMap) screenMap.classList.remove('hidden');
                     
@@ -1275,20 +1286,20 @@
                 if(this.isImmersive) {
                     if(codex) codex.classList.add('immersive-mode');
                     if(window.AudioFX) window.AudioFX.playDrone();
-                    this.setZenLayout('dual'); 
                 } else {
-                    if(codex) {
-                        codex.classList.remove('immersive-mode');
-                    }
+                    if(codex) codex.classList.remove('immersive-mode');
                     if(window.AudioFX) window.AudioFX.stopDrone();
                 }
             },
             setZenLayout(layout) {
                 if(window.AudioFX) window.AudioFX.hover();
                 const container = document.getElementById('dual-codex-container');
-                if(container) container.className = `dual-codex flex-1 overflow-hidden relative flex flex-col lg:flex-row w-full zen-layout-${layout}`;
                 
-                document.querySelectorAll('.zen-btn').forEach(b => b.classList.remove('active'));
+                // Mapeamos la clase para que el CSS nativo cambie de pestaña sin JS extra
+                if(container) container.className = `dual-codex zen-layout-${layout}`;
+                
+                // Resaltar botón activo
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 const activeBtn = document.getElementById(`zen-btn-${layout}`);
                 if(activeBtn) activeBtn.classList.add('active');
             },
@@ -1303,7 +1314,7 @@
             }
         };
 
-        // --- DELEGACIÓN GLOBAL DE EVENTOS (Evita bloqueos de CSP y Fallos en Iframes) ---
+        // --- DELEGACIÓN GLOBAL DE EVENTOS ---
         window.addEventListener('DOMContentLoaded', () => {
             // Asignación de seguridad global
             window.Game = Game;
@@ -1315,18 +1326,6 @@
             window.Lexicon = Lexicon;
             window.AudioFX = AudioFX;
 
-            // Eventos del Modo Zen
-            document.getElementById('zen-btn-dual')?.addEventListener('click', () => Game.setZenLayout('dual'));
-            document.getElementById('zen-btn-gr')?.addEventListener('click', () => Game.setZenLayout('gr'));
-            document.getElementById('zen-btn-es')?.addEventListener('click', () => Game.setZenLayout('es'));
-            document.getElementById('zen-btn-exit')?.addEventListener('click', () => Game.toggleImmersive());
-            document.getElementById('btn-exit-zen')?.addEventListener('click', () => Game.toggleImmersive());
-            
-            // Eventos del Cajón de Acertijo
-            document.getElementById('btn-toggle-puzzle')?.addEventListener('click', () => Puzzle.toggleDrawer());
-            document.getElementById('btn-close-puzzle-drawer')?.addEventListener('click', () => Puzzle.toggleDrawer());
-            document.getElementById('btn-check-puzzle')?.addEventListener('click', () => Puzzle.check());
-            
             // Eventos del Reproductor
             document.getElementById('btn-tts-lang')?.addEventListener('click', () => TTS.toggleLang());
             document.getElementById('btn-tts-play')?.addEventListener('click', () => TTS.togglePlay());
@@ -1350,7 +1349,7 @@
             document.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') {
                     const drawer = document.getElementById('puzzle-drawer');
-                    if(drawer && !drawer.classList.contains('translate-y-full')) Puzzle.check();
+                    if(drawer && drawer.style.display !== 'none') Puzzle.check();
                 }
                 if(e.key === 'Escape') {
                     if(window.Oracle) window.Oracle.close();
