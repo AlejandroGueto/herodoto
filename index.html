@@ -1,157 +1,453 @@
+
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lectura interactiva: Historias, de Heródoto</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet CSS & JS para el Mapa Interactivo -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-</head>
+    
+    <style>
+        /* ==========================================================================
+           VARIABLES Y ESTÉTICA HELÉNICA (Ultra Premium UI)
+           ========================================================================== */
+        :root {
+            --aegean-dark: #02060a;
+            --aegean-blue: #081624;
+            --marble: #f4f0e6;
+            --gold: #d4af37;
+            --gold-light: #f9d976;
+            --clay: #b85c38;
+            --sparta-red: #8b0000;
+        }
 
+        body {
+            background-color: var(--aegean-dark); color: var(--marble);
+            font-family: 'Cormorant Garamond', serif;
+            overflow: hidden; margin: 0; padding: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+        }
+
+        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.8; letter-spacing: 0.8px; }
+        .font-title { font-family: 'Cinzel Decorative', serif; }
+
+        /* Animaciones Épicas */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes pulseMarker { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); } 70% { box-shadow: 0 0 0 35px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
+        @keyframes shineText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes audioBar { 0% { height: 5px; } 50% { height: 35px; } 100% { height: 5px; } }
+        @keyframes crawl { 0% { transform: translateY(100vh); opacity: 0; } 10% { opacity: 0.3; } 90% { opacity: 0.3; } 100% { transform: translateY(-200vh); opacity: 0; } }
+
+        .animate-fade { animation: fadeIn 1.2s ease-in forwards; }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-crawl { animation: crawl 40s linear infinite; }
+        
+        .text-shine {
+            background: linear-gradient(to right, #d4af37 20%, #fff 40%, #fff 60%, #d4af37 80%);
+            background-size: 200% auto;
+            color: #000; background-clip: text; text-fill-color: transparent; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shineText 7s linear infinite;
+        }
+
+        /* Glassmorphism y Texturas */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(8, 22, 36, 0.85), rgba(2, 6, 10, 0.95));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.95), inset 0 0 40px rgba(212, 175, 55, 0.1);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        }
+
+        .parchment-panel {
+            background-color: #f4ecd8;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" opacity="0.08"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="5"/></filter><rect width="300" height="300" filter="url(%23n)"/></svg>');
+            color: #2a2218; box-shadow: inset 0 0 100px rgba(139,69,19,0.25);
+        }
+
+        /* Botones */
+        .btn-hellenic {
+            background: rgba(2, 6, 10, 0.9); border: 1px solid var(--gold); color: var(--gold);
+            font-family: 'Cinzel Decorative', serif; text-transform: uppercase; letter-spacing: 4px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
+            border-radius: 4px; cursor: pointer; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .btn-hellenic::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent); transition: all 0.5s;
+        }
+        .btn-hellenic:hover::before { left: 100%; }
+        .btn-hellenic:hover { background: rgba(212, 175, 55, 0.2); box-shadow: 0 0 30px rgba(212, 175, 55, 0.6); text-shadow: 0 0 12px var(--gold-light); transform: translateY(-3px); color: #fff; border-color: var(--gold-light); }
+
+        /* Leaflet Map Overrides */
+        #map-wrapper { background: var(--aegean-dark); height: 100%; width: 100%; z-index: 10; position: relative; }
+        #map-container { height: 100%; width: 100%; z-index: 10; position: absolute; inset: 0; }
+        #dust-canvas { position: absolute; inset: 0; z-index: 15; pointer-events: none; opacity: 0.6; }
+        .leaflet-container { font-family: 'Cinzel Decorative', serif; }
+        
+        .custom-marker {
+            width: 34px; height: 34px; background: radial-gradient(circle, var(--gold-light) 0%, var(--gold) 100%);
+            border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 25px var(--gold);
+            animation: pulseMarker 2.5s infinite; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-marker:hover { transform: scale(1.6); background: #fff; border-color: var(--gold); z-index: 1000 !important; }
+        .custom-marker.completed { background: var(--aegean-blue); border-color: var(--gold); box-shadow: 0 0 20px var(--aegean-blue); animation: none; }
+        
+        .premium-tooltip {
+            background: rgba(8, 22, 36, 0.9) !important; border: 1px solid var(--gold) !important;
+            color: var(--gold-light) !important; font-family: 'Cinzel Decorative', serif;
+            font-size: 20px; font-weight: bold; text-shadow: 2px 2px 8px #000;
+            border-radius: 6px; padding: 10px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.95) !important;
+            backdrop-filter: blur(8px); white-space: nowrap; z-index: 1000 !important;
+        }
+        .story-path { stroke: var(--gold); stroke-width: 5; stroke-dasharray: 15, 15; opacity: 0.8; animation: dash 30s linear infinite; filter: drop-shadow(0 0 8px var(--gold)); }
+        @keyframes dash { to { stroke-dashoffset: 1000; } }
+
+        /* Códice / Scrollbars (Responsive Fix: Evita cortes de texto) */
+        .dual-codex { display: flex; flex-direction: column; height: 100%; transition: all 0.8s ease; }
+        @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
+        
+        .codex-pane { flex: 1; padding: 3rem 2rem 15rem 2rem; overflow-y: auto; position: relative; scroll-behavior: smooth; transition: all 0.5s ease; }
+        @media (min-width: 768px) { .codex-pane { padding: 6rem 5rem 30rem 5rem; } }
+        .pane-greek { background: #060a10; color: #e2e8f0; border-bottom: 2px solid var(--gold); }
+        @media (min-width: 1024px) { .pane-greek { border-bottom: none; border-right: 3px solid var(--gold); } }
+        .pane-spanish { border-top: 1px solid rgba(0,0,0,0.1); }
+        @media (min-width: 1024px) { .pane-spanish { border-top: none; border-left: 1px solid rgba(0,0,0,0.1); } }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
+        @media (min-width: 768px) { .custom-scrollbar::-webkit-scrollbar { width: 14px; } }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 8px;}
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 8px; border: 2px solid #000; }
+
+        .drop-cap-greek::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--gold-light); text-shadow: 0 0 30px rgba(212,175,55,0.9); }
+        @media (min-width: 768px) { .drop-cap-greek::first-letter { font-size: 5.5em; } }
+        .drop-cap-spanish::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
+        @media (min-width: 768px) { .drop-cap-spanish::first-letter { font-size: 5.5em; } }
+
+        /* ==========================================================================
+           INTERACTIVIDAD LÉXICA Y ANÁLISIS MORFOLÓGICO PROFUNDO
+           ========================================================================== */
+        .word-interactive {
+            display: inline-block; cursor: pointer; transition: all 0.2s ease;
+            border-bottom: 2px dotted rgba(212, 175, 55, 0.3); padding: 0 5px; border-radius: 4px;
+        }
+        .word-interactive:hover {
+            color: var(--gold-light); text-shadow: 0 0 20px var(--gold);
+            background: rgba(212, 175, 55, 0.25); border-bottom: 2px solid var(--gold); transform: scale(1.05);
+        }
+        .glossary-word { border-bottom: 2px dashed var(--gold-light); font-weight: 700; color: #fdf5d3; }
+
+        /* Lexicon Tooltip Premium */
+        #lexicon-tooltip {
+            position: fixed; z-index: 9999; pointer-events: none; opacity: 0;
+            background: rgba(4, 10, 16, 0.98); border: 2px solid var(--gold);
+            color: var(--marble); padding: 25px; border-radius: 12px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.95), 0 0 45px rgba(212,175,55,0.6);
+            backdrop-filter: blur(25px); transform: translate(-50%, 15px);
+            transition: opacity 0.3s, transform 0.3s; width: 90%; max-width: 500px;
+        }
+        @media (min-width: 768px) { #lexicon-tooltip { padding: 35px; width: auto; min-width: 450px; max-width: 600px; } }
+        #lexicon-tooltip.visible { opacity: 1; transform: translate(-50%, -15px); pointer-events: auto; }
+
+        .morph-tag { 
+            display: inline-block; background: var(--aegean-blue); color: var(--gold-light); 
+            padding: 6px 14px; border-radius: 20px; font-size: 1rem; font-family: 'Cinzel Decorative'; 
+            letter-spacing: 2px; margin-bottom: 16px; border: 1px solid var(--gold); box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+        }
+        @media (min-width: 768px) { .morph-tag { padding: 8px 18px; font-size: 1.2rem; } }
+        .lexicon-lemma { color: #b8b8b8; font-style: italic; font-size: 1.3rem; margin-top: 5px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif;}
+        @media (min-width: 768px) { .lexicon-lemma { font-size: 1.6rem; } }
+
+        /* Oráculo Modal */
+        #oracle-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            z-index: 10000; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 95%; max-width: 1000px; max-height: 85vh; overflow-y: auto;
+        }
+        #oracle-modal.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+
+        /* Reproductor Audiolibro (El Aedo) */
+        .audio-player {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9000;
+            display: flex; align-items: center; gap: 15px; padding: 15px 20px;
+            border-radius: 50px; background: rgba(2, 6, 10, 0.95); border: 2px solid var(--gold);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 40px rgba(212, 175, 55, 0.4);
+            backdrop-filter: blur(20px); transform: translateY(200%); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @media (min-width: 768px) { .audio-player { bottom: 40px; right: 40px; gap: 25px; padding: 25px 40px; border-radius: 60px; } }
+        .audio-player.visible { transform: translateY(0); }
+        .visualizer-bar { width: 4px; height: 6px; background: var(--gold); border-radius: 3px; transition: height 0.1s; }
+        @media (min-width: 768px) { .visualizer-bar { width: 6px; height: 8px; } }
+        .visualizer.playing .visualizer-bar { animation: audioBar 1s infinite alternate; }
+        .visualizer.playing .visualizer-bar:nth-child(1) { animation-delay: 0.1s; }
+        .visualizer.playing .visualizer-bar:nth-child(2) { animation-delay: 0.3s; }
+        .visualizer.playing .visualizer-bar:nth-child(3) { animation-delay: 0.2s; }
+        .visualizer.playing .visualizer-bar:nth-child(4) { animation-delay: 0.5s; }
+        .visualizer.playing .visualizer-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        /* Cajón de Acertijo Gigante */
+        #puzzle-drawer { z-index: 5000; }
+        .oracle-input {
+            background: rgba(0,0,0,0.6); border: 2px solid var(--gold); border-radius: 8px;
+            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 1.5rem;
+            text-align: center; text-transform: uppercase; outline: none; width: 100%;
+            letter-spacing: 4px; transition: all 0.3s; padding: 10px;
+        }
+        @media (min-width: 768px) { .oracle-input { font-size: 2.5rem; letter-spacing: 8px; padding: 15px; } }
+        .oracle-input:focus { border-color: #fff; box-shadow: 0 0 35px rgba(212,175,55,0.6); background: rgba(0,0,0,0.9); }
+
+        /* MODO ZEN BILINGÜE AVANZADO */
+        .zen-toolbar {
+            position: fixed; top: -150px; left: 50%; transform: translateX(-50%); z-index: 6000;
+            background: rgba(4, 10, 16, 0.95); border: 1px solid var(--gold); border-radius: 0 0 20px 20px;
+            padding: 15px 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; transition: top 0.6s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.95); backdrop-filter: blur(15px); width: 95%; max-width: 800px;
+        }
+        @media (min-width: 768px) { .zen-toolbar { padding: 25px 50px; gap: 30px; border-radius: 0 0 25px 25px; width: auto; max-width: none; } }
+        .immersive-mode .zen-toolbar { top: 0; }
+        .immersive-mode .top-bar { opacity: 0; pointer-events: none; }
+        .immersive-mode .pane-greek, .immersive-mode .pane-spanish { transition: all 0.8s ease; }
+        
+        .zen-layout-es .pane-greek { display: none; }
+        .zen-layout-es .pane-spanish { padding: 10rem 10% 30rem 10%; font-size: 1.2em; border-left: none; }
+        @media (min-width: 1024px) { .zen-layout-es .pane-spanish { padding: 12rem 22% 30rem 22%; font-size: 1.6em; } }
+        
+        .zen-layout-gr .pane-spanish { display: none; }
+        .zen-layout-gr .pane-greek { padding: 10rem 10% 30rem 10%; font-size: 1.2em; border-right: none; }
+        @media (min-width: 1024px) { .zen-layout-gr .pane-greek { padding: 12rem 22% 30rem 22%; font-size: 1.6em; } }
+        
+        .zen-layout-dual .pane-greek { padding: 10rem 2rem 30rem 2rem; }
+        .zen-layout-dual .pane-spanish { padding: 10rem 2rem 30rem 2rem; }
+        @media (min-width: 1024px) { 
+            .zen-layout-dual .pane-greek { padding: 12rem 6rem 30rem 6rem; }
+            .zen-layout-dual .pane-spanish { padding: 12rem 6rem 30rem 6rem; }
+        }
+
+        .zen-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 12px; border-radius: 6px; font-family: 'Cinzel Decorative'; font-size: 1rem; transition: all 0.3s; cursor: pointer; }
+        @media (min-width: 768px) { .zen-btn { padding: 12px 25px; font-size: 1.4rem; border-radius: 8px; } }
+        .zen-btn.active { background: var(--aegean-blue); border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 25px rgba(212,175,55,0.5); }
+
+    </style>
+</head>
 <body>
-    <div id="screen-intro">
-        <div>
-            <div>&Eta;&Rho;&Omicron;&Delta;&Omicron;&Tau;&Omicron;&Upsilon; &Alpha;&Lambda;&Iota;&Kappa;&Alpha;&Rho;&Nu;&Eta;&Sigma;&Sigma;&Epsilon;&Omicron;&Sigma; &Iota;&Sigma;&Tau;&Omicron;&Rho;&Iota;&Eta;&Sigma; &Alpha;&Pi;&Omicron;&Delta;&Epsilon;&Xi;&Iota;&Sigma; &Eta;&Delta;&Epsilon; &Omega;&Sigma; &Mu;&Eta;&Tau;&Epsilon; &Tau;&Alpha; &Gamma;&Epsilon;&Nu;&Omicron;&Mu;&Epsilon;&Nu;&Alpha; &Epsilon;&Xi; &Alpha;&Nu;&Theta;&Rho;&Omega;&Pi;&Omega;&Nu; &Tau;&Omega; &Chi;&Rho;&Omicron;&Nu;&Omega; &Epsilon;&Xi;&Iota;&Tau;&Eta;&Lambda;&Alpha; &Gamma;&Epsilon;&Nu;&Eta;&Tau;&Alpha;&Iota; &Mu;&Eta;&Tau;&Epsilon; &Epsilon;&Rho;&Gamma;&Alpha; &Mu;&Epsilon;&Gamma;&Alpha;&Lambda;&Alpha; &Tau;&Epsilon; &Kappa;&Alpha;&Iota; &Theta;&Omega;&Mu;&Alpha;&Sigma;&Tau;&Alpha; &Tau;&Alpha; &Mu;&Epsilon;&Nu; &Epsilon;&Lambda;&Lambda;&Eta;&Sigma;&Iota; &Tau;&Alpha; &Delta;&Epsilon; &Beta;&Alpha;&Rho;&Beta;&Alpha;&Rho;&Omicron;&Iota;&Sigma;&Iota; &Alpha;&Pi;&Omicron;&Delta;&Epsilon;&Chi;&Theta;&Epsilon;&Nu;&Tau;&Alpha; &Alpha;&Kappa;&Lambda;&Epsilon;&Alpha; &Gamma;&Epsilon;&Nu;&Eta;&Tau;&Alpha;&Iota; &Tau;&Alpha; &Tau;&Epsilon; &Alpha;&Lambda;&Lambda;&Alpha; &Kappa;&Alpha;&Iota; &Delta;&Iota; &Eta;&Nu; &Alpha;&Iota;&Tau;&Iota;&Eta;&Nu; &Epsilon;&Pi;&Omicron;&Lambda;&Epsilon;&Mu;&Eta;&Sigma;&Alpha;&Nu; &Alpha;&Lambda;&Lambda;&Eta;&Lambda;&Omicron;&Iota;&Sigma;&Iota; ... &Eta;&Rho;&Omicron;&Delta;&Omicron;&Tau;&Omicron;&Upsilon; &Alpha;&Lambda;&Iota;&Kappa;&Alpha;&Rho;&Nu;&Eta;&Sigma;&Sigma;&Epsilon;&Omicron;&Sigma; &Iota;&Sigma;&Tau;&Omicron;&Rho;&Iota;&Eta;&Sigma; &Alpha;&Pi;&Omicron;&Delta;&Epsilon;&Xi;&Iota;&Sigma; &Eta;&Delta;&Epsilon; &Omega;&Sigma; &Mu;&Eta;&Tau;&Epsilon; &Tau;&Alpha; &Gamma;&Epsilon;&Nu;&Omicron;&Mu;&Epsilon;&Nu;&Alpha; &Epsilon;&Xi; &Alpha;&Nu;&Theta;&Rho;&Omega;&Pi;&Omega;&Nu; &Tau;&Omega; &Chi;&Rho;&Omicron;&Nu;&Omega; &Epsilon;&Xi;&Iota;&Tau;&Eta;&Lambda;&Alpha; &Gamma;&Epsilon;&Nu;&Eta;&Tau;&Alpha;&Iota;</div>
+
+    <!-- ==========================================================================
+         PANTALLA DE INICIO (Con Parallax y Prólogo Épico)
+         ========================================================================== -->
+    <div id="screen-intro" class="absolute inset-0 z-[10000] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] transition-opacity duration-1000 p-4">
+        
+        <!-- Prólogo de Heródoto flotando de fondo estilo Star Wars -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-20 z-0">
+            <div class="font-greek text-2xl md:text-4xl text-[var(--gold)] whitespace-pre-line text-center animate-crawl" style="width: 150%; margin-left: -25%;">
+                ΗΡΟΔΟΤΟΥ ΑΛΙΚΑΡΝΗΣΣΕΟΣ ΙΣΤΟΡΙΗΣ ΑΠΟΔΕΞΙΣ ΗΔΕ
+                ΩΣ ΜΗΤΕ ΤΑ ΓΕΝΟΜΕΝΑ ΕΞ ΑΝΘΡΩΠΩΝ ΤΩ ΧΡΟΝΩ ΕΞΙΤΗΛΑ ΓΕΝΗΤΑΙ
+                ΜΗΤΕ ΕΡΓΑ ΜΕΓΑΛΑ ΤΕ ΚΑΙ ΘΩΜΑΣΤΑ
+                ΤΑ ΜΕΝ ΕΛΛΗΣΙ ΤΑ ΔΕ ΒΑΡΒΑΡΟΙΣΙ ΑΠΟΔΕΧΘΕΝΤΑ ΑΚΛΕΑ ΓΕΝΗΤΑΙ
+                ΤΑ ΤΕ ΑΛΛΑ ΚΑΙ ΔΙ ΗΝ ΑΙΤΙΗΝ ΕΠΟΛΕΜΗΣΑΝ ΑΛΛΗΛΟΙΣΙ
+                ...
+                ΗΡΟΔΟΤΟΥ ΑΛΙΚΑΡΝΗΣΣΕΟΣ ΙΣΤΟΡΙΗΣ ΑΠΟΔΕΞΙΣ ΗΔΕ
+                ΩΣ ΜΗΤΕ ΤΑ ΓΕΝΟΜΕΝΑ ΕΞ ΑΝΘΡΩΠΩΝ ΤΩ ΧΡΟΝΩ ΕΞΙΤΗΛΑ ΓΕΝΗΤΑΙ
+            </div>
         </div>
-        <div id="intro-card">
-            <div><br></div>
-            <h3>&Eta;&Rho;&Omicron;&Delta;&Omicron;&Tau;&Omicron;&Sigma;</h3>
-            <h1>Historias</h1>
-            <p>&quot;Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria...&quot;</p><button id="btn-start">&nbsp;Desplegar el Egeo&nbsp;</button>
-            <div><span><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg> An&aacute;lisis Filol&oacute;gico Masivo</span> <span>|</span> <span><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"></path>
-                    </svg> Aedo Biling&uuml;e &Eacute;pico</span> <span>|</span> <span><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"></path>
-                    </svg> T&uacute;nel Proxy Logeion</span></div>
+
+        <div id="intro-card" class="text-center max-w-7xl p-8 md:p-20 glass-panel rounded-2xl animate-fade w-[95%] max-h-[90vh] overflow-y-auto custom-scrollbar relative transition-transform duration-200 z-10">
+            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/ancient-map.png')]"></div>
+            
+            <h3 class="text-[var(--gold)] text-xl md:text-5xl tracking-[0.4em] md:tracking-[0.8em] uppercase mb-6 md:mb-10 font-title opacity-90">
+                ΗΡΟΔΟΤΟΣ
+            </h3>
+            <h1 class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-black text-white mb-8 md:mb-16 font-title text-shine drop-shadow-[0_0_60px_rgba(212,175,55,0.6)]">
+                Historias
+            </h1>
+            <p class="text-xl md:text-5xl text-gray-200 text-font mb-10 md:mb-20 italic leading-relaxed px-4 md:px-20 relative z-10 font-light">
+                "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
+            </p>
+            
+            <button id="btn-start" onclick="if(window.Game) window.Game.initMap();" class="btn-hellenic px-10 py-5 md:px-24 md:py-10 text-2xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all">
+                Desplegar el Egeo
+            </button>
+            
+            <div class="mt-12 md:mt-24 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-[var(--gold)] font-sans tracking-widest uppercase text-xs md:text-xl relative z-10">
+                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Filológico Total</span>
+                <span class="hidden md:inline text-gray-600">|</span>
+                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Fluido</span>
+                <span class="hidden md:inline text-gray-600">|</span>
+                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"/></svg> Túnel Proxy Logeion</span>
+            </div>
         </div>
     </div>
-    <div id="screen-map">
-        <header>
-            <div>
-                <div><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">&nbsp; &nbsp;</svg> <span id="relic-count">0</span></div>
-                <div>
-                    <h2>El Telar de Her&oacute;doto</h2><span>Selecciona un enclave m&iacute;tico</span>
+
+    <!-- ==========================================================================
+         PANTALLA 2: MAPA INTERACTIVO Y CAPAS (Responsive Fix)
+         ========================================================================== -->
+    <div id="screen-map" class="absolute inset-0 z-20 flex flex-col hidden opacity-0 transition-opacity duration-1000">
+        <header class="h-auto md:h-32 p-6 md:px-16 glass-panel flex flex-col md:flex-row items-center justify-between z-30 border-b-2 border-[var(--gold)] gap-4">
+            <div class="flex items-center gap-4 md:gap-10">
+                <div class="relative w-16 h-16 md:w-28 md:h-28 flex items-center justify-center shrink-0">
+                    <svg class="w-full h-full text-[var(--gold)] animate-[spin_15s_linear_infinite]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="50" cy="50" r="46" stroke-dasharray="20 10"/>
+                        <polygon points="50,10 85,75 15,75" stroke-dasharray="5 5" opacity="0.6"/>
+                    </svg>
+                    <span id="relic-count" class="absolute text-2xl md:text-6xl font-bold font-title text-white">0</span>
+                </div>
+                <div class="text-center md:text-left">
+                    <h2 class="font-title text-3xl md:text-6xl text-[var(--gold)] tracking-widest m-0 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">El Telar de Heródoto</h2>
+                    <span class="text-gray-400 text-font italic text-lg md:text-4xl">Pasa el ratón para revelar los mitos en el mapa</span>
                 </div>
             </div>
-            <div><button id="btn-layer-sat">Sat&eacute;lite</button>
-                <div><br></div><button id="btn-layer-pap">Papiro</button>
+            
+            <div class="flex gap-2 md:gap-4 z-40 bg-black/50 p-2 md:p-3 rounded-lg border border-[var(--gold)] mt-2 md:mt-0">
+                <button id="btn-layer-sat" onclick="if(window.MapEngine) window.MapEngine.setLayer('satellite');" class="text-white hover:text-[var(--gold)] px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider transition-colors cursor-pointer">Satélite</button>
+                <div class="w-px bg-gray-600"></div>
+                <button id="btn-layer-pap" onclick="if(window.MapEngine) window.MapEngine.setLayer('antique');" class="text-[var(--gold-light)] font-bold px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider transition-colors cursor-pointer">Papiro</button>
             </div>
         </header>
-        <div id="map-wrapper">
-            <main id="map-container"><br></main>
-        </div>
-    </div>
-    <div id="screen-codex">
-        <div id="top-bar">
-            <h2 id="codex-title">T&iacute;tulo</h2>
-            <div><button id="btn-open-oracle" title="Contexto Histórico">&nbsp;<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg> <span>Or&aacute;culo</span>&nbsp;</button> <button id="btn-zen-mode" title="Modo Lectura Inmersiva">&nbsp;<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                    </svg> <span>Modo Zen</span>&nbsp;</button> <button id="btn-close-codex">&nbsp;✕ Volver&nbsp;</button></div>
-        </div>
-        <div id="zen-toolbar"><button id="zen-btn-dual">Biling&uuml;e</button> <button id="zen-btn-gr">Griego Antiguo</button> <button id="zen-btn-es">Espa&ntilde;ol</button>
-            <div><br></div><button id="zen-btn-exit">✕ Salir de Zen</button>
-        </div>
-        <div id="dual-codex-container">
-            <div>
-                <h3>&Epsilon;&Lambda;&Lambda;&Eta;&Nu;&Iota;&Kappa;&Omicron;&Nu; &Pi;&Rho;&Omega;&Tau;&Omicron;&Tau;&Upsilon;&Pi;&Omicron;&Nu;</h3>
-                <div id="text-greek"><br></div>
-            </div>
-            <div>
-                <h3>VERSI&Oacute;N CASTELLANA</h3>
-                <div id="text-spanish"><br></div>
-            </div>
-            <div id="puzzle-drawer"><button id="btn-close-puzzle-drawer">✕</button>
-                <div>
-                    <h3>El Acertijo de las Moiras</h3>
-                    <p id="puzzle-desc">...</p>
-                    <div><input type="text" id="puzzle-input" placeholder="Escribe tu ofrenda..." autocomplete="off" spellcheck="false"> <button id="btn-check-puzzle">Sellar Destino</button></div>
-                    <p id="puzzle-feedback"><br></p>
-                </div>
-            </div><button id="btn-toggle-puzzle">&nbsp;Enfrentar el Acertijo ▼&nbsp;</button>
-        </div>
-        <div id="audio-player">
-            <div><span>El Aedo</span>
-                <div><button id="btn-tts-lang">&nbsp;🇪🇸 ESP&nbsp;</button> <button id="btn-tts-play">&nbsp;<svg width="56" height="56" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M6 4l10 6-10 6V4z"></path>
-                        </svg>&nbsp;</button> <button id="btn-tts-stop">&nbsp;<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M5 5h10v10H5z"></path>
-                        </svg>&nbsp;</button></div>
-            </div>
-            <div id="visualizer">
-                <div><br></div>
-                <div><br></div>
-                <div><br></div>
-                <div><br></div>
-                <div><br></div>
-            </div>
-        </div>
-    </div>
-    <div id="lexicon-tooltip">
-        <div>
-            <h4 id="lexicon-greek">&Lambda;έ&xi;&iota;&sigmaf;</h4><span id="lexicon-morph">An&aacute;lisis</span>
-        </div>
-        <div id="lexicon-lemma"><br></div>
-        <p id="lexicon-spanish">Traducci&oacute;n...</p>
-        <div><a id="lexicon-link" href="#" target="_blank">&nbsp;Traducir Logeion al Espa&ntilde;ol ↗&nbsp;</a>
-            <p>Se abrir&aacute; el proxy de G-Translate.</p>
-        </div>
-    </div>
-    <div id="oracle-modal"><button id="btn-close-oracle">✕</button>
-        <div><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-            </svg>
-            <h3>El Or&aacute;culo de la Red</h3>
-        </div>
-        <div id="oracle-content">Invocando los saberes del &eacute;ter...</div>
-    </div>
-    <div id="screen-victory">
-        <h1>&Iota;&Sigma;&Tau;&Omicron;&Rho;&Iota;&Alpha;&Iota;</h1>
-        <h2>El Telar ha sido Completado</h2>
-        <p>Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te otorgan la Inmortalidad de la Memoria.</p><button id="btn-restart">Regresar a la Modernidad</button>
-    </div>
-    <script>
-        // --- GESTOR ESTRICTO DE PANTALLAS (TAB MANAGER) ---
-        const UI_Manager = {
-            showScreen(screenId) {
-                document.querySelectorAll('.game-screen').forEach(screen => {
-                    screen.classList.remove('is-active');
-                });
-                const target = document.getElementById(screenId);
-                if (target) target.classList.add('is-active');
-            },
-            initGame() {
-                const btnStart = document.getElementById('btn-start');
-                if(btnStart) {
-                    btnStart.innerText = 'Desplegando...';
-                    btnStart.classList.add('animate-pulse');
-                    btnStart.style.pointerEvents = 'none'; // Evitar dobles clics
-                }
-                
-                try { if(window.AudioFX) { window.AudioFX.init(); window.AudioFX.success(); } } catch(e) {}
-                
-                // Mostrar pantalla y cargar sistemas
-                this.showScreen('screen-map');
-                
-                // Intervalo de seguridad para Leaflet
-                let checkL = setInterval(() => {
-                    if (window.L && window.MapEngine) {
-                        clearInterval(checkL);
-                        try { window.MapEngine.init(); } catch(e) { console.error("Map Init Error:", e); }
-                        if(window.MapEngine.map) window.MapEngine.map.invalidateSize(); 
-                    }
-                }, 100);
-                
-                if(window.TTS) window.TTS.init();
-            }
-        };
         
+        <div id="map-wrapper" class="flex-1 relative">
+            <main id="map-container" class="absolute inset-0"></main>
+            <canvas id="dust-canvas" class="absolute inset-0 z-50 pointer-events-none opacity-60"></canvas>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         PANTALLA 3: EL CÓDICE INMENSO
+         ========================================================================== -->
+    <div id="screen-codex" class="absolute inset-0 z-40 bg-black flex-col hidden opacity-0 transition-opacity duration-700">
+        
+        <!-- Toolbar Normal (Responsive Fix) -->
+        <div class="top-bar h-auto md:h-32 p-4 md:px-16 border-b-2 border-[var(--gold)] glass-panel flex flex-col md:flex-row items-center justify-between z-10 shrink-0 transition-opacity duration-500 gap-4">
+            <h2 id="codex-title" class="font-title text-4xl md:text-6xl text-[var(--gold-light)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)] text-center">Título</h2>
+            <div class="flex flex-wrap justify-center gap-3 md:gap-8">
+                <button id="btn-open-oracle" onclick="if(window.Oracle) window.Oracle.open();" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="hidden xl:inline">Oráculo de Red</span>
+                </button>
+                <button id="btn-zen-mode" onclick="if(window.Game) window.Game.toggleImmersive();" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4" title="Modo Lectura Inmersiva">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="hidden xl:inline">Modo Zen</span>
+                </button>
+                <button id="btn-close-codex" onclick="if(window.Game) window.Game.closeCodex();" class="btn-hellenic px-4 py-2 md:px-12 md:py-5 text-sm md:text-3xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
+                    ✕ Volver
+                </button>
+            </div>
+        </div>
+
+        <!-- ZEN TOOLBAR (Aparece sólo en modo Zen) -->
+        <div class="zen-toolbar">
+            <button id="zen-btn-dual" class="zen-btn active">Lectura Bilingüe</button>
+            <button id="zen-btn-gr" class="zen-btn">Solo Griego Antiguo</button>
+            <button id="zen-btn-es" class="zen-btn">Solo Español</button>
+            <div class="w-px bg-gray-600 mx-4"></div>
+            <button id="zen-btn-exit" class="zen-btn hover:text-[var(--sparta-red)] hover:border-[var(--sparta-red)] font-bold">✕ Abandonar Zen</button>
+        </div>
+
+        <!-- Área Central Bilingüe (El núcleo del filólogo) -->
+        <div id="dual-codex-container" class="dual-codex zen-layout-dual w-full relative">
+            <div class="codex-pane pane-greek custom-scrollbar">
+                <h3 class="font-title text-[var(--gold)] text-center text-6xl mb-20 border-b-2 border-gray-800 pb-10 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
+                <div id="text-greek" class="font-greek text-4xl lg:text-5xl text-justify leading-loose pb-10">
+                    <!-- Texto Inyectado Interactivo -->
+                </div>
+            </div>
+            <div class="codex-pane pane-spanish parchment-panel custom-scrollbar">
+                <h3 class="font-title text-[var(--sparta-red)] text-center text-6xl mb-20 border-b-2 border-gray-400 pb-10 tracking-widest font-bold drop-shadow-md">VERSIÓN CASTELLANA</h3>
+                <div id="text-spanish" class="text-font text-4xl lg:text-5xl text-justify leading-relaxed pb-10 font-medium">
+                    <!-- Texto Inyectado -->
+                </div>
+            </div>
+            
+            <!-- EL CAJÓN DEL ACERTIJO -->
+            <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-20 z-[5000] transform translate-y-full transition-transform duration-700 shadow-[0_-20px_60px_rgba(0,0,0,0.95)]" id="puzzle-drawer">
+                <button id="btn-close-puzzle-drawer" onclick="if(window.Puzzle) window.Puzzle.toggleDrawer();" class="absolute top-10 right-12 text-gray-400 hover:text-sparta-red font-bold text-6xl transition-colors cursor-pointer">✕</button>
+                <div class="max-w-7xl mx-auto text-center">
+                    <h3 class="font-title text-[var(--gold-light)] text-7xl mb-12 drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">El Acertijo de las Moiras</h3>
+                    <p id="puzzle-desc" class="text-font text-5xl text-white mb-20 leading-relaxed">...</p>
+                    <div class="flex flex-col lg:flex-row justify-center items-center gap-12">
+                        <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3 h-28 text-5xl" placeholder="Escribe tu ofrenda aquí..." autocomplete="off" spellcheck="false">
+                        <button id="btn-check-puzzle" onclick="if(window.Puzzle) window.Puzzle.check();" class="btn-hellenic px-20 py-8 text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)]">Sellar Destino</button>
+                    </div>
+                    <p id="puzzle-feedback" class="h-16 text-[var(--sparta-red)] text-5xl font-bold mt-12"></p>
+                </div>
+            </div>
+            
+            <button id="btn-open-puzzle-drawer" onclick="if(window.Puzzle) window.Puzzle.toggleDrawer();" class="absolute bottom-16 left-1/2 transform -translate-x-1/2 btn-hellenic px-20 py-8 text-5xl z-[4000] shadow-[0_0_60px_rgba(212,175,55,0.9)] bg-[var(--aegean-blue)] animate-float border-2 border-white">
+                Enfrentar el Acertijo ▼
+            </button>
+        </div>
+        
+        <!-- REPRODUCTOR (EL AEDO BILINGÜE) -->
+        <div id="audio-player" class="audio-player">
+            <div class="flex flex-col">
+                <span class="font-title text-[var(--gold)] text-3xl uppercase tracking-widest mb-3">El Aedo de Halicarnaso</span>
+                <div class="flex items-center gap-8">
+                    <button id="btn-tts-lang" class="text-3xl border-2 border-gray-500 rounded-lg px-6 py-3 text-gray-200 hover:text-white hover:border-white transition-all w-40 text-center font-bold bg-black/50 cursor-pointer">
+                        🇪🇸 ESP
+                    </button>
+                    <button id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-transform transform hover:scale-125 cursor-pointer">
+                        <svg width="56" height="56" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
+                    </button>
+                    <button id="btn-tts-stop" class="text-gray-400 hover:text-[var(--sparta-red)] transition-colors cursor-pointer">
+                        <svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="visualizer" class="visualizer flex items-end gap-3 h-16 px-6 border-l-2 border-gray-700 ml-6">
+                <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOOLTIP DICCIONARIO (Lexicon Premium + Túnel Google Translate) -->
+    <div id="lexicon-tooltip">
+        <div class="flex justify-between items-start mb-6">
+            <h4 id="lexicon-greek" class="font-greek text-6xl text-[var(--gold)] m-0 drop-shadow-[0_2px_5px_#000]">Λέξις</h4>
+            <span id="lexicon-morph" class="morph-tag mt-3">Análisis</span>
+        </div>
+        <div id="lexicon-lemma" class="lexicon-lemma mb-6 text-2xl"></div>
+        <p id="lexicon-spanish" class="text-font text-4xl text-white m-0 leading-relaxed mb-10">Traducción...</p>
+        <div class="border-t border-gray-700 pt-8 text-center">
+            <a id="lexicon-link" href="#" target="_blank" class="inline-block text-3xl text-[var(--aegean-blue)] bg-[var(--gold-light)] font-bold text-black px-10 py-4 rounded-xl hover:bg-white font-title transition-all pointer-events-auto shadow-[0_0_30px_var(--gold)]">
+                Traducir Logeion al Español ↗
+            </a>
+            <p class="text-gray-500 text-lg mt-4 font-sans">Se abrirá el proxy de G-Translate.</p>
+        </div>
+    </div>
+
+    <!-- ORÁCULO MODAL (Wikipedia Independiente y Seguro) -->
+    <div id="oracle-modal" class="glass-panel rounded-3xl p-20 border-2 border-[var(--aegean-blue)] shadow-[0_0_100px_rgba(8,22,36,1)]">
+        <button id="btn-close-oracle" onclick="if(window.Oracle) window.Oracle.close();" class="absolute top-10 right-10 text-gray-400 hover:text-[var(--sparta-red)] font-bold text-6xl transition-colors cursor-pointer">✕</button>
+        <div class="flex items-center gap-8 mb-12 border-b-2 border-gray-700 pb-10">
+            <svg class="w-20 h-20 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <h3 class="font-title text-6xl text-[var(--gold-light)] tracking-widest uppercase text-shadow-md">El Oráculo de la Red</h3>
+        </div>
+        <div id="oracle-content" class="text-font text-5xl text-gray-300 leading-relaxed text-justify h-[60vh] overflow-y-auto custom-scrollbar pr-6">
+            Invocando los saberes del éter...
+        </div>
+    </div>
+
+    <!-- PANTALLA VICTORIA SEGURA (Independiente del Body) -->
+    <div id="screen-victory" class="absolute inset-0 bg-black flex-col items-center justify-center p-10 text-center z-[20000] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] hidden opacity-0 transition-opacity duration-1000">
+        <h1 class="text-7xl md:text-9xl text-[var(--gold)] font-title mb-8 drop-shadow-[0_0_60px_rgba(212,175,55,1)]">ΙΣΤΟΡΙΑΙ</h1>
+        <h2 class="text-4xl md:text-6xl text-white font-title mb-8 text-shine">El Telar ha sido Completado</h2>
+        <p class="text-2xl md:text-4xl text-gray-300 font-greek max-w-5xl leading-relaxed italic mb-16">Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te otorgan la Inmortalidad de la Memoria.</p>
+        <button id="btn-restart" class="btn-hellenic px-16 py-6 text-3xl font-bold bg-white text-black hover:bg-[var(--gold)]">Regresar a la Modernidad</button>
+    </div>
+
+    <!-- BOTÓN SALIR MODO INMERSIVO -->
+    <button id="btn-exit-zen" class="fixed top-8 right-8 z-[100] btn-hellenic px-6 py-3 text-xl bg-black/50 hidden">Salir del Modo Zen</button>
+
+    <!-- ==========================================================================
+         MOTOR DEL JUEGO (JAVASCRIPT Y FILOLOGÍA) - SIN EVENTOS INLINE
+         ========================================================================== -->
+    <script>
         // --- 1. BASE DE DATOS LITERARIA MASIVA ---
         const HERODOTUS_DB = [
             {
@@ -186,7 +482,7 @@
                 puzzle: "El texto relata la furia de los griegos y la muerte de Leónidas junto a otros guerreros célebres. ¿Con qué gentilicio se conoce comúnmente a estos temibles combatientes («Σπαρτιητέων»)?"
             },
             {
-                id: 'artemisia', title: 'La Astucia de Artemisia (Salamina)', lat: 37.95, lng: 23.50, wiki: 'Artemisia_I_de_Caria', pass: 'hombres',
+                id: 'artemisia', title: 'La Astucia de Artemisia', lat: 37.95, lng: 23.50, wiki: 'Artemisia_I_de_Caria', pass: 'hombres',
                 greek: `Κατὰ δὲ Ἀρτεμισίην τάδε ἐγένετο, ἀπ' ὧν εὐδοκίμησε μᾶλλον ἔτι πρὸς βασιλέος. Ἐπειδὴ γὰρ ἐς θόρυβον ἀπίκετο τὰ βασιλέος πρήγματα, ἐν τούτῳ τῷ καιρῷ ἡ νηῦς ἡ Ἀρτεμισίης ἐδιώκετο ὑπὸ νεὸς Ἀττικῆς· καὶ ἣ οὐκ ἔχουσα διαφυγεῖν (ἔμπροσθε γὰρ αὐτῆς ἦσαν ἄλλαι νέες φίλιαι, ἡ δὲ αὐτῆς πρὸς τοὺς πολεμίους μάλιστα ἐτύγχανε ἐοῦσα) ἔδοξέ οἱ τόδε ποιῆσαι, τὸ καὶ συνήνεικε ποιησάσῃ.<br><br>
                 Διωκομένη γὰρ ὑπὸ τῆς Ἀττικῆς φέρουσα ἐνέβαλε νηὶ φιλίῃ ἀνδρῶν τε Καλυνδέων καὶ αὐτοῦ ἐπιπλέοντος τοῦ Καλυνδέων βασιλέος Δαμασιθύμου. Εἰ μὲν καί τι νεῖκος πρὸς αὐτὸν ἐγεγόνεε ἔτι περὶ Ἑλλήσποντον ἐόντων, οὐ μέντοι ἔγωγε ἔχω εἰπεῖν οὔτε εἰ ἐκ προνοίης ταῦτα ἐποίησε, οὔτε εἰ συνεκύρησε ἡ τῶν Καλυνδέων νηῦς παραπεσοῦσα.<br><br>
                 Ὡς δὲ ἐνέβαλέ τε καὶ κατέδυσε, εὐτυχίῃ χρησαμένη διπλᾶ ἑωυτὴν ἀγαθὰ ἐργάσατο. Ὅ τε γὰρ τῆς Ἀττικῆς νεὸς τριήραρχος ὡς εἶδέ μιν ἐμβάλλουσαν νηὶ ἀνδρῶν βαρβάρων, νομίσας τὴν νέα τὴν Ἀρτεμισίης ἢ Ἑλληνίδα εἶναι ἢ αὐτομολέειν ἐκ τῶν βαρβάρων καὶ αὐτοῖσι ἀμύνειν, ἀποστρέψας πρὸς ἄλλας ἐτράπετο.<br><br>
@@ -214,7 +510,7 @@
                 puzzle: "¿Qué defecto mental o enfermedad destructiva («μανίην») creyeron los persas que sufrían los griegos al verlos cargar a pie, corriendo y siendo tan pocos?"
             },
             {
-                id: 'anillo', title: 'El Anillo de Polícrates (Samos)', lat: 37.70, lng: 26.98, wiki: 'Polícrates_de_Samos', pass: 'pez',
+                id: 'anillo', title: 'El Anillo de Polícrates', lat: 37.70, lng: 26.98, wiki: 'Polícrates_de_Samos', pass: 'pez',
                 greek: `Πολυκράτης δὲ ταῦτα ἐπιλεξάμενος καὶ νόῳ λαβὼν ὥς οἱ εὖ ὑπετίθετο Ἄμασις, ἐδίζητο ἐπ' ᾧ ἂν μάλιστα τὴν ψυχὴν ἀσηθείη ἀπολομένῳ τῶν κειμηλίων· διζήμενος δὲ εὕρισκε τόδε· ἦν οἱ σφρηγὶς ἣν ἐφόρεε χρυσόδετος, σμαράγδου μὲν λίθου ἐοῦσα, ἔργον δὲ ἦν Θεοδώρου τοῦ Τηλεκλέος Σαμίου.<br><br>
                 Ταύτην δὴ ὦν ἐδόκεέ οἱ ἀποβαλεῖν, καὶ ἐποίεε ὧδε· πεντηκόντερον πληρώσας ἀνδρῶν ἐσέβη ἐς αὐτήν, μετὰ δὲ ἀναγαγεῖν ἐκέλευε ἐς τὸ πέλαγος. Ὡς δὲ ἀπὸ τῆς νήσου ἑκὰς ἐγένετο, περιελόμενος τὴν σφρηγῖδα πάντων ὁρεόντων τῶν συμπλόων ῥίπτει ἐς τὴν θάλασσαν. Τοῦτο δὲ ποιήσας ἀπέπλεε, ἀπικόμενος δὲ ἐς τὰ οἰκία συμφορῇ ἐχρᾶτο.<br><br>
                 Πέμπτῃ δὲ ἢ ἕκτῃ ἡμέρῃ ἀπὸ τούτων τάδε οἱ συνήνεικε γενέσθαι· ἀνὴρ ἁλιεὺς λαβὼν ἰχθὺν μέγαν τε καὶ καλὸν ἠξίου μιν Πολυκράτεϊ δῶρον δοθῆναι. Λαβὼν δὲ ἦιε ἐπὶ τὰς θύρας, ἐς ὄψιν τε ἔφη ἐθέλειν ἐλθεῖν Πολυκράτεϊ· χωρήσαντος δέ οἱ τούτου ἔλεγε διδοὺς τὸν ἰχθύν· «Ὦ βασιλεῦ, ἐγὼ τοῦτον ἑλὼν οὐκ ἐδικαίωσα φέρειν ἐς ἀγορήν... ἀλλά μοι ἐδόκεε σεῦ τε εἶναι ἄξιος καὶ τῆς σῆς ἀρχῆς· σοὶ δὴ ὦν φέρων αὐτὸν δίδωμι.»<br><br>
@@ -223,12 +519,12 @@
                 spanish: `Polícrates, el tirano de Samos, leía la carta de su aliado el rey de Egipto, Amasis, quien le advertía de que una suerte humana tan ininterrumpida y antinatural sólo podía acabar en desgracia divina. Amasis le aconsejaba desprenderse dolorosamente de aquello que más amara. Polícrates lo meditó y buscó entre sus tesoros el que más le dolería perder: eligió su sello personal. Era una joya engarzada en oro con una esmeralda tallada por el célebre artesano Teodoro de Samos.<br><br>
                 Decidido a desprenderse de él, mandó equipar una nave de cincuenta remos y ordenó remar mar adentro. Cuando estuvieron muy lejos de la isla, se quitó el sello a la vista de toda la tripulación y lo arrojó a las aguas profundas. Hecho el sacrificio, regresó al palacio y se sumió en una profunda aflicción por la pérdida.<br><br>
                 Pero al quinto o sexto día ocurrió lo siguiente: un humilde pescador atrapó un pez de un tamaño y belleza tan extraordinarios que lo consideró indigno del mercado y decidió regalárselo en persona a Polícrates. Al llegar a las puertas del palacio, el pescador fue admitido y ofreció el animal: «Oh rey, he pescado esto y me pareció digno de ti y de tu inmenso imperio; te lo traigo como presente».<br><br>
-                Polícrates, complacido por las palabras, le invitó a cenar. Mientras el pescador se sentía el hombre más afortunado, los cocineros bajaron a las cocinas para limpiar y preparar el banquete. Pero, al abrir el vientre del gigantesco pez, los sirvióntes hallaron, intacto en sus entrañas, el mismísimo sello de esmeralda de Polícrates.<br><br>
+                Polícrates, complacido por las palabras, le invitó a cenar. Mientras el pescador se sentía el hombre más afortunado, los cocineros bajaron a las cocinas para limpiar y preparar el banquete. Pero, al abrir el vientre del gigantesco pez, los sirvientes hallaron, intacto en sus entrañas, el mismísimo sello de esmeralda de Polícrates.<br><br>
                 Contentísimos, se lo llevaron a Polícrates explicándole cómo lo habían encontrado. Él comprendió que aquello era obra divina y escribió todo a Amasis. El rey egipcio, al leer la carta, entendió que es imposible para un hombre rescatar a otro del destino que le aguarda, y que Polícrates tendría un final espantoso por tener éxito en absolutamente todo, ¡hasta el punto de recuperar lo que él mismo tira al mar! Así fue, pues Polícrates acabó crucificado por un sátrapa persa.`,
                 puzzle: "Amasis dedujo que los dioses destruirían a Polícrates porque rechazaban sus intentos de sufrir infortunios. ¿Dentro de qué animal concreto apareció asombrosamente la esmeralda que había arrojado al mar?"
             },
             {
-                id: 'rampsinito', title: 'La Trampa del Faraón (Menfis)', lat: 29.80, lng: 31.13, wiki: 'Rampsinito', pass: 'cabeza',
+                id: 'rampsinito', title: 'La Trampa del Faraón', lat: 29.80, lng: 31.13, wiki: 'Rampsinito', pass: 'cabeza',
                 greek: `Βασιλέα Ραμψίνιτον... τοῦ δὲ ἑτέρου ἐγκαταλειπομένου καὶ ὡς ἐπύθετο ἐν οἵῳ κακῷ ἦν, ἰθὺς καλέσαντα τὸν ἀδελφεὸν λέγειν μιν τάδε· «Ἐπείτε γάρ με κατάειλε ἡ πάγη, σὺ δὲ εἴσελθε τὴν ταχίστην καὶ τάμον μου τὴν κεφαλήν, μή κοτε ὀφθεὶς καὶ γνωρισθεὶς ὃς εἴην προσαπολέσω καὶ σέ.» Τῷ δὲ ἔδοξε εὖ λέγειν καὶ ἐποίησε ταῦτα πεισθείς, καὶ καταρμόσας τὸν λίθον ἀπίετο ἐπ' οἴκου φέρων τὴν κεφαλὴν τοῦ ἀδελφεοῦ.<br><br>
                 Ὡς δὲ ἡμέρη ἐγένετο, ἐσελθόντα τὸν βασιλέα ἐς τὸ οἴκημα ἐκπεπλῆχθαι, ὁρέοντα τὸ σῶμα τοῦ φωρὸς ἐν τῇ πάγῃ ἄνευ τῆς κεφαλῆς ἐόν, τὸ δὲ οἴκημα ἀσινὲς καὶ οὔτε ἔσοδον οὔτε ἔκδυσιν οὐδεμίαν ἔχον. Ἀπορέοντα δέ μιν τάδε ποιῆσαι λέγουσι· τοῦ φωρὸς τὸν νέκυν ἐκ τοῦ τείχεος κατακρεμάσαι, φυλάκους δὲ αὐτοῦ καταστήσαντα ἐντείλασθαί σφι, τὸν ἂν ἴδωνται ἀποκλαύσαντα ἢ κατοικτισάμενον, συλλαβόντας ἄγειν πρὸς ἑωυτόν.<br><br>
                 Ἀνακρεμαμένου δὲ τοῦ νέκυος, τὴν μητέρα δεινῶς φέρειν, λόγους τε πρὸς τὸν περιεόντα παῖδα ποιέεσθαι, ἐπιτάσσουσάν οἱ ὅτεῳ τρόπῳ δύναται μηχανᾶσθαι ὅκως τὸ σῶμα τοῦ ἀδελφεοῦ καταλύσας κομιεῖ· εἰ δὲ τούτων ἀμελήσει, διαπειλέειν αὐτὴν ὡς ἐλθοῦσα πρὸς τὸν βασιλέα μηνύσει αὐτὸν ἔχοντα τὰ χρήματα.<br><br>
@@ -254,7 +550,7 @@
                 puzzle: "Artábano advierte a Jerjes de que su arrogancia ciega no le deja ver a sus dos verdaderos e invencibles enemigos: La Tierra (que los matará de hambre por las distancias) y el..."
             },
             {
-                id: 'giges', title: 'La Traición de Candaules (Éfeso)', lat: 38.60, lng: 28.50, wiki: 'Candaules', pass: 'reina',
+                id: 'giges', title: 'La Traición de Candaules (Lidia)', lat: 39.00, lng: 28.50, wiki: 'Candaules', pass: 'reina',
                 greek: `Οὗτος δὴ ὦν ὁ Κανδαύλης ἤρα τῆς ἑωυτοῦ γυναικός, ἐρασθεὶς δὲ ἐνόμιζέ οἱ εἶναι γυναῖκα πολλὸν πασέων καλλίστην... ὥστε ταῦτα νομίζων, ἦν γάρ οἱ τῶν αἰχμοφόρων Γύγης ὁ Δασκύλου ἀρεσκόμενος μάλιστα, τούτῳ τῷ Γύγῃ καὶ τὰ σπουδαιέστερα τῶν πρηγμάτων ὑπερετίθετο ὁ Κανδαύλης καὶ δὴ καὶ τὸ εἶδος τῆς γυναικός ὑπερεπαινέων.<br><br>
                 Χρόνου δὲ οὐ πολλοῦ διελθόντος... ἔλεγε πρὸς τὸν Γύγην τοιάδε· «Γύγη, οὐ γάρ σε δοκέω πείθεσθαί μοι λέγοντι περὶ τοῦ εἴδεος τῆς γυναικός... ποίεε ὅκως ἐκείνην θεήσεαι γυμνήν.» Ὁ δὲ μέγα ἀμβώσας εἶπε· «Δέσποτα, τίνα λέγεις λόγον οὐκ ὑγιέα, κελεύων με δέσποιναν τὴν ἐμὴν θεήσασθαι γυμνήν; Ἅμα δὲ κιθῶνι ἐκδυομένῳ συνεκδύεται καὶ τὴν αἰδῶ γυνή...»<br><br>
                 Ὡς δὲ ἐδόκεε ὥρη τῆς κοίτης εἶναι, ἤγαγε τὸν Γύγην ἐς τὸ οἴκημα, καὶ μετὰ ταῦτα αὐτίκα παρῆν καὶ ἡ γυνή. Ἐσελθοῦσαν δὲ καὶ τιθεῖσαν τὰ εἵματα ἐθηεῖτο ὁ Γύγης. Ὡς δὲ κατὰ νώτου ἐγένετο ἰούσης τῆς γυναικὸς ἐς τὴν κοίτην, ὑπεκδὺς ἐχώρεε ἔξω. Καὶ ἡ γυνὴ ἐπορᾷ μιν ἐξιόντα.<br><br>
@@ -270,7 +566,7 @@
                 puzzle: "Candaules pierde su trono y su vida por obligar a su vasallo a cometer un sacrilegio contra la dignidad de la mujer más poderosa del reino. ¿Cuál es el título o rango de esta mujer vengativa?"
             },
             {
-                id: 'helena', title: 'Los Raptos (Troya)', lat: 39.95, lng: 26.23, wiki: 'Helena_de_Troya', pass: 'helena',
+                id: 'helena', title: 'Los Raptos de las Mujeres', lat: 37.08, lng: 22.43, wiki: 'Helena_de_Troya', pass: 'helena',
                 greek: `Περσέων μέν νυν οἱ λόγιοι Φοίνικας αἰτίους φασὶ γενέσθαι τῆς διαφορῆς.<br><br>
                 Τοὺς γὰρ Φοίνικας... ἐσαπικνεομένους δὴ καὶ ἐς τὸ Ἄργος τοῦτο... ὠνεομένῃσι τὰς γυναῖκας διακελευσαμένους τοὺς Φοίνικας ὁρμῆσαι ἐπ' αὐτάς. Τὰς μὲν δὴ πλεῦνας ἀποφυγεῖν, τὴν δὲ Ἰοῦν σὺν ἄλλῃσι ἁρπασθῆναι· ἐσβαλομένους δὲ ἐς τὴν νέα οἴχεσθαι ἀποπλέοντας ἐπ' Αἰγύπτου...<br><br>
                 Μετὰ δὲ ταῦτα Ἑλλήνων τινάς (οὐ γὰρ ἔχουσι τοὔνομα ἀπηγήσασθαι) φασὶ τῆς Φοινίκης ἐς Τύρον προσσχόντας ἁρπάσαι τοῦ βασιλέος τὴν θυγατέρα Εὐρώπην. Ταῦτα μὲν δὴ ἴσα πρὸς ἴσα σφι γενέσθαι· μετὰ δὲ ταῦτα Ἕλληνας αἰτίους τῆς δευτέρης ἀδικίης γενέσθαι. Καταπλώσαντας γὰρ μακρῇ νηὶ ἐς Αἶάν τε τὴν Κολχίδα... ἁρπάσαι τοῦ βασιλέος τὴν θυγατέρα Μήδειαν.<br><br>
@@ -297,7 +593,7 @@
                 puzzle: "El toro Apis no era un animal cualquiera para los egipcios. Cambises le acuchilla y se burla de ellos preguntando si los seres de carne y hueso pueden ser un..."
             }
         ];
-        
+
         // --- DICCIONARIO INTERACTIVO (Lexicon Filológico Avanzado) ---
         const GREEK_LEXICON = {
             'ολβιωτατοσ': { trans: 'El más feliz, el más próspero.', morph: 'Adjetivo, superlativo, nom. sing. masc.' },
@@ -336,53 +632,49 @@
             'βασιλευσ': { trans: 'Rey, soberano.', morph: 'Sustantivo, nom. sing. masc.' },
             'εφη': { trans: 'Dijo, hablaba.', morph: 'Verbo (φημί), imperf., 3ª p. sing.' },
             'ειπε': { trans: 'Dijo.', morph: 'Verbo (λέγω), aoristo fuerte, 3ª p. sing.' },
-            'εμαχοντο': { trans: 'Luchaban.', morph: 'Verbo (μάχομαι), imperfecto, 3ª p. plural.' },
-            'εργα': { trans: 'Obras, acciones, trabajos.', morph: 'Sustantivo, nom./acus. pl. neutro.' },
-            'μεγαλα': { trans: 'Grandes, magníficas.', morph: 'Adjetivo, nom./acus. pl. neutro.' },
-            'ανθρωπων': { trans: 'De los hombres, de los seres humanos.', morph: 'Sustantivo, genitivo pl. masc.' },
-            'χρονω': { trans: 'Al tiempo, por el tiempo.', morph: 'Sustantivo, dativo sing. masc.' },
-            'ελλησι': { trans: 'Para/a los griegos (helenos).', morph: 'Sustantivo, dativo pl. masc.' },
-            'βαρβαροισι': { trans: 'Para/a los bárbaros (no griegos).', morph: 'Adjetivo/Sustantivo, dativo pl. masc.' },
-            'αιτιην': { trans: 'Causa, motivo, culpa.', morph: 'Sustantivo, acusativo sing. fem.' },
-            'επολεμησαν': { trans: 'Hicieron la guerra, lucharon.', morph: 'Verbo (πολεμέω), aoristo ind., 3ª p. pl.' },
-            'αδελφεον': { trans: 'Al hermano.', morph: 'Sustantivo (jónico), acusativo sing. masc.' },
-            'αρταβανοσ': { trans: 'Artábano (tío de Jerjes).', morph: 'Sustantivo, nom. sing. masc.' },
-            'ξερξησ': { trans: 'Jerjes (rey de Persia).', morph: 'Sustantivo, nom. sing. masc.' },
-            'ειληθειαν': { trans: 'La verdad.', morph: 'Sustantivo, acusativo sing. fem.' },
-            'κανδαυλησ': { trans: 'Candaules (rey de Lidia).', morph: 'Sustantivo, nom. sing. masc.' },
-            'γυγησ': { trans: 'Giges (guardia de Candaules).', morph: 'Sustantivo, nom. sing. masc.' }
+            'εμαχοντο': { trans: 'Luchaban.', morph: 'Verbo (μάχομαι), imperfecto, 3ª p. plural.' }
         };
-        
+
+        // Procesador Léxico (Seguro para el DOM)
         const parseGreekText = (html) => {
-            let result = '';
-            let inTag = false;
-            // Tokenizar por etiquetas HTML y signos de puntuación/espacios
-            const tokens = html.split(/([<>\s,.;:·!?«»"()]+)/);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
             
-            for(let token of tokens) {
-                if(!token) continue;
-                if (token.startsWith('<')) inTag = true;
-                
-                if (inTag) {
-                    result += token;
-                    if (token.endsWith('>')) inTag = false;
-                } else {
-                    if (/^[\s,.;:·!?«»"()]+$/.test(token)) {
-                        result += token; 
-                    } else {
-                        // Normalizamos la palabra para buscarla en el lexicón
-                        const cleanW = token.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ς/g, 'σ');
-                        if(GREEK_LEXICON[cleanW]) {
-                            result += `<span>${token}</span>`;
+            const walk = (node) => {
+                if (node.nodeType === 3) { 
+                    const text = node.nodeValue;
+                    const parts = text.split(/([\s,.;:·!?«»"()]+)/);
+                    const frag = document.createDocumentFragment();
+                    
+                    parts.forEach(w => {
+                        if (w.trim().length > 0 && !/^[\s,.;:·!?«»"()]+$/.test(w)) {
+                            const span = document.createElement('span');
+                            span.className = 'word-interactive';
+                            span.textContent = w;
+                            
+                            const cleanW = w.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ς/g, 'σ');
+                            if (GREEK_LEXICON[cleanW]) {
+                                span.classList.add('glossary-word');
+                                span.dataset.trans = GREEK_LEXICON[cleanW].trans;
+                                span.dataset.morph = GREEK_LEXICON[cleanW].morph;
+                            }
+                            span.dataset.clean = cleanW;
+                            frag.appendChild(span);
                         } else {
-                            result += `<span>${token}</span>`;
+                            frag.appendChild(document.createTextNode(w));
                         }
-                    }
+                    });
+                    node.parentNode.replaceChild(frag, node);
+                } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE' && node.className !== 'drop-cap-greek') {
+                    Array.from(node.childNodes).forEach(walk);
                 }
-            }
-            return result;
+            };
+            
+            Array.from(tempDiv.childNodes).forEach(walk);
+            return tempDiv;
         };
-        
+
+        // --- SISTEMA DEL DICCIONARIO (Lexicon Premium con Event Delegation) ---
         const Lexicon = {
             init() {
                 const greekContainer = document.getElementById('text-greek');
@@ -446,7 +738,8 @@
                 }
             }
         };
-        
+
+        // --- SISTEMA DE ORÁCULO MODAL (Independiente) ---
         const Oracle = {
             async open() {
                 if(window.AudioFX) window.AudioFX.click();
@@ -454,9 +747,9 @@
                 const content = document.getElementById('oracle-content');
                 const story = State.currentStory;
                 
-                content.innerHTML = '<span>Invocando el saber del éter...</span>';
+                content.innerHTML = '<span class="animate-pulse text-[var(--gold)]">Invocando el saber del éter...</span>';
                 modal.classList.add('visible');
-        
+
                 try {
                     const url = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(story.wiki)}&format=json&origin=*`;
                     const res = await fetch(url);
@@ -465,7 +758,7 @@
                     const pageId = Object.keys(pages)[0];
                     
                     if (pageId !== "-1" && pages[pageId].extract) {
-                        content.innerHTML = `<strong>${pages[pageId].title}</strong>${pages[pageId].extract} <br><br><span>Fuente extraída en vivo: API de Wikipedia</span>`;
+                        content.innerHTML = `<strong class="text-4xl font-title text-[var(--gold-light)] block mb-6 border-b border-gray-700 pb-4">${pages[pageId].title}</strong>${pages[pageId].extract} <br><br><span class="text-sm text-gray-500 mt-6 block">Fuente extraída en vivo: API de Wikipedia</span>`;
                     } else {
                         content.innerHTML = "Los oráculos guardan silencio. No hay pergaminos en la biblioteca sobre este tema.";
                     }
@@ -479,7 +772,8 @@
                 if(modal) modal.classList.remove('visible');
             }
         };
-        
+
+        // --- 2. SISTEMA DE AUDIO EXPERTO (El Aedo / Synthesizer) ---
         const AudioFX = {
             ctx: null, isReady: false, droneOsc: null, noiseOsc: null,
             init() {
@@ -528,7 +822,7 @@
                     
                     this.droneOsc.connect(gain); gain.connect(this.ctx.destination);
                     this.droneOsc.start();
-        
+
                     const bufferSize = this.ctx.sampleRate * 2;
                     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
                     const data = buffer.getChannelData(0);
@@ -565,7 +859,8 @@
             success() { this.playLyre(440, 0.4); setTimeout(() => this.playLyre(554.37, 0.4), 150); setTimeout(() => this.playLyre(659.25, 0.6), 300); },
             error() { this.playLyre(150, 0.5); setTimeout(()=>this.playLyre(140, 0.5), 150); }
         };
-        
+
+        // --- 3. MOTOR DEL MAPA LEAFLET (CAPAS Y FLY-TO SEGUROS) ---
         const MapEngine = {
             map: null, markers: {}, pathLayer: null, dustCtx: null, dustParticles: [], dustAnim: null,
             init() {
@@ -582,11 +877,11 @@
                     this.antiqueLayer = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg', {
                         maxZoom: 9, minZoom: 5, opacity: 0.5
                     });
-        
+
                     this.darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
                         maxZoom: 9, minZoom: 5, opacity: 0.8
                     }).addTo(this.map);
-        
+
                     this.satelliteLayer.addTo(this.map);
                     
                     this.renderMarkers();
@@ -608,7 +903,7 @@
                 if(!this.map) return;
                 HERODOTUS_DB.forEach(story => {
                     const isCompleted = State.relics.includes(story.id);
-                    const markerHtml = `<div></div>`;
+                    const markerHtml = `<div class="custom-marker ${isCompleted ? 'completed' : ''}"></div>`;
                     
                     const icon = L.divIcon({ className: 'clear-marker', html: markerHtml, iconSize: [28, 28], iconAnchor: [14, 14] });
                     const marker = L.marker([story.lat, story.lng], { icon: icon }).addTo(this.map);
@@ -616,10 +911,11 @@
                     marker.bindTooltip(story.title, {
                         permanent: false, direction: 'top', className: 'premium-tooltip', offset: [0, -15]
                     });
-        
+
                     marker.on('click', () => { 
                         if(window.AudioFX) window.AudioFX.click();
                         
+                        // Sonido inmersivo de viaje
                         if(window.AudioFX && window.AudioFX.isReady) {
                             try {
                                 const sfx = new AudioContext();
@@ -689,7 +985,8 @@
                 this.dustAnim = requestAnimationFrame(() => this.loopDust());
             }
         };
-        
+
+        // --- 4. AUDIOBOOK (EL AEDO) Y CHUNKING TRANSLITERADO GARANTIZADO ---
         const TTS = {
             isPlaying: false, currentLang: 'es', chunks: [], currentChunk: 0, hasGreekVoice: false,
             init() {
@@ -707,7 +1004,7 @@
                 if(window.AudioFX) window.AudioFX.click();
                 this.currentLang = this.currentLang === 'es' ? 'gr' : 'es';
                 const btn = document.getElementById('btn-tts-lang');
-                if(btn) btn.innerHTML = this.currentLang === 'es' ? '🇪🇸 ESP' : '🏛️ GR';
+                btn.innerHTML = this.currentLang === 'es' ? '🇪🇸 ESP' : '🏛️ GR';
                 if(this.isPlaying) {
                     this.stop(); setTimeout(() => this.play(), 200);
                 }
@@ -734,7 +1031,7 @@
                     this.setPlayingState(true);
                     return;
                 }
-        
+
                 window.speechSynthesis.cancel(); 
                 
                 let textToRead = "";
@@ -744,7 +1041,8 @@
                 } else {
                     let cleanHTML = State.currentStory.greek.replace(/<[^>]*>?/gm, '');
                     if (this.hasGreekVoice) {
-                        textToRead = cleanHTML.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ς/g, 'σ').toLowerCase();
+                        // Limpieza extrema del texto politónico a monótono
+                        textToRead = cleanHTML.normalize("NFD").replace(/[\u0313\u0314\u0300\u0342\u0302\u0304\u0306]/g, "").replace(/ς/g, 'σ').normalize("NFC").toLowerCase();
                     } else {
                         textToRead = this.phoneticGreek(cleanHTML);
                     }
@@ -810,36 +1108,44 @@
                 else { player.classList.remove('visible'); this.stop(); }
             }
         };
-        
+
+        // --- 5. MOTOR LÓGICO Y CÓDICE ---
+        const State = { relics: [], currentStory: null };
+
         const Codex = {
             open(storyId) {
                 const story = HERODOTUS_DB.find(s => s.id === storyId);
                 State.currentStory = story;
-        
+
                 document.getElementById('codex-title').innerText = story.title;
                 
                 const greekContainer = document.getElementById('text-greek');
                 greekContainer.innerHTML = ''; 
-                greekContainer.innerHTML = parseGreekText(`<p>${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`);
+                const interactiveGreekNodes = parseGreekText(`<p class="drop-cap-greek">${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`);
+                greekContainer.appendChild(interactiveGreekNodes);
                 
-                document.getElementById('text-spanish').innerHTML = `<p>${story.spanish.charAt(0)}</p><p>${story.spanish.substring(1)}</p>`;
+                document.getElementById('text-spanish').innerHTML = `<p class="drop-cap-spanish">${story.spanish.charAt(0)}</p><p>${story.spanish.substring(1)}</p>`;
                 
                 document.getElementById('puzzle-desc').innerText = story.puzzle;
                 document.getElementById('puzzle-input').value = "";
                 document.getElementById('puzzle-feedback').innerText = "";
                 
-                const drawer = document.getElementById('puzzle-drawer');
-                if(drawer) drawer.classList.add('translate-y-full');
+                document.getElementById('puzzle-drawer').classList.add('translate-y-full');
                 
-                if(window.Game && window.Game.isImmersive) window.Game.setZenLayout('dual');
+                // Reset Layout Zen
+                if(window.Game && Game.isImmersive) Game.setZenLayout('dual');
                 
-                UI_Manager.showScreen('screen-codex');
-        
+                document.getElementById('screen-map').classList.add('hidden', 'opacity-0');
+                
+                const screenCodex = document.getElementById('screen-codex');
+                screenCodex.style.display = 'flex';
+                setTimeout(() => screenCodex.classList.remove('opacity-0'), 50);
+
                 if(window.AudioFX) window.AudioFX.playLyre(329.63, 0.4);
                 if(window.TTS) window.TTS.showPlayer(true);
             }
         };
-        
+
         const Puzzle = {
             toggleDrawer() {
                 if(window.AudioFX) window.AudioFX.click();
@@ -854,7 +1160,7 @@
                 const story = State.currentStory;
                 const input = document.getElementById('puzzle-input').value.trim().toLowerCase();
                 const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        
+
                 if (normalize(input).includes(normalize(story.pass))) {
                     if(window.AudioFX) window.AudioFX.success();
                     if(!State.relics.includes(story.id)) {
@@ -866,7 +1172,7 @@
                     fb.innerText = "¡SABIDURÍA REVELADA! El Destino ha sido hilado.";
                     fb.style.color = "var(--gold-light)";
                     
-                    setTimeout(() => { if(window.Game) window.Game.closeCodex(); }, 2500);
+                    setTimeout(() => { if(window.Game) Game.closeCodex(); }, 2500);
                 } else {
                     if(window.AudioFX) window.AudioFX.error();
                     const fb = document.getElementById('puzzle-feedback');
@@ -874,30 +1180,76 @@
                     fb.style.color = "var(--sparta-red)";
                     
                     const drawer = document.getElementById('puzzle-drawer');
-                    if(drawer) {
-                        drawer.classList.add('animate-shake');
-                        setTimeout(() => drawer.classList.remove('animate-shake'), 400);
-                    }
+                    drawer.classList.add('animate-shake');
+                    setTimeout(() => drawer.classList.remove('animate-shake'), 400);
                 }
             }
         };
-        
+
         const Game = {
             isImmersive: false,
+            parallax(e) {
+                const card = document.getElementById('intro-card');
+                if(!card) return;
+                const x = (window.innerWidth - e.pageX * 2) / 90;
+                const y = (window.innerHeight - e.pageY * 2) / 90;
+                card.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${y}deg)`;
+            },
+            initMap() {
+                try {
+                    if(window.AudioFX) { window.AudioFX.init(); window.AudioFX.success(); }
+                } catch(e) {}
+                
+                const btnStart = document.getElementById('btn-start');
+                if(btnStart) {
+                    btnStart.innerText = 'Desplegando...';
+                    btnStart.classList.add('animate-pulse');
+                }
+
+                const intro = document.getElementById('screen-intro');
+                if(intro) intro.classList.add('opacity-0');
+                
+                setTimeout(() => {
+                    if(intro) intro.style.display = 'none';
+                    const mapScreen = document.getElementById('screen-map');
+                    if(mapScreen) {
+                        mapScreen.classList.remove('hidden'); 
+                        mapScreen.style.display = 'flex';
+                    }
+                    
+                    try { if(window.MapEngine) window.MapEngine.init(); } catch(e) {}
+                    if(window.TTS) window.TTS.init();
+                    if(window.Lexicon) window.Lexicon.init();
+                    
+                    setTimeout(() => {
+                        if(mapScreen) mapScreen.classList.remove('opacity-0');
+                        if(window.MapEngine && window.MapEngine.map) window.MapEngine.map.invalidateSize(); 
+                    }, 100);
+                }, 1000);
+            },
             closeCodex() {
                 if(window.AudioFX) window.AudioFX.click();
                 if(window.TTS) window.TTS.showPlayer(false);
                 if(window.Oracle) window.Oracle.close(); 
                 if(this.isImmersive) this.toggleImmersive(); 
-        
-                UI_Manager.showScreen('screen-map');
+
+                const screenCodex = document.getElementById('screen-codex');
+                if(screenCodex) screenCodex.classList.add('opacity-0');
                 
-                if(window.MapEngine && window.MapEngine.map) {
-                    window.MapEngine.map.flyTo([38.5, 25.5], 6, { duration: 1.5 });
-                    window.MapEngine.updateMarkers();
-                }
-                
-                if(State.relics.length === HERODOTUS_DB.length) setTimeout(() => this.triggerVictory(), 2500);
+                setTimeout(() => {
+                    if(screenCodex) screenCodex.style.display = 'none';
+                    const screenMap = document.getElementById('screen-map');
+                    if(screenMap) screenMap.classList.remove('hidden');
+                    
+                    if(window.MapEngine && window.MapEngine.map) {
+                        window.MapEngine.map.flyTo([38.5, 25.5], 6, { duration: 1.5 });
+                        window.MapEngine.updateMarkers();
+                    }
+                    
+                    setTimeout(() => { if(screenMap) screenMap.classList.remove('opacity-0'); }, 50);
+                    
+                    if(State.relics.length === HERODOTUS_DB.length) setTimeout(() => this.triggerVictory(), 2500);
+                }, 700);
             },
             toggleImmersive() {
                 if(window.AudioFX) window.AudioFX.click();
@@ -911,6 +1263,7 @@
                 } else {
                     if(codex) {
                         codex.classList.remove('immersive-mode');
+                        codex.className = "absolute inset-0 z-40 bg-black flex-col flex opacity-100 transition-opacity duration-700"; 
                     }
                     if(window.AudioFX) window.AudioFX.stopDrone();
                 }
@@ -926,24 +1279,27 @@
             },
             triggerVictory() {
                 if(window.AudioFX) { window.AudioFX.success(); setTimeout(()=>window.AudioFX.success(), 1000); }
-                UI_Manager.showScreen('screen-victory');
+                const victoryScreen = document.getElementById('screen-victory');
+                if(victoryScreen) {
+                    victoryScreen.classList.remove('hidden');
+                    victoryScreen.style.display = 'flex';
+                    setTimeout(() => { victoryScreen.classList.remove('opacity-0'); }, 100);
+                }
             }
         };
-        
-        // --- DELEGACIÓN GLOBAL DE EVENTOS (Blindaje de CSP) ---
+
+        // --- DELEGACIÓN GLOBAL DE EVENTOS (Evita bloqueos de CSP y Fallos en Iframes) ---
         window.addEventListener('DOMContentLoaded', () => {
-            // Seguridad: Exponer objetos si algún HTML los requiere directamente (por fallbacks)
-            window.Game = Game; window.MapEngine = MapEngine; window.Codex = Codex; 
-            window.Puzzle = Puzzle; window.TTS = TTS; window.Oracle = Oracle; 
-            window.Lexicon = Lexicon; window.AudioFX = AudioFX; window.UI_Manager = UI_Manager;
-        
-            // Enlazar botón principal al Tab Manager de forma segura
-            const btnStart = document.getElementById('btn-start');
-            if(btnStart) {
-                btnStart.removeAttribute('onclick'); 
-                btnStart.addEventListener('click', () => UI_Manager.initGame());
-            }
-        
+            // Asignación de seguridad global
+            window.Game = Game;
+            window.MapEngine = MapEngine;
+            window.Codex = Codex;
+            window.Puzzle = Puzzle;
+            window.TTS = TTS;
+            window.Oracle = Oracle;
+            window.Lexicon = Lexicon;
+            window.AudioFX = AudioFX;
+
             // Eventos del Modo Zen
             document.getElementById('zen-btn-dual')?.addEventListener('click', () => Game.setZenLayout('dual'));
             document.getElementById('zen-btn-gr')?.addEventListener('click', () => Game.setZenLayout('gr'));
@@ -951,10 +1307,6 @@
             document.getElementById('zen-btn-exit')?.addEventListener('click', () => Game.toggleImmersive());
             document.getElementById('btn-exit-zen')?.addEventListener('click', () => Game.toggleImmersive());
             
-            // Eventos de Capas del Mapa
-            document.getElementById('btn-layer-sat')?.addEventListener('click', () => MapEngine.setLayer('satellite'));
-            document.getElementById('btn-layer-pap')?.addEventListener('click', () => MapEngine.setLayer('antique'));
-        
             // Eventos del Cajón de Acertijo
             document.getElementById('btn-toggle-puzzle')?.addEventListener('click', () => Puzzle.toggleDrawer());
             document.getElementById('btn-close-puzzle-drawer')?.addEventListener('click', () => Puzzle.toggleDrawer());
@@ -964,20 +1316,21 @@
             document.getElementById('btn-tts-lang')?.addEventListener('click', () => TTS.toggleLang());
             document.getElementById('btn-tts-play')?.addEventListener('click', () => TTS.togglePlay());
             document.getElementById('btn-tts-stop')?.addEventListener('click', () => TTS.stop());
-        
+
             // Evento Oráculo
             document.getElementById('btn-open-oracle')?.addEventListener('click', () => Oracle.open());
             document.getElementById('btn-close-oracle')?.addEventListener('click', () => Oracle.close());
-        
+
             // Evento Códice
             document.getElementById('btn-close-codex')?.addEventListener('click', () => Game.closeCodex());
-        
+
+            // Eventos Mapa
+            document.getElementById('btn-layer-sat')?.addEventListener('click', () => MapEngine.setLayer('satellite'));
+            document.getElementById('btn-layer-pap')?.addEventListener('click', () => MapEngine.setLayer('antique'));
+
             // Evento Victoria
             document.getElementById('btn-restart')?.addEventListener('click', () => location.reload());
-        
-            // Evento Lexicon
-            Lexicon.init();
-        
+
             // Controles de Teclado
             document.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') {
@@ -990,10 +1343,7 @@
                 }
             });
         });
-        
+
     </script>
-
-<div style="bottom: 10px; right: 10px; position: absolute;"><a href="https://signatureforemail.com/?utm_source=wth_free_link&utm_medium=external" target="_blank" style="font-size:11px; color: #d0d0d0;">SignatureForEmail</a></p>
 </body>
-
 </html>
