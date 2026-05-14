@@ -270,7 +270,6 @@
                 "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
             </p>
             
-            <!-- EL BOTÓN CLAVE ESTÁ AQUÍ. Usamos un fallback inline para vencer las restricciones CSP de los iframes -->
             <button id="btn-start" onclick="if(window.Game) window.Game.initMap();" class="btn-hellenic px-10 py-5 md:px-24 md:py-10 text-2xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all">
                 Desplegar el Egeo
             </button>
@@ -366,19 +365,19 @@
             
             <!-- EL CAJÓN DEL ACERTIJO -->
             <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-20 z-[5000] transform translate-y-full transition-transform duration-700 shadow-[0_-20px_60px_rgba(0,0,0,0.95)]" id="puzzle-drawer">
-                <button id="btn-close-puzzle-drawer" class="absolute top-10 right-12 text-gray-400 hover:text-sparta-red font-bold text-6xl transition-colors cursor-pointer">✕</button>
+                <button id="btn-close-puzzle-drawer" onclick="if(window.Puzzle) window.Puzzle.toggleDrawer();" class="absolute top-10 right-12 text-gray-400 hover:text-sparta-red font-bold text-6xl transition-colors cursor-pointer">✕</button>
                 <div class="max-w-7xl mx-auto text-center">
                     <h3 class="font-title text-[var(--gold-light)] text-7xl mb-12 drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">El Acertijo de las Moiras</h3>
                     <p id="puzzle-desc" class="text-font text-5xl text-white mb-20 leading-relaxed">...</p>
                     <div class="flex flex-col lg:flex-row justify-center items-center gap-12">
                         <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3 h-28 text-5xl" placeholder="Escribe tu ofrenda aquí..." autocomplete="off" spellcheck="false">
-                        <button id="btn-check-puzzle" class="btn-hellenic px-20 py-8 text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)]">Sellar Destino</button>
+                        <button id="btn-check-puzzle" onclick="if(window.Puzzle) window.Puzzle.check();" class="btn-hellenic px-20 py-8 text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)]">Sellar Destino</button>
                     </div>
                     <p id="puzzle-feedback" class="h-16 text-[var(--sparta-red)] text-5xl font-bold mt-12"></p>
                 </div>
             </div>
             
-            <button id="btn-open-puzzle-drawer" class="absolute bottom-16 left-1/2 transform -translate-x-1/2 btn-hellenic px-20 py-8 text-5xl z-[4000] shadow-[0_0_60px_rgba(212,175,55,0.9)] bg-[var(--aegean-blue)] animate-float border-2 border-white">
+            <button id="btn-open-puzzle-drawer" onclick="if(window.Puzzle) window.Puzzle.toggleDrawer();" class="absolute bottom-16 left-1/2 transform -translate-x-1/2 btn-hellenic px-20 py-8 text-5xl z-[4000] shadow-[0_0_60px_rgba(212,175,55,0.9)] bg-[var(--aegean-blue)] animate-float border-2 border-white">
                 Enfrentar el Acertijo ▼
             </button>
         </div>
@@ -423,7 +422,7 @@
 
     <!-- ORÁCULO MODAL (Wikipedia Independiente y Seguro) -->
     <div id="oracle-modal" class="glass-panel rounded-3xl p-20 border-2 border-[var(--aegean-blue)] shadow-[0_0_100px_rgba(8,22,36,1)]">
-        <button id="btn-close-oracle" class="absolute top-10 right-10 text-gray-400 hover:text-[var(--sparta-red)] font-bold text-6xl transition-colors cursor-pointer">✕</button>
+        <button id="btn-close-oracle" onclick="if(window.Oracle) window.Oracle.close();" class="absolute top-10 right-10 text-gray-400 hover:text-[var(--sparta-red)] font-bold text-6xl transition-colors cursor-pointer">✕</button>
         <div class="flex items-center gap-8 mb-12 border-b-2 border-gray-700 pb-10">
             <svg class="w-20 h-20 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             <h3 class="font-title text-6xl text-[var(--gold-light)] tracking-widest uppercase text-shadow-md">El Oráculo de la Red</h3>
@@ -440,6 +439,9 @@
         <p class="text-2xl md:text-4xl text-gray-300 font-greek max-w-5xl leading-relaxed italic mb-16">Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te otorgan la Inmortalidad de la Memoria.</p>
         <button id="btn-restart" class="btn-hellenic px-16 py-6 text-3xl font-bold bg-white text-black hover:bg-[var(--gold)]">Regresar a la Modernidad</button>
     </div>
+
+    <!-- BOTÓN SALIR MODO INMERSIVO -->
+    <button id="btn-exit-zen" class="fixed top-8 right-8 z-[100] btn-hellenic px-6 py-3 text-xl bg-black/50 hidden">Salir del Modo Zen</button>
 
     <!-- ==========================================================================
          MOTOR DEL JUEGO (JAVASCRIPT Y FILOLOGÍA) - SIN EVENTOS INLINE
@@ -681,14 +683,9 @@
                         if (target) this.lookup(e, target);
                     });
                 }
-                document.addEventListener('click', (e) => {
-                    if(!e.target.closest('#lexicon-tooltip') && !e.target.closest('.word-interactive')) {
-                        this.hide();
-                    }
-                });
             },
             lookup(event, target) {
-                if(AudioFX) AudioFX.hover();
+                if(window.AudioFX) window.AudioFX.hover();
                 const tooltip = document.getElementById('lexicon-tooltip');
                 const greekTitle = document.getElementById('lexicon-greek');
                 const morphTag = document.getElementById('lexicon-morph');
@@ -718,7 +715,7 @@
                     spanishDesc.style.color = "white";
                 }
                 
-                tooltip.style.display = 'block'; // temporal para medir
+                tooltip.style.display = 'block'; 
                 const rect = tooltip.getBoundingClientRect();
                 
                 let x = event.clientX;
@@ -733,15 +730,18 @@
                 tooltip.classList.add('visible');
             },
             hide() {
-                document.getElementById('lexicon-tooltip').classList.remove('visible');
-                document.getElementById('lexicon-tooltip').style.display = 'none';
+                const tt = document.getElementById('lexicon-tooltip');
+                if(tt) {
+                    tt.classList.remove('visible');
+                    tt.style.display = 'none';
+                }
             }
         };
 
         // --- SISTEMA DE ORÁCULO MODAL (Independiente) ---
         const Oracle = {
             async open() {
-                if(AudioFX) AudioFX.click();
+                if(window.AudioFX) window.AudioFX.click();
                 const modal = document.getElementById('oracle-modal');
                 const content = document.getElementById('oracle-content');
                 const story = State.currentStory;
@@ -766,8 +766,9 @@
                 }
             },
             close() {
-                if(AudioFX) AudioFX.click();
-                document.getElementById('oracle-modal').classList.remove('visible');
+                if(window.AudioFX) window.AudioFX.click();
+                const modal = document.getElementById('oracle-modal');
+                if(modal) modal.classList.remove('visible');
             }
         };
 
@@ -887,7 +888,7 @@
                 } catch(e) { console.warn("Leaflet init error:", e); }
             },
             setLayer(type) {
-                if(AudioFX) AudioFX.click();
+                if(window.AudioFX) window.AudioFX.click();
                 if(!this.map) return;
                 if(type === 'antique') {
                     this.map.removeLayer(this.satelliteLayer);
@@ -911,10 +912,10 @@
                     });
 
                     marker.on('click', () => { 
-                        if(AudioFX) AudioFX.click();
+                        if(window.AudioFX) window.AudioFX.click();
                         
                         // Sonido inmersivo de viaje
-                        if(AudioFX && AudioFX.isReady) {
+                        if(window.AudioFX && window.AudioFX.isReady) {
                             try {
                                 const sfx = new AudioContext();
                                 const noise = sfx.createBufferSource();
@@ -1092,15 +1093,16 @@
                 const vis = document.getElementById('visualizer');
                 const btn = document.getElementById('btn-tts-play');
                 if(isPlaying) {
-                    vis.classList.add('playing');
-                    btn.innerHTML = '<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg>';
+                    if(vis) vis.classList.add('playing');
+                    if(btn) btn.innerHTML = '<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg>';
                 } else {
-                    vis.classList.remove('playing');
-                    btn.innerHTML = '<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>';
+                    if(vis) vis.classList.remove('playing');
+                    if(btn) btn.innerHTML = '<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>';
                 }
             },
             showPlayer(show) {
                 const player = document.getElementById('audio-player');
+                if(!player) return;
                 if(show) player.classList.add('visible');
                 else { player.classList.remove('visible'); this.stop(); }
             }
@@ -1128,25 +1130,30 @@
                 document.getElementById('puzzle-feedback').innerText = "";
                 
                 document.getElementById('puzzle-drawer').classList.add('translate-y-full');
-                document.getElementById('btn-toggle-puzzle').style.display = 'block';
+                
+                // Reset Layout Zen
+                if(window.Game && Game.isImmersive) Game.setZenLayout('dual');
+                
                 document.getElementById('screen-map').classList.add('hidden', 'opacity-0');
                 
                 const screenCodex = document.getElementById('screen-codex');
                 screenCodex.style.display = 'flex';
                 setTimeout(() => screenCodex.classList.remove('opacity-0'), 50);
 
-                if(AudioFX) AudioFX.playLyre(329.63, 0.4);
-                TTS.showPlayer(true);
+                if(window.AudioFX) window.AudioFX.playLyre(329.63, 0.4);
+                if(window.TTS) window.TTS.showPlayer(true);
             }
         };
 
         const Puzzle = {
             toggleDrawer() {
-                if(AudioFX) AudioFX.click();
+                if(window.AudioFX) window.AudioFX.click();
                 const drawer = document.getElementById('puzzle-drawer');
+                if(!drawer) return;
                 drawer.classList.toggle('translate-y-full');
-                document.getElementById('btn-toggle-puzzle').style.display = drawer.classList.contains('translate-y-full') ? 'block' : 'none';
-                if(!drawer.classList.contains('translate-y-full')) setTimeout(()=>document.getElementById('puzzle-input').focus(), 300);
+                if(!drawer.classList.contains('translate-y-full')) {
+                    setTimeout(()=>document.getElementById('puzzle-input').focus(), 300);
+                }
             },
             check() {
                 const story = State.currentStory;
@@ -1154,7 +1161,7 @@
                 const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
                 if (normalize(input).includes(normalize(story.pass))) {
-                    if(AudioFX) AudioFX.success();
+                    if(window.AudioFX) window.AudioFX.success();
                     if(!State.relics.includes(story.id)) {
                         State.relics.push(story.id);
                         document.getElementById('relic-count').innerText = State.relics.length;
@@ -1164,9 +1171,9 @@
                     fb.innerText = "¡SABIDURÍA REVELADA! El Destino ha sido hilado.";
                     fb.style.color = "var(--gold-light)";
                     
-                    setTimeout(() => Game.closeCodex(), 2500);
+                    setTimeout(() => { if(window.Game) Game.closeCodex(); }, 2500);
                 } else {
-                    if(AudioFX) AudioFX.error();
+                    if(window.AudioFX) window.AudioFX.error();
                     const fb = document.getElementById('puzzle-feedback');
                     fb.innerText = "Los dioses rechazan tu ofrenda. Lee de nuevo, mortal.";
                     fb.style.color = "var(--sparta-red)";
@@ -1199,20 +1206,22 @@
                 }
 
                 const intro = document.getElementById('screen-intro');
-                intro.classList.add('opacity-0');
+                if(intro) intro.classList.add('opacity-0');
                 
                 setTimeout(() => {
-                    intro.style.display = 'none';
+                    if(intro) intro.style.display = 'none';
                     const mapScreen = document.getElementById('screen-map');
-                    mapScreen.classList.remove('hidden'); 
-                    mapScreen.style.display = 'flex';
+                    if(mapScreen) {
+                        mapScreen.classList.remove('hidden'); 
+                        mapScreen.style.display = 'flex';
+                    }
                     
-                    try { window.MapEngine.init(); } catch(e) {}
+                    try { if(window.MapEngine) window.MapEngine.init(); } catch(e) {}
                     if(window.TTS) window.TTS.init();
                     if(window.Lexicon) window.Lexicon.init();
                     
                     setTimeout(() => {
-                        mapScreen.classList.remove('opacity-0');
+                        if(mapScreen) mapScreen.classList.remove('opacity-0');
                         if(window.MapEngine && window.MapEngine.map) window.MapEngine.map.invalidateSize(); 
                     }, 100);
                 }, 1000);
@@ -1224,51 +1233,57 @@
                 if(this.isImmersive) this.toggleImmersive(); 
 
                 const screenCodex = document.getElementById('screen-codex');
-                screenCodex.classList.add('opacity-0');
+                if(screenCodex) screenCodex.classList.add('opacity-0');
+                
                 setTimeout(() => {
-                    screenCodex.style.display = 'none';
+                    if(screenCodex) screenCodex.style.display = 'none';
                     const screenMap = document.getElementById('screen-map');
-                    screenMap.classList.remove('hidden');
+                    if(screenMap) screenMap.classList.remove('hidden');
                     
                     if(window.MapEngine && window.MapEngine.map) {
                         window.MapEngine.map.flyTo([38.5, 25.5], 6, { duration: 1.5 });
                         window.MapEngine.updateMarkers();
                     }
                     
-                    setTimeout(() => screenMap.classList.remove('opacity-0'), 50);
+                    setTimeout(() => { if(screenMap) screenMap.classList.remove('opacity-0'); }, 50);
                     
                     if(State.relics.length === HERODOTUS_DB.length) setTimeout(() => this.triggerVictory(), 2500);
                 }, 700);
             },
             toggleImmersive() {
-                if(AudioFX) AudioFX.click();
+                if(window.AudioFX) window.AudioFX.click();
                 this.isImmersive = !this.isImmersive;
                 const codex = document.getElementById('screen-codex');
                 
                 if(this.isImmersive) {
-                    codex.classList.add('immersive-mode');
-                    if(AudioFX) AudioFX.playDrone();
+                    if(codex) codex.classList.add('immersive-mode');
+                    if(window.AudioFX) window.AudioFX.playDrone();
                     this.setZenLayout('dual'); 
                 } else {
-                    codex.classList.remove('immersive-mode');
-                    codex.className = "absolute inset-0 z-40 bg-black flex-col flex opacity-100 transition-opacity duration-700"; 
-                    if(AudioFX) AudioFX.stopDrone();
+                    if(codex) {
+                        codex.classList.remove('immersive-mode');
+                        codex.className = "absolute inset-0 z-40 bg-black flex-col flex opacity-100 transition-opacity duration-700"; 
+                    }
+                    if(window.AudioFX) window.AudioFX.stopDrone();
                 }
             },
             setZenLayout(layout) {
-                if(AudioFX) AudioFX.hover();
+                if(window.AudioFX) window.AudioFX.hover();
                 const container = document.getElementById('dual-codex-container');
-                container.className = `dual-codex w-full relative zen-layout-${layout}`;
+                if(container) container.className = `dual-codex w-full relative zen-layout-${layout}`;
                 
                 document.querySelectorAll('.zen-btn').forEach(b => b.classList.remove('active'));
-                document.getElementById(`zen-btn-${layout}`).classList.add('active');
+                const activeBtn = document.getElementById(`zen-btn-${layout}`);
+                if(activeBtn) activeBtn.classList.add('active');
             },
             triggerVictory() {
-                if(AudioFX) { AudioFX.success(); setTimeout(()=>AudioFX.success(), 1000); }
+                if(window.AudioFX) { window.AudioFX.success(); setTimeout(()=>window.AudioFX.success(), 1000); }
                 const victoryScreen = document.getElementById('screen-victory');
-                victoryScreen.classList.remove('hidden');
-                victoryScreen.style.display = 'flex';
-                setTimeout(() => { victoryScreen.classList.remove('opacity-0'); }, 100);
+                if(victoryScreen) {
+                    victoryScreen.classList.remove('hidden');
+                    victoryScreen.style.display = 'flex';
+                    setTimeout(() => { victoryScreen.classList.remove('opacity-0'); }, 100);
+                }
             }
         };
 
@@ -1285,28 +1300,42 @@
             window.AudioFX = AudioFX;
 
             // Eventos del Modo Zen
-            document.getElementById('zen-btn-dual').addEventListener('click', () => Game.setZenLayout('dual'));
-            document.getElementById('zen-btn-gr').addEventListener('click', () => Game.setZenLayout('gr'));
-            document.getElementById('zen-btn-es').addEventListener('click', () => Game.setZenLayout('es'));
-            document.getElementById('zen-btn-exit').addEventListener('click', () => Game.toggleImmersive());
-            document.getElementById('btn-exit-zen').addEventListener('click', () => Game.toggleImmersive());
+            document.getElementById('zen-btn-dual')?.addEventListener('click', () => Game.setZenLayout('dual'));
+            document.getElementById('zen-btn-gr')?.addEventListener('click', () => Game.setZenLayout('gr'));
+            document.getElementById('zen-btn-es')?.addEventListener('click', () => Game.setZenLayout('es'));
+            document.getElementById('zen-btn-exit')?.addEventListener('click', () => Game.toggleImmersive());
+            document.getElementById('btn-exit-zen')?.addEventListener('click', () => Game.toggleImmersive());
             
             // Eventos del Cajón de Acertijo
-            document.getElementById('btn-toggle-puzzle').addEventListener('click', () => Puzzle.toggleDrawer());
-            document.getElementById('btn-close-puzzle-drawer').addEventListener('click', () => Puzzle.toggleDrawer());
-            document.getElementById('btn-check-puzzle').addEventListener('click', () => Puzzle.check());
+            document.getElementById('btn-toggle-puzzle')?.addEventListener('click', () => Puzzle.toggleDrawer());
+            document.getElementById('btn-close-puzzle-drawer')?.addEventListener('click', () => Puzzle.toggleDrawer());
+            document.getElementById('btn-check-puzzle')?.addEventListener('click', () => Puzzle.check());
             
             // Eventos del Reproductor
-            document.getElementById('btn-tts-lang').addEventListener('click', () => TTS.toggleLang());
-            document.getElementById('btn-tts-play').addEventListener('click', () => TTS.togglePlay());
-            document.getElementById('btn-tts-stop').addEventListener('click', () => TTS.stop());
+            document.getElementById('btn-tts-lang')?.addEventListener('click', () => TTS.toggleLang());
+            document.getElementById('btn-tts-play')?.addEventListener('click', () => TTS.togglePlay());
+            document.getElementById('btn-tts-stop')?.addEventListener('click', () => TTS.stop());
+
+            // Evento Oráculo
+            document.getElementById('btn-open-oracle')?.addEventListener('click', () => Oracle.open());
+            document.getElementById('btn-close-oracle')?.addEventListener('click', () => Oracle.close());
+
+            // Evento Códice
+            document.getElementById('btn-close-codex')?.addEventListener('click', () => Game.closeCodex());
+
+            // Eventos Mapa
+            document.getElementById('btn-layer-sat')?.addEventListener('click', () => MapEngine.setLayer('satellite'));
+            document.getElementById('btn-layer-pap')?.addEventListener('click', () => MapEngine.setLayer('antique'));
 
             // Evento Victoria
-            document.getElementById('btn-restart').addEventListener('click', () => location.reload());
+            document.getElementById('btn-restart')?.addEventListener('click', () => location.reload());
 
             // Controles de Teclado
             document.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter' && !document.getElementById('puzzle-drawer').classList.contains('translate-y-full')) Puzzle.check();
+                if(e.key === 'Enter') {
+                    const drawer = document.getElementById('puzzle-drawer');
+                    if(drawer && !drawer.classList.contains('translate-y-full')) Puzzle.check();
+                }
                 if(e.key === 'Escape') {
                     if(window.Oracle) window.Oracle.close();
                     if(window.Lexicon) window.Lexicon.hide();
