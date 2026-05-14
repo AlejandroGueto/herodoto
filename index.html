@@ -16,16 +16,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
-        /* ==========================================================================
-           VARIABLES Y ESTÉTICA HELÉNICA (Ultra Premium UI)
-           ========================================================================== */
         :root {
-            --aegean-dark: #02060a;
-            --aegean-blue: #081624;
+            --aegean-dark: #0a0f16;
+            --aegean-blue: #132235;
             --marble: #f4f0e6;
             --gold: #d4af37;
             --gold-light: #f9d976;
-            --clay: #b85c38;
             --sparta-red: #8b0000;
         }
 
@@ -37,448 +33,324 @@
             width: 100vw; height: 100vh;
         }
 
-        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.8; letter-spacing: 0.8px; }
+        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.2; letter-spacing: 0.5px; }
         .font-title { font-family: 'Cinzel Decorative', serif; }
 
-        /* Animaciones Épicas */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes pulseMarker { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); } 70% { box-shadow: 0 0 0 35px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
-        @keyframes shineText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-        @keyframes audioBar { 0% { height: 5px; } 50% { height: 35px; } 100% { height: 5px; } }
-        @keyframes crawl { 0% { transform: translateY(100vh); opacity: 0; } 10% { opacity: 0.3; } 90% { opacity: 0.3; } 100% { transform: translateY(-200vh); opacity: 0; } }
-
-        .animate-fade { animation: fadeIn 1.2s ease-in forwards; }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        .animate-crawl { animation: crawl 40s linear infinite; }
+        @keyframes pulseMarker { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); } 70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
+        @keyframes audioBar { 0% { height: 4px; } 50% { height: 20px; } 100% { height: 4px; } }
         
-        .text-shine {
-            background: linear-gradient(to right, #d4af37 20%, #fff 40%, #fff 60%, #d4af37 80%);
-            background-size: 200% auto;
-            color: #000; background-clip: text; text-fill-color: transparent; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: shineText 7s linear infinite;
-        }
-
-        /* Glassmorphism y Texturas */
+        .animate-fade { animation: fadeIn 0.8s ease-in forwards; }
+        
         .glass-panel {
-            background: linear-gradient(135deg, rgba(8, 22, 36, 0.85), rgba(2, 6, 10, 0.95));
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.95), inset 0 0 40px rgba(212, 175, 55, 0.1);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(10, 15, 22, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
 
         .parchment-panel {
-            background-color: #f4ecd8;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" opacity="0.08"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="5"/></filter><rect width="300" height="300" filter="url(%23n)"/></svg>');
-            color: #2a2218; box-shadow: inset 0 0 100px rgba(139,69,19,0.25);
+            background-color: #fcf8f2;
+            color: #1a1a1a; 
+            border-left: 1px solid rgba(0,0,0,0.1);
         }
 
-        /* Botones */
         .btn-hellenic {
             background: rgba(2, 6, 10, 0.9); border: 1px solid var(--gold); color: var(--gold);
-            font-family: 'Cinzel Decorative', serif; text-transform: uppercase; letter-spacing: 4px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
-            border-radius: 4px; cursor: pointer; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-family: 'Cinzel Decorative', serif; text-transform: uppercase; letter-spacing: 2px;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+            border-radius: 6px; cursor: pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
-        .btn-hellenic::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent); transition: all 0.5s;
+        .btn-hellenic:hover { 
+            background: rgba(212, 175, 55, 0.15); 
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); 
+            transform: translateY(-2px); color: #fff; border-color: var(--gold-light); 
         }
-        .btn-hellenic:hover::before { left: 100%; }
-        .btn-hellenic:hover { background: rgba(212, 175, 55, 0.2); box-shadow: 0 0 30px rgba(212, 175, 55, 0.6); text-shadow: 0 0 12px var(--gold-light); transform: translateY(-3px); color: #fff; border-color: var(--gold-light); }
 
-        /* Leaflet Map Overrides */
-        #map-wrapper { background: var(--aegean-dark); height: 100%; width: 100%; z-index: 10; position: relative; }
-        #map-container { height: 100%; width: 100%; z-index: 10; position: absolute; inset: 0; }
-        #dust-canvas { position: absolute; inset: 0; z-index: 15; pointer-events: none; opacity: 0.6; }
-        .leaflet-container { font-family: 'Cinzel Decorative', serif; }
-        
-        .custom-marker {
-            width: 34px; height: 34px; background: radial-gradient(circle, var(--gold-light) 0%, var(--gold) 100%);
-            border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 25px var(--gold);
-            animation: pulseMarker 2.5s infinite; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .custom-marker:hover { transform: scale(1.6); background: #fff; border-color: var(--gold); z-index: 1000 !important; }
-        .custom-marker.completed { background: var(--aegean-blue); border-color: var(--gold); box-shadow: 0 0 20px var(--aegean-blue); animation: none; }
-        
-        .premium-tooltip {
-            background: rgba(8, 22, 36, 0.9) !important; border: 1px solid var(--gold) !important;
-            color: var(--gold-light) !important; font-family: 'Cinzel Decorative', serif;
-            font-size: 20px; font-weight: bold; text-shadow: 2px 2px 8px #000;
-            border-radius: 6px; padding: 10px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.95) !important;
-            backdrop-filter: blur(8px); white-space: nowrap; z-index: 1000 !important;
-        }
-        .story-path { stroke: var(--gold); stroke-width: 5; stroke-dasharray: 15, 15; opacity: 0.8; animation: dash 30s linear infinite; filter: drop-shadow(0 0 8px var(--gold)); }
-        @keyframes dash { to { stroke-dashoffset: 1000; } }
-
-        /* ==========================================================================
-           EL NUEVO SISTEMA DE PESTAÑAS (FLEXBOX ESTRICTO, SIN SOLAPAMIENTOS)
-           ========================================================================== */
-        
-        /* Contenedor principal de la pantalla Códice: Columna Flex estricta */
         .codex-screen-layout {
             display: flex; flex-direction: column; width: 100vw; height: 100dvh; 
             overflow: hidden; background: var(--aegean-dark);
         }
 
-        /* Barra de navegación de pestañas */
         .tabs-nav {
-            display: flex; overflow-x: auto; background: #02060a; border-bottom: 1px solid rgba(212,175,55,0.3);
-            flex-shrink: 0;
+            display: flex; overflow-x: auto; background: #04080c; border-bottom: 1px solid rgba(212,175,55,0.3);
+            flex-shrink: 0; padding: 0 10px;
         }
         .tab-btn {
-            flex: 1; min-width: 160px; padding: 16px 20px; font-family: 'Cinzel Decorative';
-            font-size: 1.1rem; color: #888; background: transparent; border: none;
-            border-bottom: 3px solid transparent; transition: all 0.3s; cursor: pointer;
-            text-align: center; white-space: nowrap; text-transform: uppercase; letter-spacing: 2px;
+            padding: 12px 20px; font-family: 'Cinzel Decorative'; font-size: 0.9rem; 
+            color: #888; background: transparent; border: none; border-bottom: 2px solid transparent; 
+            transition: all 0.3s; cursor: pointer; white-space: nowrap; text-transform: uppercase; letter-spacing: 1px;
         }
         .tab-btn:hover { color: var(--gold-light); background: rgba(212,175,55,0.05); }
-        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(2,6,10,0.8); font-weight: bold; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
+        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(212,175,55,0.1); font-weight: bold; }
 
-        /* Área de contenido con Scroll unificado */
-        .codex-scroll-area {
-            flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; background: #060a10;
-        }
+        .codex-scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; background: #0a0f16; }
         
-        /* Contenedor Dual */
         .dual-codex { display: flex; flex-direction: column; min-height: 100%; width: 100%; }
         @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
 
-        /* Paneles de texto individuales */
-        .codex-pane { padding: 3rem 2rem; position: relative; }
-        @media (min-width: 768px) { .codex-pane { padding: 4rem 5rem; } }
+        /* Espaciados corregidos y legibles */
+        .codex-pane { padding: 2rem; position: relative; }
+        @media (min-width: 768px) { .codex-pane { padding: 3rem 4rem; } }
         
-        .pane-greek { background: #060a10; color: #e2e8f0; border-bottom: 2px solid var(--gold); }
-        @media (min-width: 1024px) { .pane-greek { border-bottom: none; border-right: 3px solid var(--gold); } }
-        .pane-spanish { border-top: 1px solid rgba(0,0,0,0.1); }
-        @media (min-width: 1024px) { .pane-spanish { border-top: none; } }
+        .pane-greek { background: #0a0f16; color: #e2e8f0; }
+        @media (min-width: 1024px) { .pane-greek { border-right: 2px solid var(--gold); } }
 
-        /* LÓGICA DE VISIBILIDAD DE PESTAÑAS (Mapeado directo a tu JS existente) */
-        
-        /* Layout 1: Bilingüe (Dual) */
         .zen-layout-dual .pane-greek, .zen-layout-dual .pane-spanish { display: block; flex: 1; }
         .zen-layout-dual #puzzle-drawer { display: none !important; }
 
-        /* Layout 2: Solo Griego */
-        .zen-layout-gr .pane-greek { display: block; flex: 1; max-width: 1200px; margin: 0 auto; border-right: none; }
+        .zen-layout-gr .pane-greek { display: block; flex: 1; max-width: 900px; margin: 0 auto; border-right: none; }
         .zen-layout-gr .pane-spanish { display: none; }
         .zen-layout-gr #puzzle-drawer { display: none !important; }
 
-        /* Layout 3: Solo Español */
         .zen-layout-es .pane-greek { display: none; }
-        .zen-layout-es .pane-spanish { display: block; flex: 1; max-width: 1200px; margin: 0 auto; }
+        .zen-layout-es .pane-spanish { display: block; flex: 1; max-width: 900px; margin: 0 auto; border-left: none; border-right: 1px solid rgba(0,0,0,0.1); }
         .zen-layout-es #puzzle-drawer { display: none !important; }
 
-        /* Layout 4: Acertijo (El viejo cajón ahora es una pestaña segura) */
+        /* Acertijo corregido como capa absoluta limpia */
         .zen-layout-puzzle .pane-greek { display: none; }
         .zen-layout-puzzle .pane-spanish { display: none; }
-        .zen-layout-puzzle #puzzle-drawer { display: flex !important; flex-direction: column; justify-content: center; min-height: 100%; transform: none !important; }
+        .zen-layout-puzzle #puzzle-drawer { display: flex !important; flex-direction: column; justify-content: center; align-items: center; min-height: 100%; background: var(--aegean-dark); }
 
-        /* Anulamos la clase translate-y-full del JS original para que no rompa la pestaña */
-        .translate-y-full { transform: none !important; }
+        /* Scrollbars elegantes */
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.5); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-        /* ========================================================================== */
+        /* Letras capitales corregidas */
+        .drop-cap-greek::first-letter { font-size: 3em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--gold-light); }
+        .drop-cap-spanish::first-letter { font-size: 3em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
-        @media (min-width: 768px) { .custom-scrollbar::-webkit-scrollbar { width: 14px; } }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 8px;}
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 8px; border: 2px solid #000; }
+        .word-interactive { border-bottom: 1px dotted rgba(212, 175, 55, 0.5); padding: 0 2px; cursor: pointer; transition: color 0.2s; }
+        .word-interactive:hover { color: var(--gold-light); background: rgba(212, 175, 55, 0.1); }
+        .glossary-word { font-weight: 700; color: #fdf5d3; }
 
-        .drop-cap-greek::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--gold-light); text-shadow: 0 0 30px rgba(212,175,55,0.9); }
-        @media (min-width: 768px) { .drop-cap-greek::first-letter { font-size: 5.5em; } }
-        .drop-cap-spanish::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
-        @media (min-width: 768px) { .drop-cap-spanish::first-letter { font-size: 5.5em; } }
-
-        /* Interactividad Léxica */
-        .word-interactive {
-            display: inline-block; cursor: pointer; transition: all 0.2s ease;
-            border-bottom: 2px dotted rgba(212, 175, 55, 0.3); padding: 0 5px; border-radius: 4px;
-        }
-        .word-interactive:hover {
-            color: var(--gold-light); text-shadow: 0 0 20px var(--gold);
-            background: rgba(212, 175, 55, 0.25); border-bottom: 2px solid var(--gold); transform: scale(1.05);
-        }
-        .glossary-word { border-bottom: 2px dashed var(--gold-light); font-weight: 700; color: #fdf5d3; }
-
-        /* Lexicon Tooltip */
+        /* El tooltip ahora es un modal fijo en el centro, nunca se corta */
         #lexicon-tooltip {
-            position: fixed; z-index: 99999; pointer-events: none; opacity: 0;
-            background: rgba(4, 10, 16, 0.98); border: 2px solid var(--gold);
+            position: fixed !important; z-index: 99999; 
+            top: 50% !important; left: 50% !important; 
+            transform: translate(-50%, -50%) scale(0.95) !important;
+            background: rgba(10, 15, 22, 0.98); border: 1px solid var(--gold);
             color: var(--marble); padding: 25px; border-radius: 12px;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.95), 0 0 45px rgba(212,175,55,0.6);
-            backdrop-filter: blur(25px); transform: translate(-50%, 15px);
-            transition: opacity 0.3s, transform 0.3s; width: 90%; max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            width: 90%; max-width: 450px; max-height: 85vh; overflow-y: auto;
+            opacity: 0; pointer-events: none; transition: all 0.3s;
         }
-        @media (min-width: 768px) { #lexicon-tooltip { padding: 35px; width: auto; min-width: 450px; max-width: 600px; } }
-        #lexicon-tooltip.visible { opacity: 1; transform: translate(-50%, -15px); pointer-events: auto; }
+        #lexicon-tooltip.visible { opacity: 1; transform: translate(-50%, -50%) scale(1) !important; pointer-events: auto; }
 
-        .morph-tag { 
-            display: inline-block; background: var(--aegean-blue); color: var(--gold-light); 
-            padding: 6px 14px; border-radius: 20px; font-size: 1rem; font-family: 'Cinzel Decorative'; 
-            letter-spacing: 2px; margin-bottom: 16px; border: 1px solid var(--gold); box-shadow: 0 5px 20px rgba(0,0,0,0.6);
-        }
-        @media (min-width: 768px) { .morph-tag { padding: 8px 18px; font-size: 1.2rem; } }
-        .lexicon-lemma { color: #b8b8b8; font-style: italic; font-size: 1.3rem; margin-top: 5px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif;}
-        @media (min-width: 768px) { .lexicon-lemma { font-size: 1.6rem; } }
+        .morph-tag { background: var(--aegean-blue); color: var(--gold-light); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-family: 'Cinzel Decorative'; border: 1px solid var(--gold); }
 
-        /* Oráculo Modal Centralizado y Seguro */
         #oracle-modal {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
-            z-index: 100000; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 95%; max-width: 1000px; max-height: 85vh; overflow-y: auto;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
+            z-index: 100000; opacity: 0; pointer-events: none; transition: all 0.3s;
+            width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto;
         }
         #oracle-modal.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
 
-        /* Reproductor Audiolibro - Ahora anclado al flexbox */
         .audio-player-bar {
             display: none; align-items: center; justify-content: space-between; flex-wrap: wrap;
-            padding: 15px 20px; background: rgba(2, 6, 10, 0.98); border-top: 2px solid var(--gold);
-            z-index: 9000; flex-shrink: 0; width: 100%; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+            padding: 10px 20px; background: rgba(5, 10, 15, 0.98); border-top: 1px solid rgba(212,175,55,0.4);
+            z-index: 9000; flex-shrink: 0; width: 100%; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
         .audio-player-bar.visible { display: flex; }
-        @media (min-width: 768px) { .audio-player-bar { padding: 20px 40px; } }
 
-        .visualizer-bar { width: 4px; height: 6px; background: var(--gold); border-radius: 3px; transition: height 0.1s; }
-        @media (min-width: 768px) { .visualizer-bar { width: 6px; height: 8px; } }
-        .visualizer.playing .visualizer-bar { animation: audioBar 1s infinite alternate; }
+        .visualizer-bar { width: 4px; height: 4px; background: var(--gold); border-radius: 2px; transition: height 0.1s; }
+        .visualizer.playing .visualizer-bar { animation: audioBar 0.8s infinite alternate; }
         .visualizer.playing .visualizer-bar:nth-child(1) { animation-delay: 0.1s; }
         .visualizer.playing .visualizer-bar:nth-child(2) { animation-delay: 0.3s; }
         .visualizer.playing .visualizer-bar:nth-child(3) { animation-delay: 0.2s; }
         .visualizer.playing .visualizer-bar:nth-child(4) { animation-delay: 0.5s; }
-        .visualizer.playing .visualizer-bar:nth-child(5) { animation-delay: 0.4s; }
 
-        /* Inputs Acertijo */
         .oracle-input {
-            background: rgba(0,0,0,0.6); border: 2px solid var(--gold); border-radius: 8px;
-            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 1.5rem;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--gold); border-radius: 6px;
+            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 1.2rem;
             text-align: center; text-transform: uppercase; outline: none; width: 100%;
-            letter-spacing: 4px; transition: all 0.3s; padding: 10px;
+            letter-spacing: 2px; padding: 12px; transition: all 0.3s;
         }
-        @media (min-width: 768px) { .oracle-input { font-size: 2.5rem; letter-spacing: 8px; padding: 15px; } }
-        .oracle-input:focus { border-color: #fff; box-shadow: 0 0 35px rgba(212,175,55,0.6); background: rgba(0,0,0,0.9); }
+        .oracle-input:focus { border-color: #fff; background: rgba(0,0,0,0.8); }
 
-        /* Ocultar header en modo inmersivo */
         .immersive-mode .top-header { display: none !important; }
 
+        /* Leaflet Map */
+        #map-wrapper { background: var(--aegean-dark); height: 100%; width: 100%; z-index: 10; position: relative; }
+        #map-container { height: 100%; width: 100%; z-index: 10; position: absolute; inset: 0; }
+        #dust-canvas { position: absolute; inset: 0; z-index: 15; pointer-events: none; opacity: 0.6; }
+        .custom-marker { width: 24px; height: 24px; background: radial-gradient(circle, var(--gold-light) 0%, var(--gold) 100%); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 15px var(--gold); animation: pulseMarker 2s infinite; cursor: pointer; }
+        .custom-marker:hover { transform: scale(1.3); }
+        .custom-marker.completed { background: var(--aegean-blue); border-color: var(--gold); box-shadow: 0 0 10px var(--aegean-blue); animation: none; }
+        .premium-tooltip { background: rgba(10, 15, 22, 0.95) !important; border: 1px solid var(--gold) !important; color: var(--gold-light) !important; font-family: 'Cinzel Decorative', serif; border-radius: 4px; padding: 8px 12px; }
+        .story-path { stroke: var(--gold); stroke-width: 3; stroke-dasharray: 10, 10; opacity: 0.8; }
     </style>
 </head>
 <body>
 
-    <!-- ==========================================================================
-         PANTALLA DE INICIO
-         ========================================================================== -->
-    <div id="screen-intro" class="absolute inset-0 z-[10000] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] transition-opacity duration-1000 p-4 overflow-hidden">
-        
-        <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-20 z-0">
-            <div class="font-greek text-2xl md:text-4xl text-[var(--gold)] whitespace-pre-line text-center animate-crawl" style="width: 150%; margin-left: -25%;">
-                ΗΡΟΔΟΤΟΥ ΑΛΙΚΑΡΝΗΣΣΕΟΣ ΙΣΤΟΡΙΗΣ ΑΠΟΔΕΞΙΣ ΗΔΕ
-                ΩΣ ΜΗΤΕ ΤΑ ΓΕΝΟΜΕΝΑ ΕΞ ΑΝΘΡΩΠΩΝ ΤΩ ΧΡΟΝΩ ΕΞΙΤΗΛΑ ΓΕΝΗΤΑΙ
-                ΜΗΤΕ ΕΡΓΑ ΜΕΓΑΛΑ ΤΕ ΚΑΙ ΘΩΜΑΣΤΑ
-                ΤΑ ΜΕΝ ΕΛΛΗΣΙ ΤΑ ΔΕ ΒΑΡΒΑΡΟΙΣΙ ΑΠΟΔΕΧΘΕΝΤΑ ΑΚΛΕΑ ΓΕΝΗΤΑΙ
-                ΤΑ ΤΕ ΑΛΛΑ ΚΑΙ ΔΙ ΗΝ ΑΙΤΙΗΝ ΕΠΟΛΕΜΗΣΑΝ ΑΛΛΗΛΟΙΣΙ
-                ...
-                ΗΡΟΔΟΤΟΥ ΑΛΙΚΑΡΝΗΣΣΕΟΣ ΙΣΤΟΡΙΗΣ ΑΠΟΔΕΞΙΣ ΗΔΕ
-                ΩΣ ΜΗΤΕ ΤΑ ΓΕΝΟΜΕΝΑ ΕΞ ΑΝΘΡΩΠΩΝ ΤΩ ΧΡΟΝΩ ΕΞΙΤΗΛΑ ΓΕΝΗΤΑΙ
-            </div>
-        </div>
-
-        <div id="intro-card" class="text-center max-w-7xl p-8 md:p-20 glass-panel rounded-2xl animate-fade w-[95%] max-h-[90vh] overflow-y-auto custom-scrollbar relative transition-transform duration-200 z-10">
-            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/ancient-map.png')]"></div>
-            <h3 class="text-[var(--gold)] text-xl md:text-5xl tracking-[0.4em] md:tracking-[0.8em] uppercase mb-6 md:mb-10 font-title opacity-90">ΗΡΟΔΟΤΟΣ</h3>
-            <h1 class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-black text-white mb-8 md:mb-16 font-title text-shine drop-shadow-[0_0_60px_rgba(212,175,55,0.6)]">Historias</h1>
-            <p class="text-xl md:text-5xl text-gray-200 text-font mb-10 md:mb-20 italic leading-relaxed px-4 md:px-20 relative z-10 font-light">
+    <div id="screen-intro" class="absolute inset-0 z-[10000] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] transition-opacity duration-1000 p-4">
+        <div id="intro-card" class="text-center max-w-4xl p-8 md:p-12 glass-panel rounded-xl animate-fade w-full relative z-10">
+            <h3 class="text-[var(--gold)] text-sm md:text-lg tracking-[0.4em] uppercase mb-4 font-title opacity-90">ΗΡΟΔΟΤΟΣ</h3>
+            <h1 class="text-5xl md:text-7xl font-black text-white mb-6 font-title drop-shadow-lg">Historias</h1>
+            <p class="text-lg md:text-xl text-gray-300 mb-8 italic leading-relaxed px-4 font-light">
                 "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
             </p>
-            <button id="btn-start" onclick="if(window.Game) window.Game.initMap();" class="btn-hellenic px-10 py-5 md:px-24 md:py-10 text-2xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all">
+            <button id="btn-start" onclick="if(window.Game) window.Game.initMap();" class="btn-hellenic px-8 py-3 text-xl font-bold rounded">
                 Desplegar el Egeo
             </button>
-            <div class="mt-12 md:mt-24 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-[var(--gold)] font-sans tracking-widest uppercase text-xs md:text-xl relative z-10">
-                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Filológico Total</span>
-                <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Fluido</span>
-                <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"/></svg> Túnel Proxy Logeion</span>
-            </div>
         </div>
     </div>
 
-    <!-- ==========================================================================
-         PANTALLA 2: MAPA INTERACTIVO
-         ========================================================================== -->
     <div id="screen-map" class="absolute inset-0 z-20 flex flex-col hidden opacity-0 transition-opacity duration-1000">
-        <header class="h-auto md:h-32 p-6 md:px-16 glass-panel flex flex-col md:flex-row items-center justify-between z-30 border-b-2 border-[var(--gold)] gap-4 shrink-0">
-            <div class="flex items-center gap-4 md:gap-10">
-                <div class="relative w-16 h-16 md:w-28 md:h-28 flex items-center justify-center shrink-0">
-                    <svg class="w-full h-full text-[var(--gold)] animate-[spin_15s_linear_infinite]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="50" cy="50" r="46" stroke-dasharray="20 10"/>
-                        <polygon points="50,10 85,75 15,75" stroke-dasharray="5 5" opacity="0.6"/>
-                    </svg>
-                    <span id="relic-count" class="absolute text-2xl md:text-6xl font-bold font-title text-white">0</span>
+        <header class="h-auto p-4 md:px-8 glass-panel flex flex-col md:flex-row items-center justify-between z-30 border-b border-[var(--gold)] gap-4 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="relative w-12 h-12 flex items-center justify-center shrink-0">
+                    <svg class="w-full h-full text-[var(--gold)] animate-[spin_15s_linear_infinite]" viewBox="0 0 100 100" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="46" stroke-dasharray="20 10"/></svg>
+                    <span id="relic-count" class="absolute text-xl font-bold font-title text-white">0</span>
                 </div>
-                <div class="text-center md:text-left">
-                    <h2 class="font-title text-3xl md:text-6xl text-[var(--gold)] tracking-widest m-0 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">El Telar de Heródoto</h2>
-                    <span class="text-gray-400 text-font italic text-lg md:text-4xl">Pasa el ratón para revelar los mitos en el mapa</span>
+                <div>
+                    <h2 class="font-title text-2xl text-[var(--gold)] tracking-widest m-0 leading-none">El Telar de Heródoto</h2>
+                    <span class="text-gray-400 text-sm italic">Revela los mitos en el mapa</span>
                 </div>
             </div>
-            <div class="flex gap-2 md:gap-4 z-40 bg-black/50 p-2 md:p-3 rounded-lg border border-[var(--gold)] mt-2 md:mt-0">
-                <button id="btn-layer-sat" onclick="if(window.MapEngine) window.MapEngine.setLayer('satellite');" class="text-white hover:text-[var(--gold)] px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider transition-colors cursor-pointer">Satélite</button>
+            <div class="flex gap-2 z-40 bg-black/50 p-1 rounded border border-gray-700">
+                <button id="btn-layer-sat" onclick="if(window.MapEngine) window.MapEngine.setLayer('satellite');" class="text-gray-300 hover:text-white px-3 py-1 text-xs uppercase">Satélite</button>
                 <div class="w-px bg-gray-600"></div>
-                <button id="btn-layer-pap" onclick="if(window.MapEngine) window.MapEngine.setLayer('antique');" class="text-[var(--gold-light)] font-bold px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider transition-colors cursor-pointer">Papiro</button>
+                <button id="btn-layer-pap" onclick="if(window.MapEngine) window.MapEngine.setLayer('antique');" class="text-[var(--gold-light)] px-3 py-1 text-xs uppercase">Papiro</button>
             </div>
         </header>
         <div id="map-wrapper" class="flex-1 relative">
             <main id="map-container" class="absolute inset-0"></main>
-            <canvas id="dust-canvas" class="absolute inset-0 z-50 pointer-events-none opacity-60"></canvas>
+            <canvas id="dust-canvas" class="absolute inset-0 z-50 pointer-events-none opacity-40"></canvas>
         </div>
     </div>
 
-    <!-- ==========================================================================
-         PANTALLA 3: EL CÓDICE (EL NUEVO SISTEMA DE FLEXBOX SIN OVERLAPS)
-         ========================================================================== -->
-    <div id="screen-codex" class="fixed inset-0 z-40 bg-black hidden opacity-0 transition-opacity duration-700 codex-screen-layout">
+    <div id="screen-codex" class="fixed inset-0 z-40 bg-black hidden opacity-0 transition-opacity duration-500 codex-screen-layout">
         
-        <!-- 1. HEADER SUPERIOR (Fijo, no se monta sobre nada) -->
-        <div class="top-header h-auto p-4 md:p-6 md:px-12 border-b border-gray-700 glass-panel flex flex-col md:flex-row items-center justify-between z-20 shrink-0 gap-4">
-            <h2 id="codex-title" class="font-title text-3xl md:text-5xl text-[var(--gold-light)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)] text-center m-0">Título</h2>
-            <div class="flex flex-wrap justify-center gap-3 md:gap-6">
-                <button id="btn-open-oracle" onclick="if(window.Oracle) window.Oracle.open();" class="btn-hellenic px-4 py-2 md:px-6 md:py-3 text-sm md:text-xl flex items-center gap-2 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="hidden md:inline">Oráculo Histórico</span>
+        <!-- Header Superior -->
+        <div class="top-header p-4 border-b border-gray-800 glass-panel flex flex-col md:flex-row items-center justify-between z-20 shrink-0 gap-3">
+            <h2 id="codex-title" class="font-title text-2xl text-[var(--gold-light)] tracking-wider text-center m-0">Título</h2>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button id="btn-open-oracle" onclick="if(window.Oracle) window.Oracle.open();" class="btn-hellenic px-3 py-2 text-xs flex items-center gap-1">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Oráculo
                 </button>
-                <!-- Modo Zen ahora oculta este Header para ampliar la lectura -->
-                <button id="btn-zen-mode" onclick="if(window.Game) window.Game.toggleImmersive();" class="btn-hellenic px-4 py-2 md:px-6 md:py-3 text-sm md:text-xl flex items-center gap-2">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span class="hidden md:inline">Modo Zen</span>
+                <button id="btn-zen-mode" onclick="if(window.Game) window.Game.toggleImmersive();" class="btn-hellenic px-3 py-2 text-xs flex items-center gap-1">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    Zen
                 </button>
-                <button id="btn-close-codex" onclick="if(window.Game) window.Game.closeCodex();" class="btn-hellenic px-4 py-2 md:px-8 md:py-3 text-sm md:text-xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
+                <button id="btn-close-codex" onclick="if(window.Game) window.Game.closeCodex();" class="btn-hellenic px-3 py-2 text-xs border-gray-600 text-gray-400 hover:text-white">
                     ✕ Volver al Mapa
                 </button>
             </div>
         </div>
 
-        <!-- 2. BARRA DE PESTAÑAS (Integrada al flujo, sustituye al antiguo zen-toolbar flotante) -->
+        <!-- Barra de Pestañas -->
         <div class="tabs-nav custom-scrollbar">
-            <!-- Mapeamos las pestañas directamente a tu función setZenLayout original -->
-            <button id="zen-btn-dual" onclick="if(window.Game) window.Game.setZenLayout('dual');" class="tab-btn active">📖 Dual Bilingüe</button>
-            <button id="zen-btn-gr" onclick="if(window.Game) window.Game.setZenLayout('gr');" class="tab-btn">🏛️ Texto Griego</button>
-            <button id="zen-btn-es" onclick="if(window.Game) window.Game.setZenLayout('es');" class="tab-btn">🇪🇸 Castellano</button>
-            <button id="zen-btn-puzzle" onclick="if(window.Game) window.Game.setZenLayout('puzzle');" class="tab-btn text-[var(--gold)]" style="font-weight: 900;">🧩 Resolver Acertijo</button>
+            <button id="zen-btn-dual" onclick="if(window.Game) window.Game.setZenLayout('dual');" class="tab-btn active">Lectura Dual</button>
+            <button id="zen-btn-gr" onclick="if(window.Game) window.Game.setZenLayout('gr');" class="tab-btn">Texto Griego</button>
+            <button id="zen-btn-es" onclick="if(window.Game) window.Game.setZenLayout('es');" class="tab-btn">Castellano</button>
         </div>
 
-        <!-- Botón para salir del modo inmersivo (Solo aparece al estar en Zen) -->
-        <div class="hidden immersive-mode:flex shrink-0 w-full justify-center bg-black p-2 border-b border-gray-800">
-            <button id="btn-exit-zen" onclick="if(window.Game) window.Game.toggleImmersive();" class="text-gray-400 hover:text-[var(--sparta-red)] text-sm font-sans tracking-widest uppercase">✕ Salir de Lectura Inmersiva</button>
+        <div class="hidden immersive-mode:flex shrink-0 w-full justify-center bg-black p-1 border-b border-gray-900">
+            <button id="btn-exit-zen" onclick="if(window.Game) window.Game.toggleImmersive();" class="text-gray-500 hover:text-white text-xs tracking-widest uppercase">✕ Salir de Lectura Inmersiva</button>
         </div>
 
-        <!-- 3. ÁREA DE SCROLL PRINCIPAL (Todo se desplaza aquí dentro) -->
+        <!-- Área de Lectura -->
         <div class="codex-scroll-area custom-scrollbar relative">
-            
-            <!-- Contenedor que alterna las vistas según las clases zen-layout-* -->
             <div id="dual-codex-container" class="dual-codex zen-layout-dual">
                 
-                <!-- Pestaña: Texto Griego -->
                 <div id="pane-greek" class="codex-pane pane-greek">
-                    <h3 class="font-title text-[var(--gold)] text-center text-4xl md:text-6xl mb-12 border-b-2 border-gray-800 pb-8 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
-                    <div id="text-greek" class="font-greek text-3xl lg:text-5xl text-justify leading-loose pb-10">
-                        <!-- Texto Inyectado Interactivo -->
-                    </div>
+                    <h3 class="font-title text-gray-500 text-center text-xl md:text-2xl mb-6 border-b border-gray-800 pb-4 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
+                    <div id="text-greek" class="font-greek text-lg md:text-xl text-justify leading-relaxed pb-8"></div>
                 </div>
 
-                <!-- Pestaña: Texto Español -->
                 <div id="pane-spanish" class="codex-pane pane-spanish parchment-panel">
-                    <h3 class="font-title text-[var(--sparta-red)] text-center text-4xl md:text-6xl mb-12 border-b-2 border-gray-400 pb-8 tracking-widest font-bold drop-shadow-md">VERSIÓN CASTELLANA</h3>
-                    <div id="text-spanish" class="text-font text-3xl lg:text-5xl text-justify leading-relaxed pb-10 font-medium">
-                        <!-- Texto Inyectado -->
-                    </div>
+                    <h3 class="font-title text-gray-400 text-center text-xl md:text-2xl mb-6 border-b border-gray-300 pb-4 tracking-widest font-bold">VERSIÓN CASTELLANA</h3>
+                    <div id="text-spanish" class="text-font text-lg md:text-xl text-justify leading-relaxed pb-8 font-medium"></div>
                     
-                    <!-- Botón para ir al acertijo al terminar de leer -->
-                    <div class="mt-16 pt-8 border-t border-gray-400 text-center">
-                        <button onclick="if(window.Game) window.Game.setZenLayout('puzzle');" class="btn-hellenic px-10 py-5 text-2xl md:text-4xl bg-[var(--aegean-blue)] shadow-[0_0_30px_rgba(212,175,55,0.4)] border-white text-white hover:bg-white hover:text-black hover:border-[var(--gold)]">
+                    <div class="mt-8 pt-6 border-t border-gray-300 text-center">
+                        <button onclick="if(window.Game) window.Game.setZenLayout('puzzle');" class="btn-hellenic px-6 py-3 text-sm md:text-base bg-[var(--aegean-blue)] border-[var(--aegean-blue)] text-white hover:border-[var(--gold)]">
                             Enfrentar el Acertijo Final ➔
                         </button>
                     </div>
                 </div>
 
-                <!-- Pestaña: El Acertijo (Ya no es un cajón que se superpone, es una sección pura) -->
-                <div id="puzzle-drawer" class="glass-panel p-8 md:p-20 text-center relative">
-                    <div class="max-w-6xl mx-auto flex flex-col justify-center h-full">
-                        <h3 class="font-title text-[var(--gold-light)] text-5xl md:text-7xl mb-12 drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">El Acertijo de las Moiras</h3>
-                        <p id="puzzle-desc" class="text-font text-3xl md:text-5xl text-white mb-16 leading-relaxed">...</p>
+                <div id="puzzle-drawer" class="hidden w-full p-6 text-center">
+                    <div class="max-w-2xl mx-auto flex flex-col justify-center bg-black/60 p-8 md:p-12 rounded-xl border border-[var(--gold)] shadow-[0_0_30px_rgba(0,0,0,0.8)] relative">
                         
-                        <div class="flex flex-col lg:flex-row justify-center items-center gap-8">
-                            <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3 h-20 md:h-28 text-3xl md:text-5xl" placeholder="Escribe tu ofrenda aquí..." autocomplete="off" spellcheck="false">
-                            <button id="btn-check-puzzle" onclick="if(window.Puzzle) window.Puzzle.check();" class="btn-hellenic px-10 py-6 md:px-16 md:py-8 text-3xl md:text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)] shrink-0">
-                                Sellar Destino
+                        <!-- Botón crucial para salir del acertijo -->
+                        <button onclick="if(window.Game) window.Game.setZenLayout('dual');" class="absolute top-4 right-4 text-gray-500 hover:text-white font-bold text-xl px-2">✕</button>
+
+                        <h3 class="font-title text-[var(--gold-light)] text-2xl md:text-3xl mb-6">El Acertijo de las Moiras</h3>
+                        <p id="puzzle-desc" class="text-font text-lg text-gray-200 mb-8 leading-relaxed">...</p>
+                        
+                        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                            <input type="text" id="puzzle-input" class="oracle-input sm:w-2/3" placeholder="Tu ofrenda..." autocomplete="off">
+                            <button id="btn-check-puzzle" onclick="if(window.Puzzle) window.Puzzle.check();" class="btn-hellenic px-6 py-3 w-full sm:w-auto bg-[var(--gold)] text-black font-bold">
+                                Sellar
                             </button>
                         </div>
-                        <p id="puzzle-feedback" class="h-16 text-[var(--sparta-red)] text-3xl md:text-5xl font-bold mt-12"></p>
+                        <p id="puzzle-feedback" class="h-8 text-[var(--sparta-red)] text-sm md:text-base font-bold mt-4"></p>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- 4. BARRA INFERIOR DE AUDIO (Anclada al flujo Flexbox, nunca tapa el texto) -->
         <div id="audio-player" class="audio-player-bar">
-            <div class="flex items-center gap-4">
-                <span class="font-title text-[var(--gold)] text-lg md:text-2xl uppercase tracking-widest hidden md:inline">El Aedo de Halicarnaso</span>
-                <div id="visualizer" class="visualizer flex items-end gap-2 md:gap-3 h-10 px-4 md:px-6 border-l-2 border-gray-700">
+            <div class="flex items-center gap-3">
+                <span class="font-title text-[var(--gold)] text-sm uppercase tracking-widest hidden md:inline">Aedo de Halicarnaso</span>
+                <div id="visualizer" class="visualizer flex items-end gap-1 h-6 px-3 border-l border-gray-800">
                     <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
                 </div>
             </div>
             
-            <div class="flex items-center gap-6 md:gap-10">
-                <button id="btn-tts-lang" class="text-lg md:text-2xl border-2 border-gray-500 rounded-lg px-4 py-2 md:px-6 md:py-3 text-gray-200 hover:text-white hover:border-white transition-all w-28 md:w-40 text-center font-bold bg-black/50 cursor-pointer">
+            <div class="flex items-center gap-4">
+                <button id="btn-tts-lang" class="text-xs border border-gray-600 rounded px-3 py-1 text-gray-300 hover:text-white w-20 text-center bg-black/30">
                     🇪🇸 ESP
                 </button>
-                <button id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-transform transform hover:scale-125 cursor-pointer">
-                    <svg class="w-10 h-10 md:w-14 md:h-14" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
+                <button id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-transform hover:scale-110">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
                 </button>
-                <button id="btn-tts-stop" class="text-gray-400 hover:text-[var(--sparta-red)] transition-colors cursor-pointer">
-                    <svg class="w-8 h-8 md:w-10 md:h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
+                <button id="btn-tts-stop" class="text-gray-500 hover:text-[var(--sparta-red)]">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- TOOLTIP DICCIONARIO -->
     <div id="lexicon-tooltip">
-        <div class="flex justify-between items-start mb-6">
-            <h4 id="lexicon-greek" class="font-greek text-4xl md:text-6xl text-[var(--gold)] m-0 drop-shadow-[0_2px_5px_#000]">Λέξις</h4>
-            <span id="lexicon-morph" class="morph-tag mt-3">Análisis</span>
+        <button onclick="document.getElementById('lexicon-tooltip').classList.remove('visible');" class="absolute top-4 right-4 text-xl text-gray-500 hover:text-white">✕</button>
+        
+        <div class="flex flex-col items-start mb-4 pr-6">
+            <h4 id="lexicon-greek" class="font-greek text-3xl text-[var(--gold)] m-0">Λέξις</h4>
+            <span id="lexicon-morph" class="morph-tag mt-2">Análisis</span>
         </div>
-        <div id="lexicon-lemma" class="lexicon-lemma mb-6 text-xl md:text-2xl"></div>
-        <p id="lexicon-spanish" class="text-font text-2xl md:text-4xl text-white m-0 leading-relaxed mb-10">Traducción...</p>
-        <div class="border-t border-gray-700 pt-8 text-center">
-            <a id="lexicon-link" href="#" target="_blank" class="inline-block text-xl md:text-3xl text-[var(--aegean-blue)] bg-[var(--gold-light)] font-bold text-black px-6 py-3 md:px-10 md:py-4 rounded-xl hover:bg-white font-title transition-all shadow-[0_0_30px_var(--gold)]">
-                Traducir Logeion al Español ↗
+        <div id="lexicon-lemma" class="lexicon-lemma mb-4 text-sm md:text-base"></div>
+        <p id="lexicon-spanish" class="text-font text-lg text-gray-200 m-0 leading-relaxed mb-6">Traducción...</p>
+        <div class="border-t border-gray-800 pt-4 text-center">
+            <a id="lexicon-link" href="#" target="_blank" class="inline-block text-sm text-black bg-[var(--gold-light)] font-bold px-4 py-2 rounded hover:bg-white transition-all">
+                Ver en Logeion ↗
             </a>
-            <p class="text-gray-500 text-sm md:text-lg mt-4 font-sans">Se abrirá el proxy de G-Translate.</p>
         </div>
     </div>
 
-    <!-- ORÁCULO MODAL -->
-    <div id="oracle-modal" class="glass-panel rounded-3xl p-8 md:p-20 border-2 border-[var(--aegean-blue)] shadow-[0_0_100px_rgba(8,22,36,1)]">
-        <button id="btn-close-oracle" onclick="if(window.Oracle) window.Oracle.close();" class="absolute top-6 right-6 md:top-10 md:right-10 text-gray-400 hover:text-[var(--sparta-red)] font-bold text-4xl md:text-6xl transition-colors cursor-pointer">✕</button>
-        <div class="flex items-center gap-4 md:gap-8 mb-8 md:mb-12 border-b-2 border-gray-700 pb-6 md:pb-10">
-            <svg class="w-12 h-12 md:w-20 md:h-20 text-[var(--aegean-blue)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <h3 class="font-title text-3xl md:text-6xl text-[var(--gold-light)] tracking-widest uppercase text-shadow-md">El Oráculo de la Red</h3>
+    <div id="oracle-modal" class="glass-panel rounded-xl p-8 md:p-12 border border-[var(--aegean-blue)]">
+        <button id="btn-close-oracle" onclick="if(window.Oracle) window.Oracle.close();" class="absolute top-4 right-6 text-gray-500 hover:text-white font-bold text-2xl">✕</button>
+        <div class="flex items-center gap-3 mb-6 border-b border-gray-800 pb-4">
+            <svg class="w-8 h-8 text-[var(--gold)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <h3 class="font-title text-xl md:text-2xl text-[var(--gold-light)] tracking-widest uppercase">Oráculo</h3>
         </div>
-        <div id="oracle-content" class="text-font text-2xl md:text-5xl text-gray-300 leading-relaxed text-justify h-[50vh] md:h-[60vh] overflow-y-auto custom-scrollbar pr-6">
-            Invocando los saberes del éter...
+        <div id="oracle-content" class="text-font text-base md:text-lg text-gray-300 leading-relaxed text-justify">
+            Invocando...
         </div>
     </div>
 
-    <!-- PANTALLA VICTORIA -->
-    <div id="screen-victory" class="absolute inset-0 bg-black flex-col items-center justify-center p-10 text-center z-[20000] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] hidden opacity-0 transition-opacity duration-1000">
-        <h1 class="text-7xl md:text-9xl text-[var(--gold)] font-title mb-8 drop-shadow-[0_0_60px_rgba(212,175,55,1)]">ΙΣΤΟΡΙΑΙ</h1>
-        <h2 class="text-4xl md:text-6xl text-white font-title mb-8 text-shine">El Telar ha sido Completado</h2>
-        <p class="text-2xl md:text-4xl text-gray-300 font-greek max-w-5xl leading-relaxed italic mb-16">Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te otorgan la Inmortalidad de la Memoria.</p>
-        <button id="btn-restart" class="btn-hellenic px-16 py-6 text-3xl font-bold bg-white text-black hover:bg-[var(--gold)]">Regresar a la Modernidad</button>
+    <!-- Pantalla Victoria -->
+    <div id="screen-victory" class="absolute inset-0 bg-black flex-col items-center justify-center p-6 text-center z-[20000] hidden opacity-0 transition-opacity duration-1000">
+        <h1 class="text-5xl md:text-7xl text-[var(--gold)] font-title mb-6">ΙΣΤΟΡΙΑΙ</h1>
+        <h2 class="text-2xl md:text-4xl text-white font-title mb-4">Telar Completado</h2>
+        <p class="text-lg md:text-xl text-gray-400 max-w-2xl italic mb-8">Has descifrado la lengua de los antiguos. La Inmortalidad de la Memoria es tuya.</p>
+        <button id="btn-restart" class="btn-hellenic px-8 py-3 text-lg bg-white text-black">Regresar</button>
     </div>
 
-    <!-- ==========================================================================
-         MOTOR DEL JUEGO (EL SCRIPT ORIGINAL INTACTO)
-         ========================================================================== -->
     <script>
         // --- 1. BASE DE DATOS LITERARIA MASIVA ---
         const HERODOTUS_DB = [
@@ -626,7 +498,6 @@
             }
         ];
 
-        // --- DICCIONARIO INTERACTIVO (Lexicon Filológico Avanzado) ---
         const GREEK_LEXICON = {
             'ολβιωτατοσ': { trans: 'El más feliz, el más próspero.', morph: 'Adjetivo, superlativo, nom. sing. masc.' },
             'βασιλευ': { trans: '¡Oh rey!', morph: 'Sustantivo, vocativo sing. masc.' },
@@ -667,7 +538,6 @@
             'εμαχοντο': { trans: 'Luchaban.', morph: 'Verbo (μάχομαι), imperfecto, 3ª p. plural.' }
         };
 
-        // Procesador Léxico (Seguro para el DOM)
         const parseGreekText = (html) => {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
@@ -706,7 +576,6 @@
             return tempDiv;
         };
 
-        // --- SISTEMA DEL DICCIONARIO (Lexicon Premium con Event Delegation) ---
         const Lexicon = {
             init() {
                 const greekContainer = document.getElementById('text-greek');
@@ -748,30 +617,14 @@
                     spanishDesc.style.color = "white";
                 }
                 
-                tooltip.style.display = 'block'; 
-                const rect = tooltip.getBoundingClientRect();
-                
-                let x = event.clientX;
-                let y = event.clientY - 20;
-                
-                if (x + rect.width / 2 > window.innerWidth) x = window.innerWidth - rect.width / 2 - 20;
-                if (x - rect.width / 2 < 0) x = rect.width / 2 + 20;
-                if (y - rect.height < 0) y = event.clientY + 40; 
-                
-                tooltip.style.left = `${x}px`;
-                tooltip.style.top = `${y}px`;
                 tooltip.classList.add('visible');
             },
             hide() {
                 const tt = document.getElementById('lexicon-tooltip');
-                if(tt) {
-                    tt.classList.remove('visible');
-                    tt.style.display = 'none';
-                }
+                if(tt) tt.classList.remove('visible');
             }
         };
 
-        // --- SISTEMA DE ORÁCULO MODAL (Independiente) ---
         const Oracle = {
             async open() {
                 if(window.AudioFX) window.AudioFX.click();
@@ -790,7 +643,7 @@
                     const pageId = Object.keys(pages)[0];
                     
                     if (pageId !== "-1" && pages[pageId].extract) {
-                        content.innerHTML = `<strong class="text-4xl font-title text-[var(--gold-light)] block mb-6 border-b border-gray-700 pb-4">${pages[pageId].title}</strong>${pages[pageId].extract} <br><br><span class="text-sm text-gray-500 mt-6 block">Fuente extraída en vivo: API de Wikipedia</span>`;
+                        content.innerHTML = `<strong class="text-xl font-title text-[var(--gold-light)] block mb-4 border-b border-gray-800 pb-2">${pages[pageId].title}</strong>${pages[pageId].extract} <br><br><span class="text-xs text-gray-500 mt-4 block">Fuente extraída en vivo: API de Wikipedia</span>`;
                     } else {
                         content.innerHTML = "Los oráculos guardan silencio. No hay pergaminos en la biblioteca sobre este tema.";
                     }
@@ -805,7 +658,6 @@
             }
         };
 
-        // --- 2. SISTEMA DE AUDIO EXPERTO (El Aedo / Synthesizer) ---
         const AudioFX = {
             ctx: null, isReady: false, droneOsc: null, noiseOsc: null,
             init() {
@@ -816,7 +668,7 @@
                         if(this.ctx.state === 'suspended') this.ctx.resume();
                         this.isReady = true;
                     }
-                } catch(e) { console.warn("Audio no soportado"); }
+                } catch(e) { }
             },
             playLyre(freq, vol = 0.5) {
                 if(!this.isReady || !this.ctx) return;
@@ -854,36 +706,12 @@
                     
                     this.droneOsc.connect(gain); gain.connect(this.ctx.destination);
                     this.droneOsc.start();
-
-                    const bufferSize = this.ctx.sampleRate * 2;
-                    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-                    const data = buffer.getChannelData(0);
-                    for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
-                    
-                    this.noiseOsc = this.ctx.createBufferSource();
-                    this.noiseOsc.buffer = buffer;
-                    this.noiseOsc.loop = true;
-                    
-                    const noiseFilter = this.ctx.createBiquadFilter();
-                    noiseFilter.type = 'lowpass';
-                    noiseFilter.frequency.value = 400;
-                    
-                    const noiseGain = this.ctx.createGain();
-                    noiseGain.gain.setValueAtTime(0, this.ctx.currentTime);
-                    noiseGain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 4);
-                    
-                    this.noiseOsc.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(this.ctx.destination);
-                    this.noiseOsc.start();
                 }catch(e){}
             },
             stopDrone() {
                 if(this.droneOsc && this.ctx) {
                     try{ this.droneOsc.stop(this.ctx.currentTime + 1); }catch(e){}
                     this.droneOsc = null;
-                }
-                if(this.noiseOsc && this.ctx) {
-                    try{ this.noiseOsc.stop(this.ctx.currentTime + 1); }catch(e){}
-                    this.noiseOsc = null;
                 }
             },
             click() { this.playLyre(440, 0.3); }, 
@@ -892,12 +720,11 @@
             error() { this.playLyre(150, 0.5); setTimeout(()=>this.playLyre(140, 0.5), 150); }
         };
 
-        // --- 3. MOTOR DEL MAPA LEAFLET (CAPAS Y FLY-TO SEGUROS) ---
         const MapEngine = {
             map: null, markers: {}, pathLayer: null, dustCtx: null, dustParticles: [], dustAnim: null,
             init() {
                 try {
-                    if (typeof L === 'undefined') { console.warn("Leaflet no cargado."); return; }
+                    if (typeof L === 'undefined') return;
                     if (this.map) return;
                     
                     this.map = L.map('map-container', { zoomControl: false, attributionControl: false }).setView([38.5, 25.5], 6);
@@ -918,7 +745,7 @@
                     
                     this.renderMarkers();
                     this.initDust();
-                } catch(e) { console.warn("Leaflet init error:", e); }
+                } catch(e) {}
             },
             setLayer(type) {
                 if(window.AudioFX) window.AudioFX.click();
@@ -946,22 +773,6 @@
 
                     marker.on('click', () => { 
                         if(window.AudioFX) window.AudioFX.click();
-                        
-                        // Sonido inmersivo de viaje
-                        if(window.AudioFX && window.AudioFX.isReady) {
-                            try {
-                                const sfx = new AudioContext();
-                                const noise = sfx.createBufferSource();
-                                const buffer = sfx.createBuffer(1, sfx.sampleRate * 2, sfx.sampleRate);
-                                const data = buffer.getChannelData(0);
-                                for (let i = 0; i < buffer.length; i++) data[i] = Math.random() * 2 - 1;
-                                noise.buffer = buffer;
-                                const filter = sfx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 400;
-                                const gain = sfx.createGain(); gain.gain.setValueAtTime(0, sfx.currentTime); gain.gain.linearRampToValueAtTime(0.1, sfx.currentTime + 1); gain.gain.linearRampToValueAtTime(0, sfx.currentTime + 2);
-                                noise.connect(filter); filter.connect(gain); gain.connect(sfx.destination); noise.start();
-                            } catch(e){}
-                        }
-                        
                         this.map.flyTo([story.lat, story.lng], 8, { duration: 1.5, easeLinearity: 0.25 });
                         setTimeout(() => Codex.open(story.id), 1500);
                     });
@@ -993,10 +804,10 @@
                 const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
                 window.addEventListener('resize', resize);
                 resize();
-                for(let i=0; i<50; i++) {
+                for(let i=0; i<30; i++) {
                     this.dustParticles.push({
                         x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-                        vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+                        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
                         r: Math.random() * 1.5 + 0.5
                     });
                 }
@@ -1006,7 +817,7 @@
                 const canvas = document.getElementById('dust-canvas');
                 if(!this.dustCtx || !canvas) return;
                 this.dustCtx.clearRect(0, 0, canvas.width, canvas.height);
-                this.dustCtx.fillStyle = "rgba(212, 175, 55, 0.6)";
+                this.dustCtx.fillStyle = "rgba(212, 175, 55, 0.4)";
                 
                 this.dustParticles.forEach(p => {
                     p.x += p.vx; p.y += p.vy;
@@ -1018,7 +829,6 @@
             }
         };
 
-        // --- 4. AUDIOBOOK (EL AEDO) Y CHUNKING TRANSLITERADO GARANTIZADO ---
         const TTS = {
             isPlaying: false, currentLang: 'es', chunks: [], currentChunk: 0, hasGreekVoice: false,
             init() {
@@ -1073,7 +883,6 @@
                 } else {
                     let cleanHTML = State.currentStory.greek.replace(/<[^>]*>?/gm, '');
                     if (this.hasGreekVoice) {
-                        // Limpieza extrema del texto politónico a monótono
                         textToRead = cleanHTML.normalize("NFD").replace(/[\u0313\u0314\u0300\u0342\u0302\u0304\u0306]/g, "").replace(/ς/g, 'σ').normalize("NFC").toLowerCase();
                     } else {
                         textToRead = this.phoneticGreek(cleanHTML);
@@ -1082,7 +891,6 @@
                 
                 this.chunks = textToRead.match(/[^.!?;\n]+[.!?;\n]+/g) || [textToRead];
                 this.currentChunk = 0;
-                
                 this.speakNextChunk();
             },
             speakNextChunk() {
@@ -1090,47 +898,30 @@
                     this.setPlayingState(false);
                     return;
                 }
-                
                 let chunk = this.chunks[this.currentChunk];
                 let utterance = new SpeechSynthesisUtterance(chunk);
                 
-                if (this.currentLang === 'es') {
-                    utterance.lang = 'es-ES';
-                } else {
-                    utterance.lang = this.hasGreekVoice ? 'el-GR' : 'es-ES'; 
-                }
+                utterance.lang = (this.currentLang === 'es') ? 'es-ES' : (this.hasGreekVoice ? 'el-GR' : 'es-ES'); 
+                utterance.pitch = 0.75; utterance.rate = 0.85; 
                 
-                utterance.pitch = 0.75; 
-                utterance.rate = 0.85; 
-                
-                utterance.onend = () => {
-                    this.currentChunk++;
-                    this.speakNextChunk();
-                };
-                utterance.onerror = (e) => { 
-                    console.log("TTS Error:", e);
-                    this.setPlayingState(false); 
-                };
+                utterance.onend = () => { this.currentChunk++; this.speakNextChunk(); };
+                utterance.onerror = (e) => { this.setPlayingState(false); };
                 
                 window.speechSynthesis.speak(utterance);
                 this.setPlayingState(true);
             },
-            pause() {
-                if(window.speechSynthesis) { window.speechSynthesis.pause(); this.setPlayingState(false); }
-            },
-            stop() {
-                if(window.speechSynthesis) { window.speechSynthesis.cancel(); this.setPlayingState(false); }
-            },
+            pause() { if(window.speechSynthesis) { window.speechSynthesis.pause(); this.setPlayingState(false); } },
+            stop() { if(window.speechSynthesis) { window.speechSynthesis.cancel(); this.setPlayingState(false); } },
             setPlayingState(isPlaying) {
                 this.isPlaying = isPlaying;
                 const vis = document.getElementById('visualizer');
                 const btn = document.getElementById('btn-tts-play');
                 if(isPlaying) {
                     if(vis) vis.classList.add('playing');
-                    if(btn) btn.innerHTML = '<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg>';
+                    if(btn) btn.innerHTML = '<svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg>';
                 } else {
                     if(vis) vis.classList.remove('playing');
-                    if(btn) btn.innerHTML = '<svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>';
+                    if(btn) btn.innerHTML = '<svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>';
                 }
             },
             showPlayer(show) {
@@ -1141,7 +932,6 @@
             }
         };
 
-        // --- 5. MOTOR LÓGICO Y CÓDICE ---
         const State = { relics: [], currentStory: null };
 
         const Codex = {
@@ -1162,7 +952,6 @@
                 document.getElementById('puzzle-input').value = "";
                 document.getElementById('puzzle-feedback').innerText = "";
                 
-                // Reset Layout Zen
                 if(window.Game) window.Game.setZenLayout('dual');
                 
                 document.getElementById('screen-map').classList.add('hidden', 'opacity-0');
@@ -1177,12 +966,6 @@
         };
 
         const Puzzle = {
-            toggleDrawer() {
-                // Esta función ya no necesita levantar ningún panel porque ahora es una pestaña nativa
-                if(window.AudioFX) window.AudioFX.click();
-                if(window.Game) window.Game.setZenLayout('puzzle');
-                setTimeout(()=>document.getElementById('puzzle-input').focus(), 300);
-            },
             check() {
                 const story = State.currentStory;
                 const input = document.getElementById('puzzle-input').value.trim().toLowerCase();
@@ -1196,53 +979,31 @@
                     }
                     
                     const fb = document.getElementById('puzzle-feedback');
-                    fb.innerText = "¡SABIDURÍA REVELADA! El Destino ha sido hilado.";
+                    fb.innerText = "¡SABIDURÍA REVELADA!";
                     fb.style.color = "var(--gold-light)";
                     
-                    setTimeout(() => { if(window.Game) Game.closeCodex(); }, 2500);
+                    setTimeout(() => { if(window.Game) Game.closeCodex(); }, 2000);
                 } else {
                     if(window.AudioFX) window.AudioFX.error();
                     const fb = document.getElementById('puzzle-feedback');
-                    fb.innerText = "Los dioses rechazan tu ofrenda. Lee de nuevo, mortal.";
+                    fb.innerText = "Los dioses rechazan tu ofrenda.";
                     fb.style.color = "var(--sparta-red)";
-                    
-                    const drawer = document.getElementById('puzzle-drawer');
-                    drawer.classList.add('animate-shake');
-                    setTimeout(() => drawer.classList.remove('animate-shake'), 400);
                 }
             }
         };
 
         const Game = {
             isImmersive: false,
-            parallax(e) {
-                const card = document.getElementById('intro-card');
-                if(!card) return;
-                const x = (window.innerWidth - e.pageX * 2) / 90;
-                const y = (window.innerHeight - e.pageY * 2) / 90;
-                card.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${y}deg)`;
-            },
             initMap() {
-                try {
-                    if(window.AudioFX) { window.AudioFX.init(); window.AudioFX.success(); }
-                } catch(e) {}
+                try { if(window.AudioFX) { window.AudioFX.init(); window.AudioFX.success(); } } catch(e) {}
                 
-                const btnStart = document.getElementById('btn-start');
-                if(btnStart) {
-                    btnStart.innerText = 'Desplegando...';
-                    btnStart.classList.add('animate-pulse');
-                }
-
                 const intro = document.getElementById('screen-intro');
                 if(intro) intro.classList.add('opacity-0');
                 
                 setTimeout(() => {
                     if(intro) intro.style.display = 'none';
                     const mapScreen = document.getElementById('screen-map');
-                    if(mapScreen) {
-                        mapScreen.classList.remove('hidden'); 
-                        mapScreen.style.display = 'flex';
-                    }
+                    if(mapScreen) mapScreen.classList.remove('hidden'); 
                     
                     try { if(window.MapEngine) window.MapEngine.init(); } catch(e) {}
                     if(window.TTS) window.TTS.init();
@@ -1258,6 +1019,7 @@
                 if(window.AudioFX) window.AudioFX.click();
                 if(window.TTS) window.TTS.showPlayer(false);
                 if(window.Oracle) window.Oracle.close(); 
+                if(window.Lexicon) window.Lexicon.hide();
                 if(this.isImmersive) this.toggleImmersive(); 
 
                 const screenCodex = document.getElementById('screen-codex');
@@ -1276,7 +1038,7 @@
                     setTimeout(() => { if(screenMap) screenMap.classList.remove('opacity-0'); }, 50);
                     
                     if(State.relics.length === HERODOTUS_DB.length) setTimeout(() => this.triggerVictory(), 2500);
-                }, 700);
+                }, 500);
             },
             toggleImmersive() {
                 if(window.AudioFX) window.AudioFX.click();
@@ -1294,14 +1056,17 @@
             setZenLayout(layout) {
                 if(window.AudioFX) window.AudioFX.hover();
                 const container = document.getElementById('dual-codex-container');
-                
-                // Mapeamos la clase para que el CSS nativo cambie de pestaña sin JS extra
                 if(container) container.className = `dual-codex zen-layout-${layout}`;
                 
-                // Resaltar botón activo
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 const activeBtn = document.getElementById(`zen-btn-${layout}`);
                 if(activeBtn) activeBtn.classList.add('active');
+
+                // Si entramos al acertijo, cerramos diccionarios y oráculos para enfocar
+                if(layout === 'puzzle') {
+                    if(window.Lexicon) window.Lexicon.hide();
+                    if(window.Oracle) window.Oracle.close();
+                }
             },
             triggerVictory() {
                 if(window.AudioFX) { window.AudioFX.success(); setTimeout(()=>window.AudioFX.success(), 1000); }
@@ -1314,9 +1079,7 @@
             }
         };
 
-        // --- DELEGACIÓN GLOBAL DE EVENTOS ---
         window.addEventListener('DOMContentLoaded', () => {
-            // Asignación de seguridad global
             window.Game = Game;
             window.MapEngine = MapEngine;
             window.Codex = Codex;
@@ -1326,38 +1089,28 @@
             window.Lexicon = Lexicon;
             window.AudioFX = AudioFX;
 
-            // Eventos del Reproductor
             document.getElementById('btn-tts-lang')?.addEventListener('click', () => TTS.toggleLang());
             document.getElementById('btn-tts-play')?.addEventListener('click', () => TTS.togglePlay());
             document.getElementById('btn-tts-stop')?.addEventListener('click', () => TTS.stop());
 
-            // Evento Oráculo
-            document.getElementById('btn-open-oracle')?.addEventListener('click', () => Oracle.open());
-            document.getElementById('btn-close-oracle')?.addEventListener('click', () => Oracle.close());
-
-            // Evento Códice
-            document.getElementById('btn-close-codex')?.addEventListener('click', () => Game.closeCodex());
-
-            // Eventos Mapa
-            document.getElementById('btn-layer-sat')?.addEventListener('click', () => MapEngine.setLayer('satellite'));
-            document.getElementById('btn-layer-pap')?.addEventListener('click', () => MapEngine.setLayer('antique'));
-
-            // Evento Victoria
             document.getElementById('btn-restart')?.addEventListener('click', () => location.reload());
 
-            // Controles de Teclado
             document.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') {
                     const drawer = document.getElementById('puzzle-drawer');
-                    if(drawer && drawer.style.display !== 'none') Puzzle.check();
+                    if(drawer && window.getComputedStyle(drawer).display !== 'none') Puzzle.check();
                 }
                 if(e.key === 'Escape') {
                     if(window.Oracle) window.Oracle.close();
                     if(window.Lexicon) window.Lexicon.hide();
+                    // Salir del acertijo y volver a la lectura dual si se pulsa Escape
+                    const drawer = document.getElementById('puzzle-drawer');
+                    if(drawer && window.getComputedStyle(drawer).display !== 'none' && window.Game) {
+                        Game.setZenLayout('dual');
+                    }
                 }
             });
         });
-
     </script>
 </body>
 </html>
