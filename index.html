@@ -110,20 +110,26 @@
         .story-path { stroke: var(--gold); stroke-width: 5; stroke-dasharray: 15, 15; opacity: 0.8; animation: dash 30s linear infinite; filter: drop-shadow(0 0 8px var(--gold)); }
         @keyframes dash { to { stroke-dashoffset: 1000; } }
 
-        /* Códice / Scrollbars */
+        /* Códice / Scrollbars (Responsive Fix: Evita cortes de texto) */
         .dual-codex { display: flex; flex-direction: column; height: 100%; transition: all 0.8s ease; }
         @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
         
-        .codex-pane { flex: 1; padding: 6rem 5rem 30rem 5rem; overflow-y: auto; position: relative; scroll-behavior: smooth; transition: all 0.5s ease; }
-        .pane-greek { background: #060a10; color: #e2e8f0; border-right: 3px solid var(--gold); }
-        .pane-spanish { border-left: 1px solid rgba(0,0,0,0.1); }
+        .codex-pane { flex: 1; padding: 3rem 2rem 15rem 2rem; overflow-y: auto; position: relative; scroll-behavior: smooth; transition: all 0.5s ease; }
+        @media (min-width: 768px) { .codex-pane { padding: 6rem 5rem 30rem 5rem; } }
+        .pane-greek { background: #060a10; color: #e2e8f0; border-bottom: 2px solid var(--gold); }
+        @media (min-width: 1024px) { .pane-greek { border-bottom: none; border-right: 3px solid var(--gold); } }
+        .pane-spanish { border-top: 1px solid rgba(0,0,0,0.1); }
+        @media (min-width: 1024px) { .pane-spanish { border-top: none; border-left: 1px solid rgba(0,0,0,0.1); } }
         
-        .custom-scrollbar::-webkit-scrollbar { width: 14px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
+        @media (min-width: 768px) { .custom-scrollbar::-webkit-scrollbar { width: 14px; } }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 8px;}
         .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 8px; border: 2px solid #000; }
 
-        .drop-cap-greek::first-letter { font-size: 5.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--gold-light); text-shadow: 0 0 30px rgba(212,175,55,0.9); }
-        .drop-cap-spanish::first-letter { font-size: 5.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
+        .drop-cap-greek::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--gold-light); text-shadow: 0 0 30px rgba(212,175,55,0.9); }
+        @media (min-width: 768px) { .drop-cap-greek::first-letter { font-size: 5.5em; } }
+        .drop-cap-spanish::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
+        @media (min-width: 768px) { .drop-cap-spanish::first-letter { font-size: 5.5em; } }
 
         /* ==========================================================================
            INTERACTIVIDAD LÉXICA Y ANÁLISIS MORFOLÓGICO PROFUNDO
@@ -142,19 +148,22 @@
         #lexicon-tooltip {
             position: fixed; z-index: 9999; pointer-events: none; opacity: 0;
             background: rgba(4, 10, 16, 0.98); border: 2px solid var(--gold);
-            color: var(--marble); padding: 35px; border-radius: 12px;
+            color: var(--marble); padding: 25px; border-radius: 12px;
             box-shadow: 0 40px 80px rgba(0,0,0,0.95), 0 0 45px rgba(212,175,55,0.6);
             backdrop-filter: blur(25px); transform: translate(-50%, 15px);
-            transition: opacity 0.3s, transform 0.3s; min-width: 450px; max-width: 600px;
+            transition: opacity 0.3s, transform 0.3s; width: 90%; max-width: 500px;
         }
+        @media (min-width: 768px) { #lexicon-tooltip { padding: 35px; width: auto; min-width: 450px; max-width: 600px; } }
         #lexicon-tooltip.visible { opacity: 1; transform: translate(-50%, -15px); pointer-events: auto; }
 
         .morph-tag { 
             display: inline-block; background: var(--aegean-blue); color: var(--gold-light); 
-            padding: 8px 18px; border-radius: 20px; font-size: 1.2rem; font-family: 'Cinzel Decorative'; 
+            padding: 6px 14px; border-radius: 20px; font-size: 1rem; font-family: 'Cinzel Decorative'; 
             letter-spacing: 2px; margin-bottom: 16px; border: 1px solid var(--gold); box-shadow: 0 5px 20px rgba(0,0,0,0.6);
         }
-        .lexicon-lemma { color: #b8b8b8; font-style: italic; font-size: 1.6rem; margin-top: 5px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif;}
+        @media (min-width: 768px) { .morph-tag { padding: 8px 18px; font-size: 1.2rem; } }
+        .lexicon-lemma { color: #b8b8b8; font-style: italic; font-size: 1.3rem; margin-top: 5px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif;}
+        @media (min-width: 768px) { .lexicon-lemma { font-size: 1.6rem; } }
 
         /* Oráculo Modal */
         #oracle-modal {
@@ -166,14 +175,16 @@
 
         /* Reproductor Audiolibro (El Aedo) */
         .audio-player {
-            position: fixed; bottom: 40px; right: 40px; z-index: 9000;
-            display: flex; align-items: center; gap: 25px; padding: 25px 40px;
-            border-radius: 60px; background: rgba(2, 6, 10, 0.95); border: 2px solid var(--gold);
+            position: fixed; bottom: 20px; right: 20px; z-index: 9000;
+            display: flex; align-items: center; gap: 15px; padding: 15px 20px;
+            border-radius: 50px; background: rgba(2, 6, 10, 0.95); border: 2px solid var(--gold);
             box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 40px rgba(212, 175, 55, 0.4);
             backdrop-filter: blur(20px); transform: translateY(200%); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        @media (min-width: 768px) { .audio-player { bottom: 40px; right: 40px; gap: 25px; padding: 25px 40px; border-radius: 60px; } }
         .audio-player.visible { transform: translateY(0); }
-        .visualizer-bar { width: 6px; height: 8px; background: var(--gold); border-radius: 3px; transition: height 0.1s; }
+        .visualizer-bar { width: 4px; height: 6px; background: var(--gold); border-radius: 3px; transition: height 0.1s; }
+        @media (min-width: 768px) { .visualizer-bar { width: 6px; height: 8px; } }
         .visualizer.playing .visualizer-bar { animation: audioBar 1s infinite alternate; }
         .visualizer.playing .visualizer-bar:nth-child(1) { animation-delay: 0.1s; }
         .visualizer.playing .visualizer-bar:nth-child(2) { animation-delay: 0.3s; }
@@ -185,33 +196,42 @@
         #puzzle-drawer { z-index: 5000; }
         .oracle-input {
             background: rgba(0,0,0,0.6); border: 2px solid var(--gold); border-radius: 8px;
-            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 2.5rem;
+            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 1.5rem;
             text-align: center; text-transform: uppercase; outline: none; width: 100%;
-            letter-spacing: 8px; transition: all 0.3s; padding: 15px;
+            letter-spacing: 4px; transition: all 0.3s; padding: 10px;
         }
+        @media (min-width: 768px) { .oracle-input { font-size: 2.5rem; letter-spacing: 8px; padding: 15px; } }
         .oracle-input:focus { border-color: #fff; box-shadow: 0 0 35px rgba(212,175,55,0.6); background: rgba(0,0,0,0.9); }
 
         /* MODO ZEN BILINGÜE AVANZADO */
         .zen-toolbar {
-            position: fixed; top: -120px; left: 50%; transform: translateX(-50%); z-index: 6000;
-            background: rgba(4, 10, 16, 0.95); border: 1px solid var(--gold); border-radius: 0 0 25px 25px;
-            padding: 25px 50px; display: flex; gap: 30px; transition: top 0.6s ease;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.95); backdrop-filter: blur(15px);
+            position: fixed; top: -150px; left: 50%; transform: translateX(-50%); z-index: 6000;
+            background: rgba(4, 10, 16, 0.95); border: 1px solid var(--gold); border-radius: 0 0 20px 20px;
+            padding: 15px 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; transition: top 0.6s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.95); backdrop-filter: blur(15px); width: 95%; max-width: 800px;
         }
+        @media (min-width: 768px) { .zen-toolbar { padding: 25px 50px; gap: 30px; border-radius: 0 0 25px 25px; width: auto; max-width: none; } }
         .immersive-mode .zen-toolbar { top: 0; }
         .immersive-mode .top-bar { opacity: 0; pointer-events: none; }
         .immersive-mode .pane-greek, .immersive-mode .pane-spanish { transition: all 0.8s ease; }
         
         .zen-layout-es .pane-greek { display: none; }
-        .zen-layout-es .pane-spanish { padding: 12rem 22% 30rem 22%; font-size: 1.6em; border-left: none; }
+        .zen-layout-es .pane-spanish { padding: 10rem 10% 30rem 10%; font-size: 1.2em; border-left: none; }
+        @media (min-width: 1024px) { .zen-layout-es .pane-spanish { padding: 12rem 22% 30rem 22%; font-size: 1.6em; } }
         
         .zen-layout-gr .pane-spanish { display: none; }
-        .zen-layout-gr .pane-greek { padding: 12rem 22% 30rem 22%; font-size: 1.6em; border-right: none; }
+        .zen-layout-gr .pane-greek { padding: 10rem 10% 30rem 10%; font-size: 1.2em; border-right: none; }
+        @media (min-width: 1024px) { .zen-layout-gr .pane-greek { padding: 12rem 22% 30rem 22%; font-size: 1.6em; } }
         
-        .zen-layout-dual .pane-greek { padding: 12rem 6rem 30rem 6rem; }
-        .zen-layout-dual .pane-spanish { padding: 12rem 6rem 30rem 6rem; }
+        .zen-layout-dual .pane-greek { padding: 10rem 2rem 30rem 2rem; }
+        .zen-layout-dual .pane-spanish { padding: 10rem 2rem 30rem 2rem; }
+        @media (min-width: 1024px) { 
+            .zen-layout-dual .pane-greek { padding: 12rem 6rem 30rem 6rem; }
+            .zen-layout-dual .pane-spanish { padding: 12rem 6rem 30rem 6rem; }
+        }
 
-        .zen-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 12px 25px; border-radius: 8px; font-family: 'Cinzel Decorative'; font-size: 1.4rem; transition: all 0.3s; cursor: pointer; }
+        .zen-btn { background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 12px; border-radius: 6px; font-family: 'Cinzel Decorative'; font-size: 1rem; transition: all 0.3s; cursor: pointer; }
+        @media (min-width: 768px) { .zen-btn { padding: 12px 25px; font-size: 1.4rem; border-radius: 8px; } }
         .zen-btn.active { background: var(--aegean-blue); border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 25px rgba(212,175,55,0.5); }
 
     </style>
@@ -225,7 +245,7 @@
         
         <!-- Prólogo de Heródoto flotando de fondo estilo Star Wars -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-20 z-0">
-            <div class="font-greek text-4xl text-[var(--gold)] whitespace-pre-line text-center animate-crawl" style="width: 150%; margin-left: -25%;">
+            <div class="font-greek text-2xl md:text-4xl text-[var(--gold)] whitespace-pre-line text-center animate-crawl" style="width: 150%; margin-left: -25%;">
                 ΗΡΟΔΟΤΟΥ ΑΛΙΚΑΡΝΗΣΣΕΟΣ ΙΣΤΟΡΙΗΣ ΑΠΟΔΕΞΙΣ ΗΔΕ
                 ΩΣ ΜΗΤΕ ΤΑ ΓΕΝΟΜΕΝΑ ΕΞ ΑΝΘΡΩΠΩΝ ΤΩ ΧΡΟΝΩ ΕΞΙΤΗΛΑ ΓΕΝΗΤΑΙ
                 ΜΗΤΕ ΕΡΓΑ ΜΕΓΑΛΑ ΤΕ ΚΑΙ ΘΩΜΑΣΤΑ
@@ -237,58 +257,57 @@
             </div>
         </div>
 
-        <div id="intro-card" class="text-center max-w-7xl p-20 glass-panel rounded-2xl animate-fade w-full relative overflow-hidden transition-transform duration-200 z-10">
+        <div id="intro-card" class="text-center max-w-7xl p-8 md:p-20 glass-panel rounded-2xl animate-fade w-[95%] max-h-[90vh] overflow-y-auto custom-scrollbar relative transition-transform duration-200 z-10">
             <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/ancient-map.png')]"></div>
             
-            <h3 class="text-[var(--gold)] text-4xl md:text-5xl tracking-[0.8em] uppercase mb-10 font-title opacity-90">
+            <h3 class="text-[var(--gold)] text-xl md:text-5xl tracking-[0.4em] md:tracking-[0.8em] uppercase mb-6 md:mb-10 font-title opacity-90">
                 ΗΡΟΔΟΤΟΣ
             </h3>
-            <h1 class="text-7xl md:text-9xl lg:text-[11rem] font-black text-white mb-16 font-title text-shine drop-shadow-[0_0_60px_rgba(212,175,55,0.6)]">
+            <h1 class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-black text-white mb-8 md:mb-16 font-title text-shine drop-shadow-[0_0_60px_rgba(212,175,55,0.6)]">
                 Historias
             </h1>
-            <p class="text-4xl md:text-5xl text-gray-200 text-font mb-20 italic leading-relaxed px-6 md:px-20 relative z-10 font-light">
+            <p class="text-xl md:text-5xl text-gray-200 text-font mb-10 md:mb-20 italic leading-relaxed px-4 md:px-20 relative z-10 font-light">
                 "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
             </p>
             
-            <!-- EL BOTÓN CLAVE ESTÁ AQUÍ. Su evento se añade desde JS para evitar problemas de CSP -->
-            <button id="btn-start" class="btn-hellenic px-24 py-10 text-5xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all">
+            <!-- EL BOTÓN CLAVE ESTÁ AQUÍ. Usamos un fallback inline para vencer las restricciones CSP de los iframes -->
+            <button id="btn-start" onclick="if(window.Game) window.Game.initMap();" class="btn-hellenic px-10 py-5 md:px-24 md:py-10 text-2xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all">
                 Desplegar el Egeo
             </button>
             
-            <div class="mt-24 flex flex-col md:flex-row items-center justify-center gap-12 text-[var(--gold)] font-sans tracking-widest uppercase text-xl relative z-10">
-                <span class="flex items-center gap-4"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Filológico Total</span>
+            <div class="mt-12 md:mt-24 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-[var(--gold)] font-sans tracking-widest uppercase text-xs md:text-xl relative z-10">
+                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Filológico Total</span>
                 <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-4"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Fluido</span>
+                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Fluido</span>
                 <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-4"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"/></svg> Túnel Proxy Logeion</span>
+                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"/></svg> Túnel Proxy Logeion</span>
             </div>
         </div>
     </div>
 
     <!-- ==========================================================================
-         PANTALLA 2: MAPA INTERACTIVO Y CAPAS
+         PANTALLA 2: MAPA INTERACTIVO Y CAPAS (Responsive Fix)
          ========================================================================== -->
     <div id="screen-map" class="absolute inset-0 z-20 flex flex-col hidden opacity-0 transition-opacity duration-1000">
-        <header class="h-32 glass-panel flex items-center justify-between px-16 z-30 border-b-2 border-[var(--gold)]">
-            <div class="flex items-center gap-10">
-                <div class="relative w-28 h-28 flex items-center justify-center">
+        <header class="h-auto md:h-32 p-6 md:px-16 glass-panel flex flex-col md:flex-row items-center justify-between z-30 border-b-2 border-[var(--gold)] gap-4">
+            <div class="flex items-center gap-4 md:gap-10">
+                <div class="relative w-16 h-16 md:w-28 md:h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full text-[var(--gold)] animate-[spin_15s_linear_infinite]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="50" cy="50" r="46" stroke-dasharray="20 10"/>
                         <polygon points="50,10 85,75 15,75" stroke-dasharray="5 5" opacity="0.6"/>
                     </svg>
-                    <span id="relic-count" class="absolute text-6xl font-bold font-title text-white">0</span>
+                    <span id="relic-count" class="absolute text-2xl md:text-6xl font-bold font-title text-white">0</span>
                 </div>
-                <div>
-                    <h2 class="font-title text-6xl text-[var(--gold)] tracking-widest m-0 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">El Telar de Heródoto</h2>
-                    <span class="text-gray-400 text-font italic text-4xl">Pasa el ratón para revelar los mitos en el mapa</span>
+                <div class="text-center md:text-left">
+                    <h2 class="font-title text-3xl md:text-6xl text-[var(--gold)] tracking-widest m-0 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">El Telar de Heródoto</h2>
+                    <span class="text-gray-400 text-font italic text-lg md:text-4xl">Pasa el ratón para revelar los mitos en el mapa</span>
                 </div>
             </div>
             
-            <!-- Selector de Capas del Mapa -->
-            <div class="flex gap-4 z-40 bg-black/50 p-3 rounded-lg border border-[var(--gold)]">
-                <button id="btn-layer-sat" class="text-white hover:text-[var(--gold)] px-4 py-2 font-title text-xl uppercase tracking-wider transition-colors cursor-pointer">Satélite</button>
+            <div class="flex gap-2 md:gap-4 z-40 bg-black/50 p-2 md:p-3 rounded-lg border border-[var(--gold)] mt-2 md:mt-0">
+                <button id="btn-layer-sat" onclick="if(window.MapEngine) window.MapEngine.setLayer('satellite');" class="text-white hover:text-[var(--gold)] px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider transition-colors cursor-pointer">Satélite</button>
                 <div class="w-px bg-gray-600"></div>
-                <button id="btn-layer-pap" class="text-[var(--gold-light)] font-bold px-4 py-2 font-title text-xl uppercase tracking-wider transition-colors cursor-pointer">Papiro</button>
+                <button id="btn-layer-pap" onclick="if(window.MapEngine) window.MapEngine.setLayer('antique');" class="text-[var(--gold-light)] font-bold px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider transition-colors cursor-pointer">Papiro</button>
             </div>
         </header>
         
@@ -303,20 +322,20 @@
          ========================================================================== -->
     <div id="screen-codex" class="absolute inset-0 z-40 bg-black flex-col hidden opacity-0 transition-opacity duration-700">
         
-        <!-- Toolbar Normal -->
-        <div class="top-bar h-32 border-b-2 border-[var(--gold)] glass-panel flex items-center justify-between px-16 z-10 shrink-0 transition-opacity duration-500">
-            <h2 id="codex-title" class="font-title text-6xl text-[var(--gold-light)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)]">Título</h2>
-            <div class="flex gap-8">
-                <button id="btn-open-oracle" class="btn-hellenic px-10 py-5 text-3xl flex items-center gap-4 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
-                    <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <!-- Toolbar Normal (Responsive Fix) -->
+        <div class="top-bar h-auto md:h-32 p-4 md:px-16 border-b-2 border-[var(--gold)] glass-panel flex flex-col md:flex-row items-center justify-between z-10 shrink-0 transition-opacity duration-500 gap-4">
+            <h2 id="codex-title" class="font-title text-4xl md:text-6xl text-[var(--gold-light)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)] text-center">Título</h2>
+            <div class="flex flex-wrap justify-center gap-3 md:gap-8">
+                <button id="btn-open-oracle" onclick="if(window.Oracle) window.Oracle.open();" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span class="hidden xl:inline">Oráculo de Red</span>
                 </button>
-                <button id="btn-zen-mode" class="btn-hellenic px-10 py-5 text-3xl flex items-center gap-4" title="Modo Lectura Inmersiva">
-                    <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <button id="btn-zen-mode" onclick="if(window.Game) window.Game.toggleImmersive();" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4" title="Modo Lectura Inmersiva">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="hidden xl:inline">Modo Zen</span>
                 </button>
-                <button id="btn-close-codex" class="btn-hellenic px-12 py-5 text-3xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
-                    ✕ Volver al Mapa
+                <button id="btn-close-codex" onclick="if(window.Game) window.Game.closeCodex();" class="btn-hellenic px-4 py-2 md:px-12 md:py-5 text-sm md:text-3xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
+                    ✕ Volver
                 </button>
             </div>
         </div>
@@ -980,7 +999,7 @@
                 }
             },
             toggleLang() {
-                if(AudioFX) AudioFX.click();
+                if(window.AudioFX) window.AudioFX.click();
                 this.currentLang = this.currentLang === 'es' ? 'gr' : 'es';
                 const btn = document.getElementById('btn-tts-lang');
                 btn.innerHTML = this.currentLang === 'es' ? '🇪🇸 ESP' : '🏛️ GR';
@@ -989,7 +1008,7 @@
                 }
             },
             togglePlay() {
-                if(AudioFX) AudioFX.click();
+                if(window.AudioFX) window.AudioFX.click();
                 if(this.isPlaying) this.pause(); else this.play();
             },
             phoneticGreek(greekStr) {
@@ -1020,7 +1039,8 @@
                 } else {
                     let cleanHTML = State.currentStory.greek.replace(/<[^>]*>?/gm, '');
                     if (this.hasGreekVoice) {
-                        textToRead = cleanHTML.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ς/g, 'σ').toLowerCase();
+                        // Limpieza extrema del texto politónico a monótono
+                        textToRead = cleanHTML.normalize("NFD").replace(/[\u0313\u0314\u0300\u0342\u0302\u0304\u0306]/g, "").replace(/ς/g, 'σ').normalize("NFC").toLowerCase();
                     } else {
                         textToRead = this.phoneticGreek(cleanHTML);
                     }
@@ -1169,7 +1189,7 @@
             },
             initMap() {
                 try {
-                    if(AudioFX) { AudioFX.init(); AudioFX.success(); }
+                    if(window.AudioFX) { window.AudioFX.init(); window.AudioFX.success(); }
                 } catch(e) {}
                 
                 const btnStart = document.getElementById('btn-start');
@@ -1187,20 +1207,20 @@
                     mapScreen.classList.remove('hidden'); 
                     mapScreen.style.display = 'flex';
                     
-                    try { MapEngine.init(); } catch(e) {}
-                    TTS.init();
-                    Lexicon.init();
+                    try { window.MapEngine.init(); } catch(e) {}
+                    if(window.TTS) window.TTS.init();
+                    if(window.Lexicon) window.Lexicon.init();
                     
                     setTimeout(() => {
                         mapScreen.classList.remove('opacity-0');
-                        if(MapEngine.map) MapEngine.map.invalidateSize(); 
+                        if(window.MapEngine && window.MapEngine.map) window.MapEngine.map.invalidateSize(); 
                     }, 100);
                 }, 1000);
             },
             closeCodex() {
-                if(AudioFX) AudioFX.click();
-                TTS.showPlayer(false);
-                Oracle.close(); 
+                if(window.AudioFX) window.AudioFX.click();
+                if(window.TTS) window.TTS.showPlayer(false);
+                if(window.Oracle) window.Oracle.close(); 
                 if(this.isImmersive) this.toggleImmersive(); 
 
                 const screenCodex = document.getElementById('screen-codex');
@@ -1210,9 +1230,9 @@
                     const screenMap = document.getElementById('screen-map');
                     screenMap.classList.remove('hidden');
                     
-                    if(MapEngine.map) {
-                        MapEngine.map.flyTo([38.5, 25.5], 6, { duration: 1.5 });
-                        MapEngine.updateMarkers();
+                    if(window.MapEngine && window.MapEngine.map) {
+                        window.MapEngine.map.flyTo([38.5, 25.5], 6, { duration: 1.5 });
+                        window.MapEngine.updateMarkers();
                     }
                     
                     setTimeout(() => screenMap.classList.remove('opacity-0'), 50);
@@ -1254,18 +1274,16 @@
 
         // --- DELEGACIÓN GLOBAL DE EVENTOS (Evita bloqueos de CSP y Fallos en Iframes) ---
         window.addEventListener('DOMContentLoaded', () => {
-            // Eventos de la Pantalla Inicial
-            document.getElementById('btn-start').addEventListener('click', () => Game.initMap());
-            
-            // Eventos de las Capas del Mapa
-            document.getElementById('btn-layer-sat').addEventListener('click', () => MapEngine.setLayer('satellite'));
-            document.getElementById('btn-layer-pap').addEventListener('click', () => MapEngine.setLayer('antique'));
-            
-            // Eventos del Códice Principal
-            document.getElementById('btn-open-oracle').addEventListener('click', () => Oracle.open());
-            document.getElementById('btn-zen-mode').addEventListener('click', () => Game.toggleImmersive());
-            document.getElementById('btn-close-codex').addEventListener('click', () => Game.closeCodex());
-            
+            // Asignación de seguridad global
+            window.Game = Game;
+            window.MapEngine = MapEngine;
+            window.Codex = Codex;
+            window.Puzzle = Puzzle;
+            window.TTS = TTS;
+            window.Oracle = Oracle;
+            window.Lexicon = Lexicon;
+            window.AudioFX = AudioFX;
+
             // Eventos del Modo Zen
             document.getElementById('zen-btn-dual').addEventListener('click', () => Game.setZenLayout('dual'));
             document.getElementById('zen-btn-gr').addEventListener('click', () => Game.setZenLayout('gr'));
@@ -1282,9 +1300,6 @@
             document.getElementById('btn-tts-lang').addEventListener('click', () => TTS.toggleLang());
             document.getElementById('btn-tts-play').addEventListener('click', () => TTS.togglePlay());
             document.getElementById('btn-tts-stop').addEventListener('click', () => TTS.stop());
-            
-            // Eventos del Oráculo
-            document.getElementById('btn-close-oracle').addEventListener('click', () => Oracle.close());
 
             // Evento Victoria
             document.getElementById('btn-restart').addEventListener('click', () => location.reload());
@@ -1293,8 +1308,8 @@
             document.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter' && !document.getElementById('puzzle-drawer').classList.contains('translate-y-full')) Puzzle.check();
                 if(e.key === 'Escape') {
-                    Oracle.close();
-                    Lexicon.hide();
+                    if(window.Oracle) window.Oracle.close();
+                    if(window.Lexicon) window.Lexicon.hide();
                 }
             });
         });
