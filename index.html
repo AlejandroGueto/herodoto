@@ -37,7 +37,7 @@
             background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
         }
 
-        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.2; letter-spacing: 0.5px; }
+        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.4; letter-spacing: 0.5px; }
         .font-title { font-family: 'Cinzel Decorative', serif; }
 
         /* Animaciones Épicas */
@@ -60,16 +60,16 @@
         /* Glassmorphism y Texturas */
         .glass-panel {
             background: linear-gradient(135deg, rgba(8, 22, 36, 0.85), rgba(2, 6, 10, 0.95));
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.9), inset 0 0 25px rgba(212, 175, 55, 0.08);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(212, 175, 55, 0.1);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         }
 
         .parchment-panel {
             background-color: #f4ecd8;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" opacity="0.06"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="4"/></filter><rect width="200" height="200" filter="url(%23n)"/></svg>');
             color: #2a2218;
-            box-shadow: inset 0 0 60px rgba(139,69,19,0.15);
+            box-shadow: inset 0 0 80px rgba(139,69,19,0.2);
         }
 
         /* Botones */
@@ -97,22 +97,16 @@
         .custom-marker:hover { transform: scale(1.4); background: #fff; border-color: var(--gold); z-index: 1000 !important; }
         .custom-marker.completed { background: var(--aegean-blue); border-color: var(--gold); box-shadow: 0 0 15px var(--aegean-blue); animation: none; }
         
-        /* Tooltips Leaflet premium (Soluciona el problema de los textos cortados/superpuestos) */
         .premium-tooltip {
-            background: rgba(8, 22, 36, 0.85) !important;
-            border: 1px solid var(--gold) !important;
-            color: var(--gold-light) !important;
-            font-family: 'Cinzel Decorative', serif;
-            font-size: 16px; font-weight: bold;
-            text-shadow: 2px 2px 5px #000;
-            border-radius: 4px; padding: 6px 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.9) !important;
+            background: rgba(8, 22, 36, 0.85) !important; border: 1px solid var(--gold) !important;
+            color: var(--gold-light) !important; font-family: 'Cinzel Decorative', serif;
+            font-size: 16px; font-weight: bold; text-shadow: 2px 2px 5px #000;
+            border-radius: 4px; padding: 6px 12px; box-shadow: 0 0 15px rgba(0,0,0,0.9) !important;
             backdrop-filter: blur(5px); white-space: nowrap;
         }
         .premium-tooltip::before { border-right-color: var(--gold) !important; }
         .premium-tooltip::after { border-left-color: var(--gold) !important; }
 
-        /* Líneas del Telar de Heródoto (Progreso) */
         .story-path { stroke: var(--gold); stroke-width: 3; stroke-dasharray: 10, 10; opacity: 0.6; animation: dash 20s linear infinite; }
         @keyframes dash { to { stroke-dashoffset: 1000; } }
 
@@ -120,9 +114,8 @@
         .dual-codex { display: flex; flex-direction: column; height: 100%; transition: all 0.8s ease; }
         @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
         
-        /* Solución al corte de texto en el griego/español (padding bottom inmenso) */
         .codex-pane { flex: 1; padding: 4rem 4rem 20rem 4rem; overflow-y: auto; position: relative; scroll-behavior: smooth; transition: all 0.5s ease; }
-        .pane-greek { background: #0b1016; color: #e2e8f0; border-right: 2px solid var(--gold); }
+        .pane-greek { background: #080c11; color: #e2e8f0; border-right: 2px solid var(--gold); }
         .pane-spanish { border-left: 2px solid rgba(0,0,0,0.1); }
         
         .custom-scrollbar::-webkit-scrollbar { width: 10px; }
@@ -132,25 +125,36 @@
         .drop-cap-greek::first-letter { font-size: 4.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--gold-light); text-shadow: 0 0 20px rgba(212,175,55,0.7); }
         .drop-cap-spanish::first-letter { font-size: 4.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
 
-        /* Glosario Interactivo Premium */
-        .glossary-word {
-            position: relative; cursor: help; border-bottom: 2px dotted var(--gold);
-            transition: color 0.3s, text-shadow 0.3s;
+        /* ==========================================================================
+           INTERACTIVIDAD LÉXICA (PALABRAS DEL GRIEGO CLÁSICO)
+           ========================================================================== */
+        .word-interactive {
+            display: inline-block; cursor: pointer; transition: all 0.2s ease;
+            border-bottom: 1px dotted rgba(212, 175, 55, 0.4); padding: 0 2px; border-radius: 2px;
         }
-        .glossary-word:hover { color: var(--gold-light); text-shadow: 0 0 10px var(--gold); }
-        .glossary-word::after {
-            content: attr(data-trans); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
-            background: rgba(4, 10, 16, 0.95); color: #fff; font-family: 'Cormorant Garamond', serif;
-            font-size: 1.2rem; padding: 5px 12px; border: 1px solid var(--gold); border-radius: 4px;
-            white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.3s; pointer-events: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.9); z-index: 50;
+        .word-interactive:hover {
+            color: var(--gold-light); text-shadow: 0 0 10px var(--gold);
+            background: rgba(212, 175, 55, 0.1); border-bottom: 1px solid var(--gold);
         }
-        .glossary-word:hover::after { opacity: 1; visibility: visible; bottom: 100%; }
 
-        /* Modo Inmersivo */
-        .immersive-mode .pane-greek { display: none; }
-        .immersive-mode .pane-spanish { padding: 5rem 15% 20rem 15%; font-size: 1.2em; }
-        .immersive-mode .top-bar { opacity: 0; pointer-events: none; }
+        /* Lexicon Tooltip */
+        #lexicon-tooltip {
+            position: fixed; z-index: 1000; pointer-events: none; opacity: 0;
+            background: rgba(4, 10, 16, 0.98); border: 1px solid var(--gold);
+            color: var(--marble); padding: 15px 20px; border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 15px rgba(212,175,55,0.2);
+            backdrop-filter: blur(10px); transform: translate(-50%, -10px);
+            transition: opacity 0.2s, transform 0.2s; max-width: 300px;
+        }
+        #lexicon-tooltip.visible { opacity: 1; transform: translate(-50%, -20px); pointer-events: auto; }
+        
+        /* Oráculo Modal Independiente */
+        #oracle-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            z-index: 2000; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto;
+        }
+        #oracle-modal.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
 
         /* Reproductor Audiolibro (El Aedo) */
         .audio-player {
@@ -177,14 +181,15 @@
         }
         .oracle-input:focus { border-color: #fff; box-shadow: 0 0 25px rgba(212,175,55,0.5); background: rgba(0,0,0,0.8); }
 
-        /* Control de Capas Leaflet Personalizado */
-        .leaflet-control-layers { border: 1px solid var(--gold) !important; background: rgba(8, 22, 36, 0.9) !important; color: var(--gold) !important; font-family: 'Cormorant Garamond', serif; border-radius: 4px !important; }
+        .immersive-mode .pane-greek { display: none; }
+        .immersive-mode .pane-spanish { padding: 5rem 20% 20rem 20%; font-size: 1.3em; }
+        .immersive-mode .top-bar { opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <!-- ==========================================================================
-         PANTALLA DE INICIO (CINE)
+         PANTALLA DE INICIO
          ========================================================================== -->
     <div id="screen-intro" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] transition-opacity duration-1000 p-4">
         <div class="text-center max-w-6xl p-12 glass-panel rounded-xl animate-fade w-full relative overflow-hidden">
@@ -205,11 +210,11 @@
             </button>
             
             <div class="mt-16 flex flex-col md:flex-row items-center justify-center gap-8 text-[var(--gold)] font-sans tracking-widest uppercase text-sm relative z-10">
-                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 18v-5m-4 0h8m-4-8a4 4 0 110 8 4 4 0 010-8z"/></svg> Textos Masivos Bilingües</span>
+                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Traducción Interactiva</span>
                 <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> El Aedo (Audiolibro)</span>
+                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Fluido</span>
                 <span class="hidden md:inline text-gray-600">|</span>
-                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Vuelo Cinematográfico</span>
+                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9"/></svg> Oráculo en Red</span>
             </div>
         </div>
     </div>
@@ -237,21 +242,24 @@
                 ΜΕΣΟΓΕΙΟΣ
             </div>
         </header>
-
         <main class="flex-1 relative" id="map-container"></main>
     </div>
 
     <!-- ==========================================================================
-         PANTALLA 3: EL CÓDICE Y EL AEDO
+         PANTALLA 3: EL CÓDICE
          ========================================================================== -->
     <div id="screen-codex" class="absolute inset-0 z-40 bg-black flex-col hidden opacity-0 transition-opacity duration-700">
         
-        <!-- Toolbar Superior -->
+        <!-- Toolbar -->
         <div class="top-bar h-24 border-b-2 border-[var(--gold)] glass-panel flex items-center justify-between px-10 z-10 shrink-0 transition-opacity duration-500">
             <h2 id="codex-title" class="font-title text-4xl text-[var(--gold)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)]">Título</h2>
-            <div class="flex gap-6">
+            <div class="flex gap-4">
+                <button onclick="Oracle.open()" class="btn-hellenic px-6 py-3 text-xl flex items-center gap-2 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="hidden xl:inline">Oráculo</span>
+                </button>
                 <button onclick="Game.toggleImmersive()" class="btn-hellenic px-6 py-3 text-xl flex items-center gap-2" title="Modo Lectura Inmersiva">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="hidden xl:inline">Zen</span>
                 </button>
                 <button onclick="Game.closeCodex()" class="btn-hellenic px-8 py-3 text-xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
@@ -260,50 +268,43 @@
             </div>
         </div>
 
-        <!-- Área Central (Piedra Rosetta) -->
+        <!-- Área Central Bilingüe -->
         <div class="dual-codex w-full relative">
-            <!-- GRIEGO -->
             <div class="codex-pane pane-greek custom-scrollbar">
                 <h3 class="font-title text-[var(--gold)] text-center text-4xl mb-12 border-b-2 border-gray-800 pb-6 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
-                <div id="text-greek" class="font-greek text-2xl lg:text-3xl text-justify leading-loose pb-20">
-                    <!-- Texto Griego Masivo -->
+                <div id="text-greek" class="font-greek text-3xl lg:text-4xl text-justify leading-loose">
+                    <!-- Texto Inyectado Interactivo -->
                 </div>
             </div>
-
-            <!-- ESPAÑOL -->
             <div class="codex-pane pane-spanish parchment-panel custom-scrollbar">
                 <h3 class="font-title text-[var(--sparta-red)] text-center text-4xl mb-12 border-b-2 border-gray-400 pb-6 tracking-widest">VERSIÓN CASTELLANA</h3>
-                <div id="text-spanish" class="text-font text-2xl lg:text-3xl text-justify leading-relaxed pb-20">
-                    <!-- Texto Español Masivo -->
+                <div id="text-spanish" class="text-font text-3xl lg:text-4xl text-justify leading-relaxed">
+                    <!-- Texto Inyectado -->
                 </div>
-                
-                <div class="h-48"></div> <!-- Espacio extra para asegurar el scroll final -->
             </div>
             
             <!-- EL CAJÓN DEL ACERTIJO -->
-            <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-8 lg:p-12 z-20 transform translate-y-full transition-transform duration-700 shadow-[0_-20px_50px_rgba(0,0,0,0.9)]" id="puzzle-drawer">
+            <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-12 z-20 transform translate-y-full transition-transform duration-700 shadow-[0_-20px_50px_rgba(0,0,0,0.9)]" id="puzzle-drawer">
                 <div class="max-w-6xl mx-auto text-center">
-                    <h3 class="font-title text-[var(--gold-light)] text-4xl lg:text-5xl mb-6 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">El Oráculo de Delfos</h3>
-                    <p id="puzzle-desc" class="text-font text-2xl lg:text-3xl text-white mb-12">...</p>
-                    
+                    <h3 class="font-title text-[var(--gold-light)] text-5xl mb-6 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">El Acertijo de las Moiras</h3>
+                    <p id="puzzle-desc" class="text-font text-3xl text-white mb-12">...</p>
                     <div class="flex flex-col lg:flex-row justify-center items-center gap-8">
-                        <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3" placeholder="Ofrenda tu respuesta..." autocomplete="off" spellcheck="false">
+                        <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3" placeholder="Tu respuesta..." autocomplete="off" spellcheck="false">
                         <button onclick="Puzzle.check()" class="btn-hellenic px-12 py-5 text-3xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black">Sellar Destino</button>
                     </div>
                     <p id="puzzle-feedback" class="h-10 text-[var(--sparta-red)] text-2xl font-bold mt-8"></p>
                 </div>
             </div>
             
-            <!-- BOTÓN ENFRENTAR ACERTIJO -->
             <button onclick="Puzzle.toggleDrawer()" id="btn-toggle-puzzle" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 btn-hellenic px-12 py-5 text-2xl z-10 shadow-[0_0_40px_rgba(212,175,55,0.8)] bg-[var(--aegean-blue)] animate-float">
                 Enfrentar el Acertijo ▼
             </button>
         </div>
         
-        <!-- REPRODUCTOR "EL AEDO" (AUDIOBOOK CHUNKING) -->
+        <!-- REPRODUCTOR (EL AEDO) -->
         <div id="audio-player" class="audio-player">
             <div class="flex flex-col">
-                <span class="font-title text-[var(--gold)] text-lg uppercase tracking-widest mb-1">El Aedo (Voz)</span>
+                <span class="font-title text-[var(--gold)] text-lg uppercase tracking-widest mb-1">El Aedo</span>
                 <div class="flex items-center gap-3">
                     <button onclick="TTS.toggleLang()" id="btn-tts-lang" class="text-sm border border-gray-500 rounded px-2 py-1 text-gray-300 hover:text-white hover:border-white transition-colors w-16 text-center">
                         🇪🇸 ESP
@@ -317,33 +318,47 @@
                 </div>
             </div>
             <div id="visualizer" class="visualizer flex items-end gap-1 h-8 px-2 border-l border-gray-700 ml-2">
-                <div class="visualizer-bar"></div>
-                <div class="visualizer-bar"></div>
-                <div class="visualizer-bar"></div>
-                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
             </div>
         </div>
     </div>
 
-    <!-- BOTÓN SALIR MODO INMERSIVO -->
-    <button onclick="Game.toggleImmersive()" id="btn-exit-zen" class="fixed top-8 right-8 z-[100] btn-hellenic px-6 py-3 text-xl bg-black/50 hidden">
-        Salir del Modo Zen
-    </button>
+    <!-- TOOLTIP DICCIONARIO (Lexicon) -->
+    <div id="lexicon-tooltip">
+        <div class="flex justify-between items-start mb-2">
+            <h4 id="lexicon-greek" class="font-greek text-2xl text-[var(--gold)] m-0">Λέξις</h4>
+        </div>
+        <p id="lexicon-spanish" class="text-font text-xl text-white m-0">Traducción...</p>
+        <a id="lexicon-link" href="#" target="_blank" class="block mt-3 text-sm text-[var(--aegean-blue)] hover:text-white font-title underline pointer-events-auto">Ver en Logeion ↗</a>
+    </div>
 
+    <!-- ORÁCULO MODAL (Wikipedia) -->
+    <div id="oracle-modal" class="glass-panel rounded-xl p-8 border-2 border-[var(--aegean-blue)]">
+        <button onclick="Oracle.close()" class="absolute top-6 right-6 text-gray-400 hover:text-white font-bold text-3xl">✕</button>
+        <div class="flex items-center gap-4 mb-6 border-b border-gray-700 pb-4">
+            <svg class="w-10 h-10 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <h3 class="font-title text-3xl text-white tracking-widest uppercase">El Oráculo de la Red</h3>
+        </div>
+        <div id="oracle-content" class="text-font text-2xl text-gray-300 leading-relaxed text-justify">
+            Invocando los saberes del éter...
+        </div>
+    </div>
+
+    <!-- BOTÓN SALIR MODO INMERSIVO -->
+    <button onclick="Game.toggleImmersive()" id="btn-exit-zen" class="fixed top-8 right-8 z-[100] btn-hellenic px-6 py-3 text-xl bg-black/50 hidden">Salir del Modo Zen</button>
 
     <!-- ==========================================================================
          MOTOR DEL JUEGO (JAVASCRIPT)
          ========================================================================== -->
     <script>
         // --- 1. BASE DE DATOS LITERARIA MASIVA ---
-        // Textos súper expandidos y coordenadas corregidas para evitar colisiones en el mapa.
         const HERODOTUS_DB = [
             {
-                id: 'creso', title: 'Creso y Solón', lat: 38.48, lng: 28.04, pass: 'felicidad',
-                greek: `«Σόλων, τίς <span class="glossary-word" data-trans="el más feliz / el más próspero">ὀλβιώτατος</span>;» Ὁ δὲ Σόλων οὐδὲν ὑποθωπεύσας, ἀλλὰ τῷ ἐόντι χρησάμενος λέγει· «Ὦ βασιλεῦ, Τέλλος ὁ Ἀθηναῖος.» Ἀποθωμάσας δὲ Κροῖσος τὸ λεχθὲν εἴρετο ἐπιστρεφέως· «Κοίῃ δὴ κρίνεις Τέλλον εἶναι ὀλβιώτατον;»<br><br>
-                Ὁ δὲ εἶπε· «Τέλλῳ τοῦτο μὲν τῆς πόλιος εὖ ἡκούσης <span class="glossary-word" data-trans="hijos, niños">παῖδες</span> ἦσαν καλοί τε κἀγαθοί, καί σφι εἶδε ἅπασι τέκνα ἐκγενόμενα καὶ πάντα παραμείναντα· τοῦτο δὲ τοῦ βίου εὖ ἥκοντι, ὡς τὰ παρ’ ἡμῖν, τελευτὴ τοῦ βίου λαμπροτάτη ἐπεγένετο· γενομένης γὰρ Ἀθηναίοισι μάχης πρὸς τοὺς ἀστυγείτονας ἐν Ἐλευσῖνι, βοηθήσας καὶ τροπὴν ποιήσας τῶν πολεμίων ἀπέθανε κάλλιστα, καί μιν Ἀθηναῖοι δημοσίῃ τε ἔθαψαν αὐτοῦ τῇ περ ἔπεσε καὶ ἐτίμησαν μεγάλως.»<br><br>
+                id: 'creso', title: 'Creso y Solón', lat: 38.48, lng: 28.04, wiki: 'Creso', pass: 'felicidad',
+                greek: `«Σόλων, τίς ὀλβιώτατος;» Ὁ δὲ Σόλων οὐδὲν ὑποθωπεύσας, ἀλλὰ τῷ ἐόντι χρησάμενος λέγει· «Ὦ βασιλεῦ, Τέλλος ὁ Ἀθηναῖος.» Ἀποθωμάσας δὲ Κροῖσος τὸ λεχθὲν εἴρετο ἐπιστρεφέως· «Κοίῃ δὴ κρίνεις Τέλλον εἶναι ὀλβιώτατον;»<br><br>
+                Ὁ δὲ εἶπε· «Τέλλῳ τοῦτο μὲν τῆς πόλιος εὖ ἡκούσης παῖδες ἦσαν καλοί τε κἀγαθοί, καί σφι εἶδε ἅπασι τέκνα ἐκγενόμενα καὶ πάντα παραμείναντα· τοῦτο δὲ τοῦ βίου εὖ ἥκοντι, ὡς τὰ παρ’ ἡμῖν, τελευτὴ τοῦ βίου λαμπροτάτη ἐπεγένετο· γενομένης γὰρ Ἀθηναίοισι μάχης πρὸς τοὺς ἀστυγείτονας ἐν Ἐλευσῖνι, βοηθήσας καὶ τροπὴν ποιήσας τῶν πολεμίων ἀπέθανε κάλλιστα, καί μιν Ἀθηναῖοι δημοσίῃ τε ἔθαψαν αὐτοῦ τῇ περ ἔπεσε καὶ ἐτίμησαν μεγάλως.»<br><br>
                 Ὡς δὲ τὰ κατὰ τὸν Τέλλον προετρέψατο ὁ Σόλων τὸν Κροῖσον εἴπας πολλὰ καὶ ὄλβια, ἐπειρώτα τίνα δεύτερον μετ' ἐκεῖνον ἴδοι, δοκέων πάγχυ δευτερεῖα γῶν οἴσεσθαι. Ὁ δ' εἶπε· «Κλέοβίν τε καὶ Βίτωνα.» Τούτοισι γὰρ ἐοῦσι γένος Ἀργείοισι βίος τε ἀρκέων ὑπῆν, καὶ πρὸς τούτῳ ῥώμη σώματος τοιήδε· ἀεθλοφόροι τε ἀμφότεροι ὁμοίως ἦσαν, καὶ δὴ καὶ λέγεται ὅδε ὁ λόγος. Ἐούσης ὁρτῆς τῇ Ἥρῃ τοῖσι Ἀργείοισι ἔδεε πάντως τὴν μητέρα αὐτῶν ζεύγεϊ κομισθῆναι ἐς τὸ ἱρόν, οἱ δέ σφι βόες ἐκ τοῦ ἀγροῦ οὐ παρεγίνοντο ἐν ὥρῃ· ἐκκληϊόμενοι δὲ τῇ ὥρῃ οἱ νεηνίαι ὑποδύντες αὐτοὶ ὑπὸ τὴν ζεύγλην εἷλκον τὴν ἅμαξαν, ἐπὶ τῆς ἁμάξης δέ σφι ὠχέετο ἡ μήτηρ, σταδίους δὲ πέντε καὶ τεσσεράκοντα διακομίσαντες ἀπίκοντο ἐς τὸ ἱρόν.<br><br>
-                Μετεξέτεροι δὲ λέγουσι ὡς Κροῖσος, ἁλοὺς ὑπὸ Κύρου, ἐπὶ <span class="glossary-word" data-trans="pira (de fuego)">πυρὴν</span> ἀναβιβασθεὶς καὶ ὑπὸ τοῦ πυρὸς φλεγόμενος, ἀνενειχθεὶς ἐς τρὶς ὠνόμασε τὸ τοῦ Σόλωνος οὔνομα. Κῦρος δὲ ἀκούσας, μεταμεληθεὶς καὶ ἐννοήσας ὅτι καὶ αὐτὸς ἄνθρωπος ἐὼν ἄνθρωπον ἄλλον, οὐδὲν ἑωυτοῦ ὄλβῳ ἔλασσον γενόμενον, ζώοντα πυρὶ διδοίη, ἐκέλευε σβεννύναι τὴν ταχίστην τὸ καιόμενον πῦρ.<br><br>
+                Μετεξέτεροι δὲ λέγουσι ὡς Κροῖσος, ἁλοὺς ὑπὸ Κύρου, ἐπὶ πυρὴν ἀναβιβασθεὶς καὶ ὑπὸ τοῦ πυρὸς φλεγόμενος, ἀνενειχθεὶς ἐς τρὶς ὠνόμασε τὸ τοῦ Σόλωνος οὔνομα. Κῦρος δὲ ἀκούσας, μεταμεληθεὶς καὶ ἐννοήσας ὅτι καὶ αὐτὸς ἄνθρωπος ἐὼν ἄνθρωπον ἄλλον, οὐδὲν ἑωυτοῦ ὄλβῳ ἔλασσον γενόμενον, ζώοντα πυρὶ διδοίη, ἐκέλευε σβεννύναι τὴν ταχίστην τὸ καιόμενον πῦρ.<br><br>
                 Σκοπέειν δὲ χρὴ παντὸς χρήματος τὴν τελευτήν, κῇ ἀποβήσεται· πολλοῖσι γὰρ δὴ ὑποδέξας ὄλβον ὁ θεὸς προῤῥίζους ἀνέτρεψε.`,
                 spanish: `Creso, rey de Lidia, creyéndose el hombre más dichoso de la tierra por sus inmensas riquezas, ordenó a sus sirvientes que mostraran todos sus tesoros al sabio ateniense Solón. Tras la visita, le preguntó: «Solón, huésped ateniense, dime: ¿quién es el hombre más feliz que has conocido en tus viajes?». Solón, sin adularle en absoluto y ateniéndose estrictamente a la verdad, respondió: «Oh rey, Telo de Atenas». Creso, asombrado e indignado por la respuesta, le preguntó con viveza: «¿Por qué juzgas que un simple ciudadano como Telo es el más feliz?».<br><br>
                 Solón respondió: «Porque, en primer lugar, en una ciudad próspera y libre, tuvo hijos hermosos y virtuosos, y vio nacer nietos de todos ellos, y todos le sobrevivieron; y, en segundo lugar, tras gozar de una vida próspera según la medida humana, tuvo un final gloriosísimo. Pues durante una batalla de los atenienses contra sus vecinos en Eleusis, acudió en ayuda de los suyos, puso en fuga a los enemigos y murió en el campo de batalla de la forma más heroica. Los atenienses lo enterraron a expensas públicas en el mismo lugar donde cayó y le rindieron honores inmortales».<br><br>
@@ -354,10 +369,10 @@
                 puzzle: "Creso creía que su inmenso oro le garantizaba el primer puesto en la lista de Solón. ¿Qué concepto central (aquello que anhela el ser humano y que Solón mide sólo al final de la vida) están debatiendo?"
             },
             {
-                id: 'termopilas', title: 'La Resistencia de las Termópilas', lat: 38.80, lng: 22.55, pass: 'espartiatas',
-                greek: `Οἱ δὲ ἀμφὶ Λεωνίδην Ἕλληνες, ὡς τὴν ἐπὶ <span class="glossary-word" data-trans="muerte">θανάτῳ</span> ἔξοδον ποιεύμενοι, ἤδη πολλῷ μᾶλλον ἢ κατ' ἀρχὰς ἐπεξῄεσαν ἐς τὸ εὐρύτερον τοῦ αὐχένος. Τὸ μὲν γὰρ ἔρυμα τοῦ τείχεος ἐφυλάσσετο, οἱ δὲ ἀνὰ τὰς προτέρας ἡμέρας ὑπεξιόντες ἐς τὰ στεινόπορα ἐμάχοντο· τότε δὲ συμμίσγοντες ἔξω τῶν στεινῶν ἔπιπτον πλήθεϊ πολλοὶ τῶν βαρβάρων· ὄπισθε γὰρ οἱ ἡγεμόνες τῶν τελέων ἔχοντες μάστιγας ἐῤῥάπιζον πάντα ἄνδρα, αἰεὶ ἐς τὸ πρόσω ἐποτρύνοντες.<br><br>
+                id: 'termopilas', title: 'La Resistencia de las Termópilas', lat: 38.80, lng: 22.55, wiki: 'Batalla_de_las_Termópilas', pass: 'espartiatas',
+                greek: `Οἱ δὲ ἀμφὶ Λεωνίδην Ἕλληνες, ὡς τὴν ἐπὶ θανάτῳ ἔξοδον ποιεύμενοι, ἤδη πολλῷ μᾶλλον ἢ κατ' ἀρχὰς ἐπεξῄεσαν ἐς τὸ εὐρύτερον τοῦ αὐχένος. Τὸ μὲν γὰρ ἔρυμα τοῦ τείχεος ἐφυλάσσετο, οἱ δὲ ἀνὰ τὰς προτέρας ἡμέρας ὑπεξιόντες ἐς τὰ στεινόπορα ἐμάχοντο· τότε δὲ συμμίσγοντες ἔξω τῶν στεινῶν ἔπιπτον πλήθεϊ πολλοὶ τῶν βαρβάρων· ὄπισθε γὰρ οἱ ἡγεμόνες τῶν τελέων ἔχοντες μάστιγας ἐῤῥάπιζον πάντα ἄνδρα, αἰεὶ ἐς τὸ πρόσω ἐποτρύνοντες.<br><br>
                 Πολλοὶ μὲν δὴ ἐσέπιπτον αὐτῶν ἐς τὴν θάλασσαν καὶ διεφθείροντο, πολλῷ δ' ἔτι πλεῦνες κατεπατέοντο ζωοὶ ὑπ' ἀλλήλων· ἦν δ' λόγος οὐδεὶς τοῦ ἀπολλυμένου. Ἅτε γὰρ ἐπιστάμενοι τὸν μέλλοντα σφι ἔσεσθαι θάνατον ἐκ τῶν περιιόντων τὸ ὄρος, ἀπεδείκνυντο ῥώμης ὅσον εἶχον μέγιστον ἐς τοὺς βαρβάρους, παραχρεώμενοί τε καὶ ἀτέοντες.<br><br>
-                Δόρατα μέν νυν τοῖσι πλέοσι αὐτῶν τηνικαῦτα ἤδη ἐτύγχανε κατεηγότα, οἱ δὲ τοῖσι ξίφεσι ἔργοντο τοὺς Πέρσας. Καὶ Λεωνίδης τε ἐν τούτῳ τῷ πόνῳ πίπτει ἀνὴρ γενόμενος ἄριστος, καὶ μετ' αὐτοῦ ἄλλοι <span class="glossary-word" data-trans="de los espartiatas">Σπαρτιητέων</span> ὀνομαστοί.<br><br>
+                Δόρατα μέν νυν τοῖσι πλέοσι αὐτῶν τηνικαῦτα ἤδη ἐτύγχανε κατεηγότα, οἱ δὲ τοῖσι ξίφεσι ἔργοντο τοὺς Πέρσας. Καὶ Λεωνίδης τε ἐν τούτῳ τῷ πόνῳ πίπτει ἀνὴρ γενόμενος ἄριστος, καὶ μετ' αὐτοῦ ἄλλοι Σπαρτιητέων ὀνομαστοί.<br><br>
                 Ὑπὲρ τοῦ νεκροῦ τοῦ Λεωνίδεω Περσέων τε καὶ Λακεδαιμονίων ὠθισμὸς ἐγένετο πολλός, ἐς ὃ τοῦτόν τε ἀρετῇ οἱ Ἕλληνες ὑπεξέσχοντο καὶ ἐτρέψαντο τοὺς ἐναντίους τετράκις. Τοῦτο δὲ συμπεσὸν ἐγίνετο μέχρι οὗ οἱ σὺν Ἐπιάλτῃ παρεγένοντο. Ὡς δὲ τούτους ἥκειν ἐπύθοντο οἱ Ἕλληνες, ἐνθεῦτεν ἤδη ἑτεροιοῦτο τὸ ἔργον· ἔς τε γὰρ τὸ στεινὸν τοῦ αὐχένος ἀνεχώρεον ὀπίσω... καὶ ἐν τούτῳ τῷ χώρῳ ἀλεξόμενοι μαχαίρῃσι, τοῖσι αὐτῶν ἐτύγχανον ἔτι περιεοῦσαι, καὶ χερσὶ καὶ στόμασι κατεχώσθησαν ὑπὸ τῶν βαρβάρων βάλλοντων.<br><br>
                 Ὦ ξεῖν', ἀγγέλλειν Λακεδαιμονίοις ὅτι τῇδε κείμεθα τοῖς κείνων ῥήμασι πειθόμενοι.`,
                 spanish: `Los griegos al mando de Leónidas, sabiendo que su salida era hacia una muerte segura, avanzaron mucho más que al principio hacia la parte más ancha del desfiladero. Hasta entonces habían defendido el muro protector y hacían salidas tácticas hacia la parte más estrecha; pero en ese momento, lanzándose fuera de la estrechez, se enfrentaron en campo abierto. Caían grandes multitudes de bárbaros, pues detrás de ellos los comandantes de los escuadrones, armados con látigos, azotaban a cada hombre, empujándolos incesantemente hacia adelante.<br><br>
@@ -368,12 +383,12 @@
                 puzzle: "El texto relata la furia de los griegos y la muerte de Leónidas junto a otros guerreros célebres. ¿Con qué gentilicio se conoce comúnmente a estos temibles combatientes («Σπαρτιητέων»)?"
             },
             {
-                id: 'artemisia', title: 'La Astucia de Artemisia', lat: 37.95, lng: 23.50, pass: 'hombres',
-                greek: `Κατὰ δὲ Ἀρτεμισίην τάδε ἐγένετο, ἀπ' ὧν εὐδοκίμησε μᾶλλον ἔτι πρὸς βασιλέος. Ἐπειδὴ γὰρ ἐς θόρυβον ἀπίκετο τὰ βασιλέος πρήγματα, ἐν τούτῳ τῷ καιρῷ ἡ <span class="glossary-word" data-trans="nave, barco">νηῦς</span> ἡ Ἀρτεμισίης ἐδιώκετο ὑπὸ νεὸς Ἀττικῆς· καὶ ἣ οὐκ ἔχουσα διαφυγεῖν (ἔμπροσθε γὰρ αὐτῆς ἦσαν ἄλλαι νέες φίλιαι, ἡ δὲ αὐτῆς πρὸς τοὺς πολεμίους μάλιστα ἐτύγχανε ἐοῦσα) ἔδοξέ οἱ τόδε ποιῆσαι, τὸ καὶ συνήνεικε ποιησάσῃ.<br><br>
+                id: 'artemisia', title: 'La Astucia de Artemisia', lat: 37.95, lng: 23.50, wiki: 'Artemisia_I_de_Caria', pass: 'hombres',
+                greek: `Κατὰ δὲ Ἀρτεμισίην τάδε ἐγένετο, ἀπ' ὧν εὐδοκίμησε μᾶλλον ἔτι πρὸς βασιλέος. Ἐπειδὴ γὰρ ἐς θόρυβον ἀπίκετο τὰ βασιλέος πρήγματα, ἐν τούτῳ τῷ καιρῷ ἡ νηῦς ἡ Ἀρτεμισίης ἐδιώκετο ὑπὸ νεὸς Ἀττικῆς· καὶ ἣ οὐκ ἔχουσα διαφυγεῖν (ἔμπροσθε γὰρ αὐτῆς ἦσαν ἄλλαι νέες φίλιαι, ἡ δὲ αὐτῆς πρὸς τοὺς πολεμίους μάλιστα ἐτύγχανε ἐοῦσα) ἔδοξέ οἱ τόδε ποιῆσαι, τὸ καὶ συνήνεικε ποιησάσῃ.<br><br>
                 Διωκομένη γὰρ ὑπὸ τῆς Ἀττικῆς φέρουσα ἐνέβαλε νηὶ φιλίῃ ἀνδρῶν τε Καλυνδέων καὶ αὐτοῦ ἐπιπλέοντος τοῦ Καλυνδέων βασιλέος Δαμασιθύμου. Εἰ μὲν καί τι νεῖκος πρὸς αὐτὸν ἐγεγόνεε ἔτι περὶ Ἑλλήσποντον ἐόντων, οὐ μέντοι ἔγωγε ἔχω εἰπεῖν οὔτε εἰ ἐκ προνοίης ταῦτα ἐποίησε, οὔτε εἰ συνεκύρησε ἡ τῶν Καλυνδέων νηῦς παραπεσοῦσα.<br><br>
                 Ὡς δὲ ἐνέβαλέ τε καὶ κατέδυσε, εὐτυχίῃ χρησαμένη διπλᾶ ἑωυτὴν ἀγαθὰ ἐργάσατο. Ὅ τε γὰρ τῆς Ἀττικῆς νεὸς τριήραρχος ὡς εἶδέ μιν ἐμβάλλουσαν νηὶ ἀνδρῶν βαρβάρων, νομίσας τὴν νέα τὴν Ἀρτεμισίης ἢ Ἑλληνίδα εἶναι ἢ αὐτομολέειν ἐκ τῶν βαρβάρων καὶ αὐτοῖσι ἀμύνειν, ἀποστρέψας πρὸς ἄλλας ἐτράπετο.<br><br>
                 Τοῦτο μὲν τοιοῦτο αὐτῇ συνήνεικε γενέσθαι διαφυγεῖν τε καὶ μὴ ἀπολέσθαι, τοῦτο δὲ συνέβη ὥστε κακὸν ἐργασαμένην ἀπὸ τούτων αὐτὴν μάλιστα εὐδοκιμῆσαι παρὰ Ξέρξῃ. Ὁρῶν γάρ τις τῶν παρεστεώτων ἐμβάλλουσαν τὴν νῆα εἶπε· «Δέσποτα, ὁρᾷς Ἀρτεμισίην ὡς καλῶς ἀγωνίζεται καὶ νέα τῶν πολεμίων κατέδυσε;»<br><br>
-                Ὁ δὲ ἐπειρώτα εἰ ἀληθέως ἐστὶ Ἀρτεμισίης τὸ ἔργον. Οἱ δὲ ἔφασαν, σαφέως τὸ ἐπίσημον τῆς νεὸς ἐπιστάμενοι· τὴν δὲ διαφθαρεῖσαν ἠπίσταντο εἶναι πολεμίην. Ξέρξης δὲ εἶπε· «Οἱ μὲν <span class="glossary-word" data-trans="hombres / varones">ἄνδρες</span> γεγόνασί μοι γυναῖκες, αἱ δὲ γυναῖκες ἄνδρες.» Ταῦτα μὲν Ξέρξην φασὶ εἰπεῖν.`,
+                Ὁ δὲ ἐπειρώτα εἰ ἀληθέως ἐστὶ Ἀρτεμισίης τὸ ἔργον. Οἱ δὲ ἔφασαν, σαφέως τὸ ἐπίσημον τῆς νεὸς ἐπιστάμενοι· τὴν δὲ διαφθαρεῖσαν ἠπίσταντο εἶναι πολεμίην. Ξέρξης δὲ εἶπε· «Οἱ μὲν ἄνδρες γεγόνασί μοι γυναῖκες, αἱ δὲ γυναῖκες ἄνδρες.» Ταῦτα μὲν Ξέρξην φασὶ εἰπεῖν.`,
                 spanish: `Con respecto a la reina Artemisia en la batalla de Salamina, sucedió un episodio por el cual adquirió aún más prestigio ante el rey Jerjes. Cuando la armada persa llegó a una situación de confusión y pánico, la nave de Artemisia se vio perseguida tenazmente por un trirreme ateniense. Al ver que no tenía escapatoria (pues su nave estaba en vanguardia, bloqueada por otras naves amigas), decidió ejecutar una maniobra audaz que, al final, le resultó inmensamente provechosa.<br><br>
                 Acosada por los griegos, dirigió su proa a toda velocidad y embistió brutalmente a una nave amiga, tripulada por hombres de Calinda y comandada por su propio rey, Damasítimo. Ignoro si Artemisia lo hizo por una antigua rencilla que arrastraban desde su estancia en el Helesponto, o si simplemente el barco de Calinda tuvo la mala suerte de cruzarse en su camino. Lo cierto es que lo partió por la mitad.<br><br>
                 Al hundir la nave aliada sin dejar supervivientes, logró un doble golpe de suerte. El capitán ateniense, al verla embestir un barco bárbaro, pensó lógicamente que la nave de Artemisia era griega o que había desertado del bando persa para ayudarles. Así que ordenó virar y la dejó escapar para perseguir a otros.<br><br>
@@ -382,9 +397,9 @@
                 puzzle: "Jerjes, asombrado por la violencia de la reina al hundir el barco, proclama que sus guerreros varones se han vuelto mujeres, y sus mujeres se han convertido en..."
             },
             {
-                id: 'maraton', title: 'La Carga de Maratón', lat: 38.15, lng: 24.00, pass: 'locura',
-                greek: `Ἀθηναῖοι δὲ ἐπείτε ἀπείθησαν καὶ ἔθυον τὰ σφάγια, ἐνθαῦτα <span class="glossary-word" data-trans="a la carrera / corriendo">δρόμῳ</span> ἵεντο ἐς τοὺς βαρβάρους. Ἦσαν δὲ τὸ μεταίχμιον αὐτῶν στάδιοι οὐκ ἐλάσσονες ὀκτώ.<br><br>
-                Πέρσαι δὲ ὁρέοντες δρόμῳ ἐπιόντας παρεσκευάζοντο ὡς δεξόμενοι, <span class="glossary-word" data-trans="locura, demencia">μανίην</span> τε τοῖσι Ἀθηναίοισι ἐπέφερον καὶ πάγχυ ὀλεθρίην, ὁρέοντες αὐτοὺς ὀλίγους καὶ τούτους δρόμῳ ἐπειγομένους οὔτε ἵππου ὑπαρχούσης σφι οὔτε τοξευμάτων. Ταῦτα μέν νυν οἱ βάρβαροι κατείκαζον·<br><br>
+                id: 'maraton', title: 'La Carga de Maratón', lat: 38.15, lng: 24.00, wiki: 'Batalla_de_Maratón', pass: 'locura',
+                greek: `Ἀθηναῖοι δὲ ἐπείτε ἀπείθησαν καὶ ἔθυον τὰ σφάγια, ἐνθαῦτα δρόμῳ ἵεντο ἐς τοὺς βαρβάρους. Ἦσαν δὲ τὸ μεταίχμιον αὐτῶν στάδιοι οὐκ ἐλάσσονες ὀκτώ.<br><br>
+                Πέρσαι δὲ ὁρέοντες δρόμῳ ἐπιόντας παρεσκευάζοντο ὡς δεξόμενοι, μανίην τε τοῖσι Ἀθηναίοισι ἐπέφερον καὶ πάγχυ ὀλεθρίην, ὁρέοντες αὐτοὺς ὀλίγους καὶ τούτους δρόμῳ ἐπειγομένους οὔτε ἵππου ὑπαρχούσης σφι οὔτε τοξευμάτων. Ταῦτα μέν νυν οἱ βάρβαροι κατείκαζον·<br><br>
                 Ἀθηναῖοι δὲ ἐπείτε ἀθρόοι προσέμιξαν τοῖσι βαρβάροισι, ἐμάχοντο ἀξίως λόγου. Πρῶτοι μὲν γὰρ Ἑλλήνων πάντων τῶν ἡμεῖς ἴδμεν δρόμῳ ἐς πολεμίους ἐχρήσαντο, πρῶτοι δὲ ἀνέσχοντο ἐσθῆτά τε Μηδικὴν ὁρέοντες καὶ τοὺς ἄνδρας ταύτην ἐσθημένους· τέως δὲ ἦν τοῖσι Ἕλλησι καὶ τὸ οὔνομα τὸ Μήδων φόβος ἀκοῦσαι.<br><br>
                 Μαχομένων δὲ ἐν τῷ Μαραθῶνι χρόνος ἐγίνετο πολλός. Καὶ τὸ μὲν μέσον τοῦ στρατοπέδου ἐνίκων οἱ βάρβαροι, τῇ Πέρσαι τε αὐτοὶ καὶ Σάκαι ἐτετάχατο· ταύτῃ μὲν δὴ ἐνίκων οἱ βάρβαροι καὶ ῥήξαντες ἐδίωκον ἐς τὴν μεσόγαιαν· τὸ δὲ κέρας ἑκάτερον ἐνίκων Ἀθηναῖοί τε καὶ Πλαταιέες.<br><br>
                 Νικῶντες δὲ τὸ μὲν τετραμμένον τῶν βαρβάρων φεύγειν ἔων, τοῖσι δὲ τὸ μέσον ῥήξασι αὐτῶν συναγαγόντες τὰ κέρεα ἀμφότερα ἐμάχοντο, καὶ ἐνίκων Ἀθηναῖοι. Φεύγουσι δὲ τοῖσι Πέρσῃσι εἵποντο κόπτοντες, ἐς ὃ ἐπὶ τὴν θάλασσαν ἀπικόμενοι πῦρ τε αἴτεον καὶ ἐπελαμβάνοντο τῶν νεῶν.`,
@@ -396,10 +411,10 @@
                 puzzle: "¿Qué defecto mental o enfermedad destructiva («μανίην») creyeron los persas que sufrían los griegos al verlos cargar a pie, corriendo y siendo tan pocos?"
             },
             {
-                id: 'anillo', title: 'El Anillo de Polícrates', lat: 37.70, lng: 26.98, pass: 'pez',
+                id: 'anillo', title: 'El Anillo de Polícrates', lat: 37.70, lng: 26.98, wiki: 'Polícrates_de_Samos', pass: 'pez',
                 greek: `Πολυκράτης δὲ ταῦτα ἐπιλεξάμενος καὶ νόῳ λαβὼν ὥς οἱ εὖ ὑπετίθετο Ἄμασις, ἐδίζητο ἐπ' ᾧ ἂν μάλιστα τὴν ψυχὴν ἀσηθείη ἀπολομένῳ τῶν κειμηλίων· διζήμενος δὲ εὕρισκε τόδε· ἦν οἱ σφρηγὶς ἣν ἐφόρεε χρυσόδετος, σμαράγδου μὲν λίθου ἐοῦσα, ἔργον δὲ ἦν Θεοδώρου τοῦ Τηλεκλέος Σαμίου.<br><br>
                 Ταύτην δὴ ὦν ἐδόκεέ οἱ ἀποβαλεῖν, καὶ ἐποίεε ὧδε· πεντηκόντερον πληρώσας ἀνδρῶν ἐσέβη ἐς αὐτήν, μετὰ δὲ ἀναγαγεῖν ἐκέλευε ἐς τὸ πέλαγος. Ὡς δὲ ἀπὸ τῆς νήσου ἑκὰς ἐγένετο, περιελόμενος τὴν σφρηγῖδα πάντων ὁρεόντων τῶν συμπλόων ῥίπτει ἐς τὴν θάλασσαν. Τοῦτο δὲ ποιήσας ἀπέπλεε, ἀπικόμενος δὲ ἐς τὰ οἰκία συμφορῇ ἐχρᾶτο.<br><br>
-                Πέμπτῃ δὲ ἢ ἕκτῃ ἡμέρῃ ἀπὸ τούτων τάδε οἱ συνήνεικε γενέσθαι· ἀνὴρ ἁλιεὺς λαβὼν <span class="glossary-word" data-trans="pez, pescado">ἰχθὺν</span> μέγαν τε καὶ καλὸν ἠξίου μιν Πολυκράτεϊ δῶρον δοθῆναι. Λαβὼν δὲ ἦιε ἐπὶ τὰς θύρας, ἐς ὄψιν τε ἔφη ἐθέλειν ἐλθεῖν Πολυκράτεϊ· χωρήσαντος δέ οἱ τούτου ἔλεγε διδοὺς τὸν ἰχθύν· «Ὦ βασιλεῦ, ἐγὼ τοῦτον ἑλὼν οὐκ ἐδικαίωσα φέρειν ἐς ἀγορήν... ἀλλά μοι ἐδόκεε σεῦ τε εἶναι ἄξιος καὶ τῆς σῆς ἀρχῆς· σοὶ δὴ ὦν φέρων αὐτὸν δίδωμι.»<br><br>
+                Πέμπτῃ δὲ ἢ ἕκτῃ ἡμέρῃ ἀπὸ τούτων τάδε οἱ συνήνεικε γενέσθαι· ἀνὴρ ἁλιεὺς λαβὼν ἰχθὺν μέγαν τε καὶ καλὸν ἠξίου μιν Πολυκράτεϊ δῶρον δοθῆναι. Λαβὼν δὲ ἦιε ἐπὶ τὰς θύρας, ἐς ὄψιν τε ἔφη ἐθέλειν ἐλθεῖν Πολυκράτεϊ· χωρήσαντος δέ οἱ τούτου ἔλεγε διδοὺς τὸν ἰχθύν· «Ὦ βασιλεῦ, ἐγὼ τοῦτον ἑλὼν οὐκ ἐδικαίωσα φέρειν ἐς ἀγορήν... ἀλλά μοι ἐδόκεε σεῦ τε εἶναι ἄξιος καὶ τῆς σῆς ἀρχῆς· σοὶ δὴ ὦν φέρων αὐτὸν δίδωμι.»<br><br>
                 Ὁ δὲ ἡσθεὶς τοῖσι ἔπεσι ἀμείβεται τοῖσιδε· «Κάρτα τε εὖ ἐποίησας καὶ χάρις διπλῆ τῶν τε λόγων καὶ τοῦ δώρου· καί σε ἐπὶ δεῖπνον καλέομεν.» Ὁ μὲν δὴ ἁλιεὺς μέγα ποιεύμενος ταῦτα ἤιε ἐς τὰ οἰκία, οἱ δὲ θεράποντες τάμνοντες τὸν ἰχθὺν εὑρίσκουσι ἐν τῇ νηδύϊ αὐτοῦ ἐνεοῦσαν τὴν Πολυκράτεος σφρηγῖδα.<br><br>
                 Ὡς δὲ εἶδόν τε καὶ ἔλαβον τάχιστα, ἔφερον χαρμόσυνοι παρὰ τὸν Πολυκράτεα, διδόντες τέ οἱ τὴν σφρηγῖδα ἔλεγον ὅτεῳ τρόπῳ εὑρέθη. Ὁ δὲ ὡς ἐνόησε θεῖον εἶναι τὸ πρῆγμα, γράφει ἐς βυβλίον πάντα τὰ ποιήσαντά μιν οἷα καταλελάβηκε. Ἄμασις δὲ ἐπιλεξάμενος... ἔμαθε ὅτι ἐκκομίσαι τε ἀδύνατον εἴη ἀνθρώπῳ ἄνθρωπον ἐκ τοῦ μέλλοντος γίνεσθαι πρήγματος, καὶ ὅτι οὐκ εὖ τελευτήσειν μέλλοι Πολυκράτης εὐτυχέων τὰ πάντα, ὃς καὶ τὰ ἀποβάλλει εὑρίσκει.`,
                 spanish: `Polícrates, el tirano de Samos, leía la carta de su aliado el rey de Egipto, Amasis, quien le advertía de que una suerte humana tan ininterrumpida y antinatural sólo podía acabar en desgracia divina. Amasis le aconsejaba desprenderse dolorosamente de aquello que más amara. Polícrates lo meditó y buscó entre sus tesoros el que más le dolería perder: eligió su sello personal. Era una joya engarzada en oro con una esmeralda tallada por el célebre artesano Teodoro de Samos.<br><br>
@@ -410,8 +425,8 @@
                 puzzle: "Amasis dedujo que los dioses destruirían a Polícrates porque rechazaban sus intentos de sufrir infortunios. ¿Dentro de qué animal concreto apareció asombrosamente la esmeralda que había arrojado al mar?"
             },
             {
-                id: 'rampsinito', title: 'La Trampa del Faraón', lat: 29.80, lng: 31.13, pass: 'cabeza',
-                greek: `Βασιλέα Ραμψίνιτον... τοῦ δὲ ἑτέρου ἐγκαταλειπομένου καὶ ὡς ἐπύθετο ἐν οἵῳ κακῷ ἦν, ἰθὺς καλέσαντα τὸν ἀδελφεὸν λέγειν μιν τάδε· «Ἐπείτε γάρ με κατάειλε ἡ πάγη, σὺ δὲ εἴσελθε τὴν ταχίστην καὶ τάμον μου τὴν <span class="glossary-word" data-trans="cabeza">κεφαλήν</span>, μή κοτε ὀφθεὶς καὶ γνωρισθεὶς ὃς εἴην προσαπολέσω καὶ σέ.» Τῷ δὲ ἔδοξε εὖ λέγειν καὶ ἐποίησε ταῦτα πεισθείς, καὶ καταρμόσας τὸν λίθον ἀπίετο ἐπ' οἴκου φέρων τὴν κεφαλὴν τοῦ ἀδελφεοῦ.<br><br>
+                id: 'rampsinito', title: 'La Trampa del Faraón', lat: 29.80, lng: 31.13, wiki: 'Rampsinito', pass: 'cabeza',
+                greek: `Βασιλέα Ραμψίνιτον... τοῦ δὲ ἑτέρου ἐγκαταλειπομένου καὶ ὡς ἐπύθετο ἐν οἵῳ κακῷ ἦν, ἰθὺς καλέσαντα τὸν ἀδελφεὸν λέγειν μιν τάδε· «Ἐπείτε γάρ με κατάειλε ἡ πάγη, σὺ δὲ εἴσελθε τὴν ταχίστην καὶ τάμον μου τὴν κεφαλήν, μή κοτε ὀφθεὶς καὶ γνωρισθεὶς ὃς εἴην προσαπολέσω καὶ σέ.» Τῷ δὲ ἔδοξε εὖ λέγειν καὶ ἐποίησε ταῦτα πεισθείς, καὶ καταρμόσας τὸν λίθον ἀπίετο ἐπ' οἴκου φέρων τὴν κεφαλὴν τοῦ ἀδελφεοῦ.<br><br>
                 Ὡς δὲ ἡμέρη ἐγένετο, ἐσελθόντα τὸν βασιλέα ἐς τὸ οἴκημα ἐκπεπλῆχθαι, ὁρέοντα τὸ σῶμα τοῦ φωρὸς ἐν τῇ πάγῃ ἄνευ τῆς κεφαλῆς ἐόν, τὸ δὲ οἴκημα ἀσινὲς καὶ οὔτε ἔσοδον οὔτε ἔκδυσιν οὐδεμίαν ἔχον. Ἀπορέοντα δέ μιν τάδε ποιῆσαι λέγουσι· τοῦ φωρὸς τὸν νέκυν ἐκ τοῦ τείχεος κατακρεμάσαι, φυλάκους δὲ αὐτοῦ καταστήσαντα ἐντείλασθαί σφι, τὸν ἂν ἴδωνται ἀποκλαύσαντα ἢ κατοικτισάμενον, συλλαβόντας ἄγειν πρὸς ἑωυτόν.<br><br>
                 Ἀνακρεμαμένου δὲ τοῦ νέκυος, τὴν μητέρα δεινῶς φέρειν, λόγους τε πρὸς τὸν περιεόντα παῖδα ποιέεσθαι, ἐπιτάσσουσάν οἱ ὅτεῳ τρόπῳ δύναται μηχανᾶσθαι ὅκως τὸ σῶμα τοῦ ἀδελφεοῦ καταλύσας κομιεῖ· εἰ δὲ τούτων ἀμελήσει, διαπειλέειν αὐτὴν ὡς ἐλθοῦσα πρὸς τὸν βασιλέα μηνύσει αὐτὸν ἔχοντα τὰ χρήματα.<br><br>
                 Ὡς δὲ χαλεπῶς ἐνένωτο ἡ μήτηρ τῷ περιεόντι παιδί, μηχανᾶται τοιάδε. Ὄνους κατασκευάσας καὶ ἀσκοὺς πλήσας οἴνου, ἐπιθεὶς ἐπὶ τοὺς ὄνους ἤλαυνε. Ὡς δὲ κατὰ τοὺς φυλάσσοντες ἦν τὸν κρεμάμενον νέκυν, ἐπισπάσας τῶν ἀσκῶν τοὺς ποδεῶνας ἔλυε. Ὡς δὲ ἔῤῥεε ὁ οἶνος... οἱ δὲ φύλακοι ἰδόντες ῥέοντα πολὺν οἶνον, συνδραμεῖν ἐς τὴν ὁδὸν ἀγγήια ἔχοντας... τέλος δὲ μεθυσθέντας τοὺς φύλακας ὑπνωθῆναι. Ὁ δὲ τὸν ἀδελφεὸν καταλύσας, τὴν δεξιὴν παρειὴν πάντων τῶν φυλάκων ξυρήσας, ἀπήλαυνε τοὺς ὄνους ἐπ' οἴκου.`,
@@ -423,10 +438,10 @@
                 puzzle: "El hermano atrapado hace un sacrificio atroz para evitar que la identidad de su familia sea descubierta. ¿Qué es lo que pide que le corten («τὴν κεφαλήν») antes de huir?"
             },
             {
-                id: 'artabano', title: 'El Consejo de Artábano', lat: 40.11, lng: 26.40, pass: 'mar',
+                id: 'artabano', title: 'El Consejo de Artábano', lat: 40.11, lng: 26.40, wiki: 'Artábano', pass: 'mar',
                 greek: `Ἀρτάβανος δὲ ὁ πάτρως, ὃς τὸ πρῶτον γνώμην ἀπεδέξατο ἐλευθέρως οὐ συμβουλεύων Ξέρξῃ στρατεύεσθαι ἐπὶ τὴν Ἑλλάδα... εἶπε· «Ὦ βασιλεῦ, ὅρα ὡς οὐκ ἔστι τοι πιστὸν οὐδὲν τῶν ἐν τῇ Ἀσίῃ... Δύο γάρ τοι τὰ μέγιστα πάντων ἐστὶ πολεμιώτατα.»<br><br>
                 Ξέρξης δὲ ἀμείβεται τοῖσιδε· «Δαιμόνιε ἀνδρῶν Ἀρτάβανε, κοῖα ταῦτα λέγεις εἶναι δύο μοι πολεμιώτατα; κότερα τὸν πεζὸν μεμφόμενος ὡς πλῆθος ἐνδεέστερον ἐὸν τοῦ Ἑλληνικοῦ;... Εἰ γάρ τοι ταῦτα φαίνεται ἐνδεέστερα εἶναι, ἄλλον ἂν στρατὸν ἀγείροιμι ὡς τάχιστα.»<br><br>
-                Ὃ δὲ ἀμείβετο λέγων· «Ὦ βασιλεῦ, οὔτε τὸν στρατὸν τοῦτον ὅστις γε σύνεσιν ἔχει μέμφοιτ' ἂν οὔτε τῶν νεῶν τὸ πλῆθος... τὰ δὲ δύο τοι τὰ λέγω ἐστὶ πολεμιώτατα γῆ τε καὶ <span class="glossary-word" data-trans="mar, océano">θάλασσα</span>. Οὔτε γὰρ τῆς θαλάσσης ἐστὶ λιμὴν τοσοῦτος οὐδαμόθι, ὡς ἐγὼ εἰκάζω, ὅστις ἐγειρομένου χειμῶνος δεξάμενός σευ τὸ ναυτικὸν φερέγγυος ἔσται διασῶσαι τὰς νέας... Ἡ δὲ δὴ γῆ σύμμαχος ὧδέ τοι γίγνεται· εἰ θέλει τοι μηδὲν ἀντίξοον καταστῆναι, τοσούτῳ τοι γίγνεται πολεμιωτέρη ὅσῳ ἂν προβαίνῃς ἑκαστέρω... λιμῷ τέλεος γίγνεται.»<br><br>
+                Ὃ δὲ ἀμείβετο λέγων· «Ὦ βασιλεῦ, οὔτε τὸν στρατὸν τοῦτον ὅστις γε σύνεσιν ἔχει μέμφοιτ' ἂν οὔτε τῶν νεῶν τὸ πλῆθος... τὰ δὲ δύο τοι τὰ λέγω ἐστὶ πολεμιώτατα γῆ τε καὶ θάλασσα. Οὔτε γὰρ τῆς θαλάσσης ἐστὶ λιμὴν τοσοῦτος οὐδαμόθι, ὡς ἐγὼ εἰκάζω, ὅστις ἐγειρομένου χειμῶνος δεξάμενός σευ τὸ ναυτικὸν φερέγγυος ἔσται διασῶσαι τὰς νέας... Ἡ δὲ δὴ γῆ σύμμαχος ὧδέ τοι γίγνεται· εἰ θέλει τοι μηδὲν ἀντίξοον καταστῆναι, τοσούτῳ τοι γίγνεται πολεμιωτέρη ὅσῳ ἂν προβαίνῃς ἑκαστέρω... λιμῷ τέλεος γίγνεται.»<br><br>
                 Ταῦτα ἀκούσας Ξέρξης ἀμείβετο· «Ἀρτάβανε, οἰκότως μὲν σύ γε τούτων ἕκαστα διαιρέαι· ἀτὰρ μήτε πάντα φοβέο μήτε πᾶν ὁμοίως ἐπιλέγεο. Εἰ γὰρ δὴ βούλοιο ἐπὶ τῷ αἰεὶ ἐπεσφερομένῳ πρήγματι τὸ πᾶν ὁμοίως ἐπιλέγεσθαι, ποιήσειας ἂν οὐδαμὰ οὐδέν· κρέσσον δὲ πάντα θαρσέοντα ἥμισυ τῶν δεινῶν πάσχειν μᾶλλον ἢ πᾶν χρῆμα προδειμαίνοντα μηδαμὰ μηδὲν παθεῖν.»`,
                 spanish: `Mientras el gigantesco ejército persa cruzaba el Helesponto hacia Grecia, Artábano (el tío del rey Jerjes, quien desde el principio había aconsejado libremente no invadir Grecia) se acercó a su sobrino y le dijo: «Oh rey, aunque veo la inmensidad de tu ejército, he de advertirte que las dos cosas más grandes del mundo son tus peores enemigos».<br><br>
                 Jerjes, sorprendido, le respondió: «Extraño Artábano, ¿cuáles dices que son esos dos formidables enemigos? ¿Acaso crees que mi infantería es inferior en número a la de los griegos? ¿O crees que nuestra flota es débil? Si te parece que nos falta poder, ordenaré reunir otro ejército más grande de inmediato».<br><br>
@@ -436,8 +451,8 @@
                 puzzle: "Artábano advierte a Jerjes de que su arrogancia ciega no le deja ver a sus dos verdaderos e invencibles enemigos: La Tierra (que los matará de hambre por las distancias) y el..."
             },
             {
-                id: 'giges', title: 'La Traición de Candaules', lat: 38.60, lng: 28.20, pass: 'reina',
-                greek: `Οὗτος δὴ ὦν ὁ Κανδαύλης ἤρα τῆς ἑωυτοῦ <span class="glossary-word" data-trans="esposa, mujer">γυναικός</span>, ἐρασθεὶς δὲ ἐνόμιζέ οἱ εἶναι γυναῖκα πολλὸν πασέων καλλίστην... ὥστε ταῦτα νομίζων, ἦν γάρ οἱ τῶν αἰχμοφόρων Γύγης ὁ Δασκύλου ἀρεσκόμενος μάλιστα, τούτῳ τῷ Γύγῃ καὶ τὰ σπουδαιέστερα τῶν πρηγμάτων ὑπερετίθετο ὁ Κανδαύλης καὶ δὴ καὶ τὸ εἶδος τῆς γυναικός ὑπερεπαινέων.<br><br>
+                id: 'giges', title: 'La Traición de Candaules', lat: 38.60, lng: 28.20, wiki: 'Candaules', pass: 'reina',
+                greek: `Οὗτος δὴ ὦν ὁ Κανδαύλης ἤρα τῆς ἑωυτοῦ γυναικός, ἐρασθεὶς δὲ ἐνόμιζέ οἱ εἶναι γυναῖκα πολλὸν πασέων καλλίστην... ὥστε ταῦτα νομίζων, ἦν γάρ οἱ τῶν αἰχμοφόρων Γύγης ὁ Δασκύλου ἀρεσκόμενος μάλιστα, τούτῳ τῷ Γύγῃ καὶ τὰ σπουδαιέστερα τῶν πρηγμάτων ὑπερετίθετο ὁ Κανδαύλης καὶ δὴ καὶ τὸ εἶδος τῆς γυναικός ὑπερεπαινέων.<br><br>
                 Χρόνου δὲ οὐ πολλοῦ διελθόντος... ἔλεγε πρὸς τὸν Γύγην τοιάδε· «Γύγη, οὐ γάρ σε δοκέω πείθεσθαί μοι λέγοντι περὶ τοῦ εἴδεος τῆς γυναικός... ποίεε ὅκως ἐκείνην θεήσεαι γυμνήν.» Ὁ δὲ μέγα ἀμβώσας εἶπε· «Δέσποτα, τίνα λέγεις λόγον οὐκ ὑγιέα, κελεύων με δέσποιναν τὴν ἐμὴν θεήσασθαι γυμνήν; Ἅμα δὲ κιθῶνι ἐκδυομένῳ συνεκδύεται καὶ τὴν αἰδῶ γυνή...»<br><br>
                 Ὡς δὲ ἐδόκεε ὥρη τῆς κοίτης εἶναι, ἤγαγε τὸν Γύγην ἐς τὸ οἴκημα, καὶ μετὰ ταῦτα αὐτίκα παρῆν καὶ ἡ γυνή. Ἐσελθοῦσαν δὲ καὶ τιθεῖσαν τὰ εἵματα ἐθηεῖτο ὁ Γύγης. Ὡς δὲ κατὰ νώτου ἐγένετο ἰούσης τῆς γυναικὸς ἐς τὴν κοίτην, ὑπεκδὺς ἐχώρεε ἔξω. Καὶ ἡ γυνὴ ἐπορᾷ μιν ἐξιόντα.<br><br>
                 Μαθοῦσα δὲ τὸ ποιηθὲν ἐκ τοῦ ἀνδρὸς οὔτε ἀνέβωσε αἰσχυνθεῖσα οὔτε ἔδοξε μαθεῖν, ἐν νόῳ ἔχουσα τίσεσθαι τὸν Κανδαύλην.<br><br>
@@ -452,11 +467,11 @@
                 puzzle: "Candaules pierde su trono y su vida por obligar a su vasallo a cometer un sacrilegio contra la dignidad de la mujer más poderosa del reino. ¿Cuál es el título o rango de esta mujer vengativa?"
             },
             {
-                id: 'helena', title: 'Los Raptos de las Mujeres', lat: 37.08, lng: 22.43, pass: 'helena',
+                id: 'helena', title: 'Los Raptos de las Mujeres', lat: 37.08, lng: 22.43, wiki: 'Helena_de_Troya', pass: 'helena',
                 greek: `Περσέων μέν νυν οἱ λόγιοι Φοίνικας αἰτίους φασὶ γενέσθαι τῆς διαφορῆς.<br><br>
                 Τοὺς γὰρ Φοίνικας... ἐσαπικνεομένους δὴ καὶ ἐς τὸ Ἄργος τοῦτο... ὠνεομένῃσι τὰς γυναῖκας διακελευσαμένους τοὺς Φοίνικας ὁρμῆσαι ἐπ' αὐτάς. Τὰς μὲν δὴ πλεῦνας ἀποφυγεῖν, τὴν δὲ Ἰοῦν σὺν ἄλλῃσι ἁρπασθῆναι· ἐσβαλομένους δὲ ἐς τὴν νέα οἴχεσθαι ἀποπλέοντας ἐπ' Αἰγύπτου...<br><br>
                 Μετὰ δὲ ταῦτα Ἑλλήνων τινάς (οὐ γὰρ ἔχουσι τοὔνομα ἀπηγήσασθαι) φασὶ τῆς Φοινίκης ἐς Τύρον προσσχόντας ἁρπάσαι τοῦ βασιλέος τὴν θυγατέρα Εὐρώπην. Ταῦτα μὲν δὴ ἴσα πρὸς ἴσα σφι γενέσθαι· μετὰ δὲ ταῦτα Ἕλληνας αἰτίους τῆς δευτέρης ἀδικίης γενέσθαι. Καταπλώσαντας γὰρ μακρῇ νηὶ ἐς Αἶάν τε τὴν Κολχίδα... ἁρπάσαι τοῦ βασιλέος τὴν θυγατέρα Μήδειαν.<br><br>
-                Δευτέρῃ δὲ λέγουσι γενεῇ μετὰ ταῦτα Ἀλέξανδρον τὸν Πριάμου ἀκηκοότα ταῦτα, ἐθελῆσαί οἱ ἐκ τῆς Ἑλλάδος δι' ἁρπαγῆς γενέσθαι γυναῖκα... Οὕτω δὴ ἁρπάσαντος αὐτοῦ <span class="glossary-word" data-trans="Helena, esposa de Menelao">Ἑλένην</span>, τοῖσι Ἕλλησι δόξαι πρῶτον πέμψαντας ἀγγέλους ἀπαιτέειν τε Ἑλένην καὶ δίκας τῆς ἁρπαγῆς αἰτέειν...<br><br>
+                Δευτέρῃ δὲ λέγουσι γενεῇ μετὰ ταῦτα Ἀλέξανδρον τὸν Πριάμου ἀκηκοότα ταῦτα, ἐθελῆσαί οἱ ἐκ τῆς Ἑλλάδος δι' ἁρπαγῆς γενέσθαι γυναῖκα... Οὕτω δὴ ἁρπάσαντος αὐτοῦ Ἑλένην, τοῖσι Ἕλλησι δόξαι πρῶτον πέμψαντας ἀγγέλους ἀπαιτέειν τε Ἑλένην καὶ δίκας τῆς ἁρπαγῆς αἰτέειν...<br><br>
                 Μέχρι μὲν ὦν τούτου ἁρπαγὰς μούνας εἶναι παρ' ἀλλήλων, τὸ δὲ ἀπὸ τούτου Ἕλληνας δὴ μεγάλως αἰτίους γενέσθαι· προτέρους γὰρ ἄρξαι στρατεύεσθαι ἐς τὴν Ἀσίην ἢ σφέας ἐς τὴν Εὐρώπην. τὸ μέν νυν ἁρπάζειν γυναῖκας ἀνδρῶν ἀδίκων νομίζειν ἔργον εἶναι, τὸ δὲ ἁρπασθεισέων σπουδὴν ποιήσασθαι τιμωρέειν ἀνοήτων, τὸ δὲ μηδεμίαν ὤρην ἔχειν ἁρπασθεισέων σωφρόνων.`,
                 spanish: `Los eruditos de los persas afirman que los fenicios fueron los culpables del comienzo del conflicto eterno entre Europa y Asia.<br><br>
                 Cuentan que los mercaderes fenicios llegaron a Argos, en Grecia, y expusieron sus mercancías. Mientras las mujeres griegas compraban, los marineros fenicios se abalanzaron sobre ellas. La mayoría escapó, pero la princesa Ío, hija del rey, fue raptada junto con otras y se la llevaron en su barco hacia Egipto. Así comenzó la primera injusticia, según los persas.<br><br>
@@ -466,10 +481,10 @@
                 puzzle: "Según la perspectiva cínica de los persas en la introducción de la obra, el motivo que desata la desastrosa guerra de Troya y las futuras guerras médicas es el rapto de una mujer en Esparta. ¿Cómo se llama esa mujer?"
             },
             {
-                id: 'cambises', title: 'La Locura de Cambises', lat: 29.50, lng: 31.50, pass: 'dios',
+                id: 'cambises', title: 'La Locura de Cambises', lat: 29.50, lng: 31.50, wiki: 'Cambises_II', pass: 'dios',
                 greek: `Καμβύσης δὲ ἐπείτε ἀπίκετο ἐς Μέμφιν, ἐφάνη Αἰγυπτίοισι ὁ Ἆπις, τὸν Ἕλληνες Ἔπαφον καλέουσι· ἐπιφανέος δὲ τούτου γενομένου αὐτίκα οἱ Αἰγύπτιοι εἵματα ἐφόρεον τὰ κάλλιστα καὶ ἦσαν ἐν ὁρτῇ.<br><br>
                 Ἰδὼν δὲ ταῦτα τοὺς Αἰγυπτίους ποιέοντας ὁ Καμβύσης, πάγχυ σφι δοκέων ἑωυτοῦ κακῶς πρήξαντος χαρμόσυνα ταῦτα ποιέειν, ἐκάλεσε τοὺς ἐπιτρόπους τῆς Μέμφιος, ἀπικομένους δὲ ἐς ὄψιν εἴρετο ὅ τι πρότερον μὲν ἐόντος αὐτοῦ ἐν Αἰγύπτῳ ἐποίευν τοιοῦτον οὐδὲν Αἰγύπτιοι, τότε δὲ ἐπεὶ αὐτὸς ἀποβαλὼν τῆς στρατιῆς πλῆθος συχνὸν παρείη. Οἱ δὲ ἔφασαν θεόν σφι φανῆναι διὰ χρόνου πολλοῦ εἰωθότα ἐπιφαίνεσθαι, καὶ ὡς ἐπεὰν φανῇ, τότ' ἄρα πάντες Αἰγύπτιοι κεχαρηκότες ὁρτάζουσι...<br><br>
-                Καμβύσης δὲ... ἐσπασμένος τὸ ἐγχειρίδιον, παίειν βουλόμενος τὸν Ἆπιν τὴν γαστέρα, τύπτει τὸν μηρόν· καί μιν ἐπιγελάσας εἶπε· «Ὦ κακαὶ κεφαλαί, τοιοῦτοι <span class="glossary-word" data-trans="dioses (nominativo plural)">θεοὶ</span> γίνονται, ἔναιμοί τε καὶ σαρκώδεες καὶ ἐπαΐοντες σιδήρου; Ἄξιος μὲν Αἰγυπτίων οὗτός γε ὁ θεός· ἀτάρ τοι ὑμεῖς γε οὐ χαίροντες γέλωτα ἔμε θέσθε.»<br><br>
+                Καμβύσης δὲ... ἐσπασμένος τὸ ἐγχειρίδιον, παίειν βουλόμενος τὸν Ἆπιν τὴν γαστέρα, τύπτει τὸν μηρόν· καί μιν ἐπιγελάσας εἶπε· «Ὦ κακαὶ κεφαλαί, τοιοῦτοι θεοὶ γίνονται, ἔναιμοί τε καὶ σαρκώδεες καὶ ἐπαΐοντες σιδήρου; Ἄξιος μὲν Αἰγυπτίων οὗτός γε ὁ θεός· ἀτάρ τοι ὑμεῖς γε οὐ χαίροντες γέλωτα ἔμε θέσθε.»<br><br>
                 Ταῦτα εἴπας ἐνετείλατο τοῖσι ταῦτα πρήσσουσι τοὺς μὲν ἱρέας μαστιγοῦν... Ὁ μὲν δὴ Ἆπις πληγεὶς τὸν μηρὸν ἔφθινε ἐν τῷ ἱρῷ, καί μιν τελευτήσαντα ἐκ τοῦ τρώματος ἔθαψαν οἱ ἱρέες λάθρῃ Καμβύσεω. Καμβύσης δέ, ὡς λέγουσι Αἰγύπτιοι, διὰ τοῦτο τὸ ἀδίκημα αὐτίκα ἐμάνη, ἐὼν οὐδὲ πρότερον φρενήρης.`,
                 spanish: `Cuando el rey persa Cambises regresó a Menfis en Egipto, habiendo perdido gran parte de su ejército en el desierto, sucedió que apareció ante los egipcios el toro Apis, al que los griegos llaman Épafo. Con su aparición divina, inmediatamente todos los egipcios se pusieron sus mejores ropajes y comenzaron a celebrar ruidosas fiestas en las calles.<br><br>
                 Cambises, al ver a los egipcios de fiesta, creyó con total seguridad que se estaban alegrando por el fracaso de su campaña militar. Llamó de inmediato a los gobernadores de Menfis y, cuando se presentaron, les preguntó furioso por qué antes, estando él triunfante en Egipto, los egipcios no hacían nada parecido, y justo ahora que volvía derrotado se ponían a festejar. Ellos respondieron que se les había aparecido un dios que solía manifestarse de siglo en siglo, y que siempre que aparecía, todos los egipcios se alegraban. Cambises no les creyó y mandó ejecutarlos por mentirosos.<br><br>
@@ -479,6 +494,135 @@
                 puzzle: "El toro Apis no era un animal cualquiera para los egipcios. Cambises le acuchilla y se burla de ellos preguntando si los seres de carne y hueso pueden ser un..."
             }
         ];
+
+        // --- DICCIONARIO INTERACTIVO (Lexicon Filológico) ---
+        const GREEK_LEXICON = {
+            'ολβιωτατοσ': 'Superlativo de ὄλβιος: el más feliz, el más próspero.',
+            'βασιλευ': 'Vocativo de βασιλεύς: ¡Oh rey!',
+            'παιδεσ': 'Nominativo plural de παῖς: niños, hijos.',
+            'τελευτη': 'Sustantivo femenino: fin, final, conclusión.',
+            'πυρην': 'Acusativo de πυρή: pira, hoguera funeraria.',
+            'θανατω': 'Dativo de θάνατος: a la muerte.',
+            'ξεῖν': 'Vocativo épico/jónico de ξένος: ¡Oh extranjero/huésped!',
+            'σπαρτιητεων': 'Genitivo jónico de Σπαρτιάτης: de los espartiatas.',
+            'ανδρεσ': 'Nominativo plural de ἀνήρ: los hombres, los varones.',
+            'γυναικεσ': 'Nominativo plural de γυνή: las mujeres.',
+            'νηυσ': 'Sustantivo femenino (épico/jónico): nave, barco.',
+            'μανιην': 'Acusativo jónico de μανία: locura, demencia, furor.',
+            'δρομω': 'Dativo de δρόμος: a la carrera, corriendo.',
+            'ιχθυν': 'Acusativo de ἰχθύς: pez (origen de "ictiología").',
+            'κεφαλην': 'Acusativo de κεφαλή: cabeza (origen de "cefálico").',
+            'θαλασσα': 'Sustantivo femenino: mar, océano.',
+            'γυναικοσ': 'Genitivo de γυνή: de la mujer/esposa.',
+            'θεοι': 'Nominativo plural de θεός: los dioses.'
+        };
+
+        // Formatea el texto griego aislando cada palabra en un span interactivo
+        const parseGreekText = (html) => {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            const walk = (node) => {
+                if (node.nodeType === 3) { // Nodo de texto
+                    const words = node.nodeValue.split(/([\s,.;:·!?«»"()]+)/);
+                    const frag = document.createDocumentFragment();
+                    words.forEach(w => {
+                        if (w.trim().length > 0 && !/^[\s,.;:·!?«»"()]+$/.test(w)) {
+                            const span = document.createElement('span');
+                            span.className = 'word-interactive';
+                            span.textContent = w;
+                            
+                            // Check if word is in dictionary
+                            const cleanW = w.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ς/g, 'σ');
+                            if (GREEK_LEXICON[cleanW]) {
+                                span.classList.add('glossary-word');
+                                span.setAttribute('data-trans', GREEK_LEXICON[cleanW]);
+                            }
+                            
+                            span.onclick = (e) => Lexicon.lookup(e, w);
+                            frag.appendChild(span);
+                        } else {
+                            frag.appendChild(document.createTextNode(w));
+                        }
+                    });
+                    node.parentNode.replaceChild(frag, node);
+                } else if (node.nodeType === 1 && node.className !== 'drop-cap-greek') { // Evitar procesar la letra capital
+                    Array.from(node.childNodes).forEach(walk);
+                }
+            };
+            Array.from(tempDiv.childNodes).forEach(walk);
+            return tempDiv.innerHTML;
+        };
+
+        // --- SISTEMA DEL DICCIONARIO (Lexicon) ---
+        const Lexicon = {
+            lookup(event, wordText) {
+                event.stopPropagation();
+                AudioFX.hover();
+                
+                const tooltip = document.getElementById('lexicon-tooltip');
+                const greekTitle = document.getElementById('lexicon-greek');
+                const spanishDesc = document.getElementById('lexicon-spanish');
+                const link = document.getElementById('lexicon-link');
+                
+                // Normalizar la palabra (quitar acentos) para buscar en el diccionario
+                const cleanWord = wordText.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ς/g, 'σ');
+                
+                greekTitle.textContent = wordText;
+                link.href = `https://logeion.uchicago.edu/${encodeURIComponent(cleanWord)}`;
+                
+                if (GREEK_LEXICON[cleanWord]) {
+                    spanishDesc.textContent = GREEK_LEXICON[cleanWord];
+                    spanishDesc.style.color = "var(--gold-light)";
+                } else {
+                    spanishDesc.textContent = `Forma de la raíz «${cleanWord}». Profundiza en el oráculo léxico.`;
+                    spanishDesc.style.color = "white";
+                }
+                
+                // Posicionar cerca del ratón
+                tooltip.style.left = `${event.clientX}px`;
+                tooltip.style.top = `${event.clientY - 30}px`;
+                tooltip.classList.add('visible');
+            },
+            hide() {
+                document.getElementById('lexicon-tooltip').classList.remove('visible');
+            }
+        };
+        // Ocultar diccionario al hacer clic fuera
+        document.addEventListener('click', Lexicon.hide);
+
+        // --- SISTEMA DE ORÁCULO MODAL INDEPENDIENTE ---
+        const Oracle = {
+            async open() {
+                AudioFX.click();
+                const modal = document.getElementById('oracle-modal');
+                const content = document.getElementById('oracle-content');
+                const story = State.currentStory;
+                
+                content.innerHTML = '<span class="animate-pulse text-[var(--gold)]">Invocando el saber del éter...</span>';
+                modal.classList.add('visible');
+
+                try {
+                    const url = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(story.wiki)}&format=json&origin=*`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    const pages = data.query.pages;
+                    const pageId = Object.keys(pages)[0];
+                    
+                    if (pageId !== "-1" && pages[pageId].extract) {
+                        content.innerHTML = `<strong class="text-3xl text-white block mb-6 border-b border-gray-700 pb-4">${pages[pageId].title}</strong>${pages[pageId].extract} <br><br><span class="text-sm text-gray-500 mt-4 block">Fuente extraída en vivo: API de Wikipedia</span>`;
+                    } else {
+                        content.innerHTML = "Los oráculos guardan silencio. No hay pergaminos en la biblioteca sobre este tema.";
+                    }
+                } catch(e) {
+                    content.innerHTML = "El éter está perturbado. Error de conexión con el Oráculo.";
+                }
+            },
+            close() {
+                AudioFX.click();
+                document.getElementById('oracle-modal').classList.remove('visible');
+            }
+        };
 
         // --- 2. SISTEMA DE AUDIO EXPERTO (El Aedo / Synthesizer) ---
         const AudioFX = {
@@ -623,7 +767,8 @@
             // Normaliza el griego politónico a monótono en memoria. Así la voz "el-GR" lee fluido sin trabarse deletreando acentos antiguos.
             sanitizeGreekForTTS(htmlText) {
                 let cleanText = htmlText.replace(/<[^>]*>?/gm, ''); 
-                return cleanText.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                // Sustituimos la sigma final por normal, quitamos acentos NFD y lo pasamos a minúsculas
+                return cleanText.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ς/g, 'σ').toLowerCase();
             },
             play() {
                 if(!State.currentStory || !window.speechSynthesis) return;
@@ -711,7 +856,11 @@
                 State.currentStory = story;
 
                 document.getElementById('codex-title').innerText = story.title;
-                document.getElementById('text-greek').innerHTML = `<p class="drop-cap-greek">${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`;
+                
+                // Procesar el texto griego para hacerlo interactivo palabra a palabra
+                const interactiveGreek = parseGreekText(`<p class="drop-cap-greek">${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`);
+                document.getElementById('text-greek').innerHTML = interactiveGreek;
+                
                 document.getElementById('text-spanish').innerHTML = `<p class="drop-cap-spanish">${story.spanish.charAt(0)}</p><p>${story.spanish.substring(1)}</p>`;
                 
                 document.getElementById('puzzle-desc').innerText = story.puzzle;
@@ -794,6 +943,7 @@
             closeCodex() {
                 AudioFX.click();
                 TTS.showPlayer(false);
+                Oracle.close(); // Cerrar oráculo por si estaba abierto
                 if(this.isImmersive) this.toggleImmersive(); // Resetea la vista
 
                 const screenCodex = document.getElementById('screen-codex');
@@ -847,9 +997,10 @@
             }
         };
 
-        // Inputs globales
+        // Inputs globales para comodidad en el aula
         document.addEventListener('keydown', (e) => {
             if(e.key === 'Enter' && !document.getElementById('puzzle-drawer').classList.contains('translate-y-full')) Puzzle.check();
+            if(e.key === 'Escape') Oracle.close();
         });
 
     </script>
