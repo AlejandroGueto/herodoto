@@ -17,7 +17,7 @@
     
     <style>
         /* ==========================================================================
-           1. VARIABLES Y ESTÉTICA HELÉNICA
+           1. VARIABLES Y ESTÉTICA HELÉNICA (Ultra Premium UI)
            ========================================================================== */
         :root {
             --aegean-dark: #02060a;
@@ -40,7 +40,7 @@
         .font-title { font-family: 'Cinzel Decorative', serif; }
 
         /* ==========================================================================
-           2. SISTEMA ESTRÍCTO DE PANTALLAS (TAB MANAGER) - SOLUCIÓN AL SOLAPAMIENTO
+           2. SISTEMA ESTRÍCTO DE PANTALLAS (TAB MANAGER)
            ========================================================================== */
         .game-screen {
             display: none !important; /* Oculta todo por defecto implacablemente */
@@ -67,6 +67,7 @@
         @keyframes pulseMarker { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); } 70% { box-shadow: 0 0 0 35px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
         @keyframes shineText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
         @keyframes crawl { 0% { transform: translateY(100vh); opacity: 0; } 10% { opacity: 0.3; } 90% { opacity: 0.3; } 100% { transform: translateY(-200vh); opacity: 0; } }
+        @keyframes audioBar { 0% { height: 5px; } 50% { height: 35px; } 100% { height: 5px; } }
 
         .animate-float { animation: float 6s ease-in-out infinite; }
         .animate-crawl { animation: crawl 40s linear infinite; }
@@ -271,12 +272,12 @@
                 "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
             </p>
             
-            <button id="btn-start" onclick="if(window.UI_Manager) window.UI_Manager.initGame();" class="btn-hellenic px-10 py-5 md:px-24 md:py-10 text-2xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all hover:scale-105">
+            <button id="btn-start" class="btn-hellenic px-10 py-5 md:px-24 md:py-10 text-2xl md:text-6xl font-bold rounded shadow-[0_0_80px_rgba(212,175,55,0.6)] relative z-10 transition-all hover:scale-105">
                 Desplegar el Egeo
             </button>
             
             <div class="mt-12 md:mt-24 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-[var(--gold)] font-sans tracking-widest uppercase text-xs md:text-xl relative z-10">
-                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Filológico Masivo</span>
+                <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Análisis Filológico Total</span>
                 <span class="hidden md:inline text-gray-600">|</span>
                 <span class="flex items-center gap-2 md:gap-4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> Aedo Bilingüe Fluido</span>
                 <span class="hidden md:inline text-gray-600">|</span>
@@ -304,10 +305,10 @@
                 </div>
             </div>
             
-            <div class="flex gap-2 md:gap-4 z-40 bg-black/50 p-2 md:p-3 rounded-lg border border-[var(--gold)]">
-                <button onclick="if(window.MapEngine) window.MapEngine.setLayer('satellite');" class="text-white hover:text-[var(--gold)] px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider cursor-pointer">Satélite</button>
+            <div class="flex gap-2 md:gap-4 z-40 bg-black/50 p-2 md:p-3 rounded-lg border border-[var(--gold)] mt-2 md:mt-0">
+                <button id="btn-layer-sat" class="text-white hover:text-[var(--gold)] px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider cursor-pointer">Satélite</button>
                 <div class="w-px bg-gray-600"></div>
-                <button onclick="if(window.MapEngine) window.MapEngine.setLayer('antique');" class="text-[var(--gold-light)] font-bold px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider cursor-pointer">Papiro</button>
+                <button id="btn-layer-pap" class="text-[var(--gold-light)] font-bold px-2 py-1 md:px-4 md:py-2 font-title text-sm md:text-xl uppercase tracking-wider cursor-pointer">Papiro</button>
             </div>
         </header>
         
@@ -325,15 +326,15 @@
         <div class="top-bar h-auto md:h-32 p-4 md:px-16 border-b-2 border-[var(--gold)] glass-panel flex flex-col md:flex-row items-center justify-between z-10 shrink-0 transition-opacity duration-500 gap-4">
             <h2 id="codex-title" class="font-title text-4xl md:text-6xl text-[var(--gold-light)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)] text-center">Título</h2>
             <div class="flex flex-wrap justify-center gap-3 md:gap-8">
-                <button onclick="if(window.Oracle) window.Oracle.open();" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
+                <button id="btn-open-oracle" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4 text-[var(--aegean-blue)] border-[var(--aegean-blue)] hover:bg-[var(--aegean-blue)] hover:text-white" title="Contexto Histórico">
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span class="hidden xl:inline">Oráculo</span>
                 </button>
-                <button onclick="if(window.Game) window.Game.toggleImmersive();" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4" title="Modo Lectura Inmersiva">
+                <button id="btn-zen-mode" class="btn-hellenic px-4 py-2 md:px-10 md:py-5 text-sm md:text-3xl flex items-center gap-2 md:gap-4" title="Modo Lectura Inmersiva">
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="hidden xl:inline">Modo Zen</span>
                 </button>
-                <button onclick="if(window.Game) window.Game.closeCodex();" class="btn-hellenic px-4 py-2 md:px-12 md:py-5 text-sm md:text-3xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
+                <button id="btn-close-codex" class="btn-hellenic px-4 py-2 md:px-12 md:py-5 text-sm md:text-3xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
                     ✕ Volver
                 </button>
             </div>
@@ -341,18 +342,18 @@
 
         <!-- ZEN TOOLBAR (Aparece sólo en modo Zen) -->
         <div class="zen-toolbar">
-            <button onclick="if(window.Game) window.Game.setZenLayout('dual');" id="zen-btn-dual" class="zen-btn active">Bilingüe</button>
-            <button onclick="if(window.Game) window.Game.setZenLayout('gr');" id="zen-btn-gr" class="zen-btn">Griego</button>
-            <button onclick="if(window.Game) window.Game.setZenLayout('es');" id="zen-btn-es" class="zen-btn">Español</button>
+            <button id="zen-btn-dual" class="zen-btn active">Bilingüe</button>
+            <button id="zen-btn-gr" class="zen-btn">Griego</button>
+            <button id="zen-btn-es" class="zen-btn">Español</button>
             <div class="w-px bg-gray-600 mx-4"></div>
-            <button onclick="if(window.Game) window.Game.toggleImmersive();" class="zen-btn hover:text-[var(--sparta-red)] hover:border-[var(--sparta-red)] font-bold">✕ Salir de Zen</button>
+            <button id="zen-btn-exit" class="zen-btn hover:text-[var(--sparta-red)] hover:border-[var(--sparta-red)] font-bold">✕ Salir de Zen</button>
         </div>
 
         <!-- Área Central Bilingüe (El núcleo del filólogo) -->
         <div id="dual-codex-container" class="dual-codex zen-layout-dual w-full relative">
             <div class="codex-pane pane-greek custom-scrollbar">
                 <h3 class="font-title text-[var(--gold)] text-center text-6xl mb-20 border-b-2 border-gray-800 pb-10 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
-                <div id="text-greek" class="font-greek text-4xl lg:text-5xl text-justify leading-loose">
+                <div id="text-greek" class="font-greek text-4xl lg:text-5xl text-justify leading-loose pb-10">
                     <!-- Texto Inyectado Interactivo -->
                 </div>
             </div>
@@ -365,19 +366,19 @@
             
             <!-- EL CAJÓN DEL ACERTIJO -->
             <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-12 md:p-20 z-[5000] transform translate-y-full transition-transform duration-700 shadow-[0_-20px_60px_rgba(0,0,0,0.95)]" id="puzzle-drawer">
-                <button onclick="if(window.Puzzle) window.Puzzle.toggleDrawer();" class="absolute top-10 right-12 text-gray-400 hover:text-sparta-red font-bold text-6xl transition-colors cursor-pointer">✕</button>
+                <button id="btn-close-puzzle-drawer" class="absolute top-10 right-12 text-gray-400 hover:text-sparta-red font-bold text-6xl transition-colors cursor-pointer">✕</button>
                 <div class="max-w-7xl mx-auto text-center">
                     <h3 class="font-title text-[var(--gold-light)] text-5xl md:text-7xl mb-12 drop-shadow-[0_0_20px_rgba(212,175,55,0.6)]">El Acertijo de las Moiras</h3>
                     <p id="puzzle-desc" class="text-font text-3xl md:text-5xl text-white mb-20 leading-relaxed">...</p>
                     <div class="flex flex-col lg:flex-row justify-center items-center gap-12">
                         <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3 h-20 md:h-28 text-3xl md:text-5xl" placeholder="Escribe tu ofrenda..." autocomplete="off" spellcheck="false">
-                        <button onclick="if(window.Puzzle) window.Puzzle.check();" class="btn-hellenic px-10 py-6 md:px-20 md:py-8 text-3xl md:text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)]">Sellar Destino</button>
+                        <button id="btn-check-puzzle" class="btn-hellenic px-10 py-6 md:px-20 md:py-8 text-3xl md:text-5xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black shadow-[0_0_40px_var(--gold)]">Sellar Destino</button>
                     </div>
                     <p id="puzzle-feedback" class="h-16 text-[var(--sparta-red)] text-3xl md:text-5xl font-bold mt-12"></p>
                 </div>
             </div>
             
-            <button onclick="if(window.Puzzle) window.Puzzle.toggleDrawer();" id="btn-toggle-puzzle" class="absolute bottom-16 left-1/2 transform -translate-x-1/2 btn-hellenic px-12 py-5 md:px-20 md:py-8 text-3xl md:text-5xl z-[4000] shadow-[0_0_60px_rgba(212,175,55,0.9)] bg-[var(--aegean-blue)] animate-float border-2 border-white">
+            <button id="btn-toggle-puzzle" class="absolute bottom-16 left-1/2 transform -translate-x-1/2 btn-hellenic px-12 py-5 md:px-20 md:py-8 text-3xl md:text-5xl z-[4000] shadow-[0_0_60px_rgba(212,175,55,0.9)] bg-[var(--aegean-blue)] animate-float border-2 border-white">
                 Enfrentar el Acertijo ▼
             </button>
         </div>
@@ -387,13 +388,13 @@
             <div class="flex flex-col">
                 <span class="font-title text-[var(--gold)] text-2xl md:text-3xl uppercase tracking-widest mb-3">El Aedo</span>
                 <div class="flex items-center gap-8">
-                    <button onclick="if(window.TTS) window.TTS.toggleLang();" id="btn-tts-lang" class="text-2xl md:text-3xl border-2 border-gray-500 rounded-lg px-6 py-3 text-gray-200 hover:text-white hover:border-white transition-all w-40 text-center font-bold bg-black/50 cursor-pointer">
+                    <button id="btn-tts-lang" class="text-2xl md:text-3xl border-2 border-gray-500 rounded-lg px-6 py-3 text-gray-200 hover:text-white hover:border-white transition-all w-40 text-center font-bold bg-black/50 cursor-pointer">
                         🇪🇸 ESP
                     </button>
-                    <button onclick="if(window.TTS) window.TTS.togglePlay();" id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-transform transform hover:scale-125 cursor-pointer">
+                    <button id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-transform transform hover:scale-125 cursor-pointer">
                         <svg width="56" height="56" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
                     </button>
-                    <button onclick="if(window.TTS) window.TTS.stop();" class="text-gray-400 hover:text-[var(--sparta-red)] transition-colors cursor-pointer">
+                    <button id="btn-tts-stop" class="text-gray-400 hover:text-[var(--sparta-red)] transition-colors cursor-pointer">
                         <svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
                     </button>
                 </div>
@@ -422,7 +423,7 @@
 
     <!-- ORÁCULO MODAL (Wikipedia Independiente y Seguro) -->
     <div id="oracle-modal" class="glass-panel rounded-3xl p-10 md:p-20 border-2 border-[var(--aegean-blue)] shadow-[0_0_100px_rgba(8,22,36,1)]">
-        <button onclick="if(window.Oracle) window.Oracle.close();" class="absolute top-10 right-10 text-gray-400 hover:text-[var(--sparta-red)] font-bold text-6xl transition-colors cursor-pointer">✕</button>
+        <button id="btn-close-oracle" class="absolute top-10 right-10 text-gray-400 hover:text-[var(--sparta-red)] font-bold text-6xl transition-colors cursor-pointer">✕</button>
         <div class="flex items-center gap-8 mb-12 border-b-2 border-gray-700 pb-10">
             <svg class="w-20 h-20 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             <h3 class="font-title text-4xl md:text-6xl text-[var(--gold-light)] tracking-widest uppercase text-shadow-md">El Oráculo de la Red</h3>
@@ -437,8 +438,11 @@
         <h1 class="text-7xl md:text-9xl text-[var(--gold)] font-title mb-8 drop-shadow-[0_0_60px_rgba(212,175,55,1)]">ΙΣΤΟΡΙΑΙ</h1>
         <h2 class="text-4xl md:text-6xl text-white font-title mb-8 text-shine">El Telar ha sido Completado</h2>
         <p class="text-2xl md:text-4xl text-gray-300 font-greek max-w-5xl leading-relaxed italic mb-16">Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te otorgan la Inmortalidad de la Memoria.</p>
-        <button onclick="location.reload()" class="btn-hellenic px-16 py-6 text-3xl font-bold bg-white text-black hover:bg-[var(--gold)]">Regresar a la Modernidad</button>
+        <button id="btn-restart" class="btn-hellenic px-16 py-6 text-3xl font-bold bg-white text-black hover:bg-[var(--gold)]">Regresar a la Modernidad</button>
     </div>
+
+    <!-- BOTÓN SALIR MODO INMERSIVO -->
+    <button id="btn-exit-zen" class="fixed top-8 right-8 z-[100] btn-hellenic px-6 py-3 text-xl bg-black/50 hidden">Salir del Modo Zen</button>
 
     <!-- ==========================================================================
          MOTOR DEL JUEGO (JAVASCRIPT Y FILOLOGÍA)
@@ -447,11 +451,9 @@
         // --- GESTOR ESTRICTO DE PANTALLAS (TAB MANAGER) ---
         const UI_Manager = {
             showScreen(screenId) {
-                // 1. Apagamos todas las pantallas sin piedad
                 document.querySelectorAll('.game-screen').forEach(screen => {
                     screen.classList.remove('is-active');
                 });
-                // 2. Encendemos únicamente la pantalla elegida
                 const target = document.getElementById(screenId);
                 if (target) target.classList.add('is-active');
             },
@@ -467,19 +469,18 @@
                 setTimeout(() => {
                     this.showScreen('screen-map');
                     
-                    try { if(window.MapEngine) window.MapEngine.init(); } catch(e) {}
+                    try { if(window.MapEngine) window.MapEngine.init(); } catch(e) { console.error(e); }
                     if(window.TTS) window.TTS.init();
                     if(window.Lexicon) window.Lexicon.init();
                     
                     setTimeout(() => {
                         if(window.MapEngine && window.MapEngine.map) window.MapEngine.map.invalidateSize(); 
-                    }, 200); // Le damos tiempo a Leaflet para calcular su tamaño
+                    }, 400); 
                 }, 800);
             }
         };
 
         // --- 1. BASE DE DATOS LITERARIA MASIVA ---
-        // Se extienden los textos por párrafos gigantes y precisos de Heródoto.
         const HERODOTUS_DB = [
             {
                 id: 'creso', title: 'Creso y Solón (Lidia)', lat: 38.60, lng: 28.10, wiki: 'Creso', pass: 'felicidad',
@@ -663,7 +664,15 @@
             'βασιλευσ': { trans: 'Rey, soberano.', morph: 'Sustantivo, nom. sing. masc.' },
             'εφη': { trans: 'Dijo, hablaba.', morph: 'Verbo (φημί), imperf., 3ª p. sing.' },
             'ειπε': { trans: 'Dijo.', morph: 'Verbo (λέγω), aoristo fuerte, 3ª p. sing.' },
-            'εμαχοντο': { trans: 'Luchaban.', morph: 'Verbo (μάχομαι), imperfecto, 3ª p. plural.' }
+            'εμαχοντο': { trans: 'Luchaban.', morph: 'Verbo (μάχομαι), imperfecto, 3ª p. plural.' },
+            'εργα': { trans: 'Obras, acciones, trabajos.', morph: 'Sustantivo, nom./acus. pl. neutro.' },
+            'μεγαλα': { trans: 'Grandes, magníficas.', morph: 'Adjetivo, nom./acus. pl. neutro.' },
+            'ανθρωπων': { trans: 'De los hombres, de los seres humanos.', morph: 'Sustantivo, genitivo pl. masc.' },
+            'χρονω': { trans: 'Al tiempo, por el tiempo.', morph: 'Sustantivo, dativo sing. masc.' },
+            'ελλησι': { trans: 'Para/a los griegos (helenos).', morph: 'Sustantivo, dativo pl. masc.' },
+            'βαρβαροισι': { trans: 'Para/a los bárbaros (no griegos).', morph: 'Adjetivo/Sustantivo, dativo pl. masc.' },
+            'αιτιην': { trans: 'Causa, motivo, culpa.', morph: 'Sustantivo, acusativo sing. fem.' },
+            'επολεμησαν': { trans: 'Hicieron la guerra, lucharon.', morph: 'Verbo (πολεμέω), aoristo ind., 3ª p. pl.' }
         };
 
         const parseGreekText = (html) => {
@@ -1262,10 +1271,9 @@
             window.Puzzle = Puzzle; window.TTS = TTS; window.Oracle = Oracle; 
             window.Lexicon = Lexicon; window.AudioFX = AudioFX; window.UI_Manager = UI_Manager;
 
-            // Enlazar botón principal al Tab Manager
+            // Enlazar botón principal al Tab Manager de forma segura
             const btnStart = document.getElementById('btn-start');
             if(btnStart) {
-                // Eliminamos cualquier onclick inline previo por seguridad
                 btnStart.removeAttribute('onclick'); 
                 btnStart.addEventListener('click', () => UI_Manager.initGame());
             }
