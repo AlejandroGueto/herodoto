@@ -3,314 +3,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΙΣΤΟΡΙΑΙ: El Telar de Heródoto | Griego Antiguo</title>
+    <title>Lectura interactiva: Historias, de Heródoto</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet CSS & JS para el Mapa Interactivo -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
         /* ==========================================================================
-           VARIABLES Y ESTÉTICA HELÉNICA
+           VARIABLES Y ESTÉTICA HELÉNICA (Ultra Premium UI)
            ========================================================================== */
         :root {
-            --aegean-dark: #071521;
-            --aegean-blue: #0f3052;
+            --aegean-dark: #02060a;
+            --aegean-blue: #081624;
             --marble: #f4f0e6;
             --gold: #d4af37;
+            --gold-light: #f9d976;
             --clay: #b85c38;
             --sparta-red: #8b0000;
-            --athens-blue: #4a90e2;
         }
 
         body {
             background-color: var(--aegean-dark);
             color: var(--marble);
             font-family: 'Cormorant Garamond', serif;
-            overflow: hidden;
-            user-select: none;
-            margin: 0; padding: 0;
+            overflow: hidden; margin: 0; padding: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
         }
 
-        /* Tipografías Específicas */
-        .font-greek { font-family: 'Noto Serif', serif; line-height: 1.8; letter-spacing: 0.5px; }
+        .font-greek { font-family: 'Noto Serif', serif; line-height: 2.2; letter-spacing: 0.5px; }
         .font-title { font-family: 'Cinzel Decorative', serif; }
 
-        /* Animaciones Premium */
+        /* Animaciones Épicas */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulseGlow { 0%, 100% { filter: drop-shadow(0 0 5px var(--gold)); } 50% { filter: drop-shadow(0 0 25px var(--gold)); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        @keyframes ripple { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); } 100% { box-shadow: 0 0 0 30px rgba(212, 175, 55, 0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes pulseMarker { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); } 70% { box-shadow: 0 0 0 25px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
+        @keyframes shineText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes audioBar { 0% { height: 5px; } 50% { height: 25px; } 100% { height: 5px; } }
 
-        .animate-fade { animation: fadeIn 1s ease-in forwards; }
-        .animate-glow { animation: pulseGlow 3s infinite; }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-
-        /* Paneles de Cristal (Glassmorphism) */
-        .glass-panel {
-            background: linear-gradient(135deg, rgba(15, 48, 82, 0.8), rgba(7, 21, 33, 0.95));
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
-            backdrop-filter: blur(16px);
+        .animate-fade { animation: fadeIn 1.5s ease-in forwards; }
+        .animate-float { animation: float 5s ease-in-out infinite; }
+        
+        .text-shine {
+            background: linear-gradient(to right, #d4af37 20%, #fff 40%, #fff 60%, #d4af37 80%);
+            background-size: 200% auto;
+            color: #000; background-clip: text; text-fill-color: transparent; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shineText 6s linear infinite;
         }
 
-        /* Botones Griegos */
+        /* Glassmorphism y Texturas */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(8, 22, 36, 0.85), rgba(2, 6, 10, 0.95));
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9), inset 0 0 25px rgba(212, 175, 55, 0.08);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        }
+
+        .parchment-panel {
+            background-color: #f4ecd8;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" opacity="0.06"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="4"/></filter><rect width="200" height="200" filter="url(%23n)"/></svg>');
+            color: #2a2218;
+            box-shadow: inset 0 0 60px rgba(139,69,19,0.15);
+        }
+
+        /* Botones */
         .btn-hellenic {
-            background: rgba(7, 21, 33, 0.8);
-            border: 1px solid var(--gold); color: var(--gold);
-            font-family: 'Cinzel Decorative', serif; text-transform: uppercase; letter-spacing: 3px;
+            background: rgba(2, 6, 10, 0.9); border: 1px solid var(--gold); color: var(--gold);
+            font-family: 'Cinzel Decorative', serif; text-transform: uppercase; letter-spacing: 4px;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
-            border-radius: 4px;
+            border-radius: 3px; cursor: pointer; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .btn-hellenic::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
-            transition: all 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent); transition: all 0.5s;
         }
         .btn-hellenic:hover::before { left: 100%; }
-        .btn-hellenic:hover { background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); text-shadow: 0 0 8px var(--gold); transform: translateY(-2px); }
+        .btn-hellenic:hover { background: rgba(212, 175, 55, 0.2); box-shadow: 0 0 25px rgba(212, 175, 55, 0.5); text-shadow: 0 0 10px var(--gold-light); transform: translateY(-2px); color: #fff; border-color: var(--gold-light); }
 
-        /* Nodos del Mapa interactivo */
-        .map-node { cursor: pointer; transition: all 0.3s; transform-origin: center; }
-        .map-node:hover circle:first-child { fill: var(--gold); r: 12; }
-        .map-node:hover text { fill: #fff; font-weight: bold; text-shadow: 0 0 10px var(--gold); font-size: 20px; }
-        .map-node.completed circle:first-child { fill: var(--gold); filter: drop-shadow(0 0 10px var(--gold)); }
-        
-        .pulse-ring { animation: ripple 2s infinite; border-radius: 50%; }
+        /* Leaflet Map Overrides */
+        #map-container { background: var(--aegean-dark); height: 100%; width: 100%; z-index: 10; }
+        .leaflet-container { background: #02060a; font-family: 'Cinzel Decorative', serif; }
+        .custom-marker {
+            width: 28px; height: 28px; background: radial-gradient(circle, var(--gold-light) 0%, var(--gold) 100%);
+            border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 20px var(--gold);
+            animation: pulseMarker 2s infinite; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-marker:hover { transform: scale(1.4); background: #fff; border-color: var(--gold); z-index: 1000 !important; }
+        .custom-marker.completed { background: var(--aegean-blue); border-color: var(--gold); box-shadow: 0 0 15px var(--aegean-blue); animation: none; }
+        .marker-label {
+            color: var(--gold-light); font-size: 18px; font-weight: 900; text-shadow: 2px 2px 5px #000, -1px -1px 0 #000;
+            white-space: nowrap; margin-top: -35px; margin-left: -20px; transition: all 0.3s;
+        }
+        .custom-marker:hover + .marker-label { color: #fff; transform: translateY(-5px); text-shadow: 0 0 10px var(--gold); }
 
-        /* Estructura del Códice Dividido (Piedra Rosetta) */
-        .dual-codex { display: flex; flex-direction: column; height: 100%; }
+        /* Líneas del Telar de Heródoto (Progreso) */
+        .story-path { stroke: var(--gold); stroke-width: 3; stroke-dasharray: 10, 10; opacity: 0.6; animation: dash 20s linear infinite; }
+        @keyframes dash { to { stroke-dashoffset: 1000; } }
+
+        /* Códice / Scrollbars */
+        .dual-codex { display: flex; flex-direction: column; height: 100%; transition: all 0.8s ease; }
         @media (min-width: 1024px) { .dual-codex { flex-direction: row; } }
         
-        .codex-pane { flex: 1; padding: 2rem; overflow-y: auto; position: relative; }
-        .pane-greek { background: #1a1a24; color: #e2e8f0; border-right: 2px solid var(--gold); }
-        .pane-spanish { background: #fdfbf7; color: #2c241b; }
+        .codex-pane { flex: 1; padding: 4rem; overflow-y: auto; position: relative; scroll-behavior: smooth; transition: all 0.5s ease; }
+        .pane-greek { background: #0b1016; color: #e2e8f0; border-right: 2px solid var(--gold); }
+        .pane-spanish { border-left: 2px solid rgba(0,0,0,0.1); }
         
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 5px; border: 2px solid #000; }
 
-        .drop-cap-greek::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.1em 0 0; line-height: 0.8; color: var(--gold); text-shadow: 0 0 10px rgba(212,175,55,0.5); }
-        .drop-cap-spanish::first-letter { font-size: 3.5em; float: left; margin: 0.1em 0.1em 0 0; line-height: 0.8; color: var(--aegean-blue); font-family: 'Cinzel Decorative'; }
+        .drop-cap-greek::first-letter { font-size: 4.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--gold-light); text-shadow: 0 0 20px rgba(212,175,55,0.7); }
+        .drop-cap-spanish::first-letter { font-size: 4.5em; float: left; margin: 0.1em 0.15em 0 0; line-height: 0.8; color: var(--sparta-red); font-family: 'Cinzel Decorative'; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
+        /* Modo Inmersivo */
+        .immersive-mode .pane-greek { display: none; }
+        .immersive-mode .pane-spanish { padding: 5rem 15%; font-size: 1.2em; }
+        .immersive-mode .top-bar { opacity: 0; pointer-events: none; }
+
+        /* Reproductor Audiolibro (El Aedo) */
+        .audio-player {
+            position: fixed; bottom: 30px; right: 30px; z-index: 100;
+            display: flex; align-items: center; gap: 15px; padding: 15px 25px;
+            border-radius: 50px; background: rgba(2, 6, 10, 0.95); border: 1px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(10px); transform: translateY(150%); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .audio-player.visible { transform: translateY(0); }
+        .visualizer-bar { width: 4px; height: 5px; background: var(--gold); border-radius: 2px; transition: height 0.1s; }
+        .visualizer.playing .visualizer-bar { animation: audioBar 1s infinite alternate; }
+        .visualizer.playing .visualizer-bar:nth-child(1) { animation-delay: 0.1s; }
+        .visualizer.playing .visualizer-bar:nth-child(2) { animation-delay: 0.3s; }
+        .visualizer.playing .visualizer-bar:nth-child(3) { animation-delay: 0.2s; }
+        .visualizer.playing .visualizer-bar:nth-child(4) { animation-delay: 0.5s; }
 
         /* Inputs Puzle */
         .oracle-input {
-            background: transparent; border: none; border-bottom: 2px solid var(--gold);
-            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 1.5rem;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--gold); border-radius: 4px;
+            color: var(--marble); font-family: 'Cinzel Decorative'; font-size: 2rem;
             text-align: center; text-transform: uppercase; outline: none; width: 100%;
-            letter-spacing: 4px; transition: all 0.3s;
+            letter-spacing: 6px; transition: all 0.3s; padding: 10px;
         }
-        .oracle-input:focus { border-color: #fff; box-shadow: 0 10px 10px -10px var(--gold); }
-
-        /* Capa de red de constelaciones */
-        #constellation-canvas { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+        .oracle-input:focus { border-color: #fff; box-shadow: 0 0 25px rgba(212,175,55,0.5); background: rgba(0,0,0,0.8); }
     </style>
 </head>
 <body>
 
-    <!-- RED DE CONSTELACIONES Y POLVO DE ESTRELLAS -->
-    <canvas id="constellation-canvas"></canvas>
-
     <!-- ==========================================================================
-         PANTALLA DE INICIO
+         PANTALLA DE INICIO (CINE)
          ========================================================================== -->
     <div id="screen-intro" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--aegean-blue)_0%,_var(--aegean-dark)_100%)] transition-opacity duration-1000 p-4">
-        <div class="text-center max-w-5xl p-8 glass-panel rounded-2xl animate-fade w-full">
-            <h3 class="text-[var(--gold)] text-lg md:text-2xl tracking-[0.4em] uppercase mb-4 font-title opacity-90">
-                ΗΡΟΔΟΤΟΣ ΑΛΙΚΑΡΝΗΣΣΕΥΣ
+        <div class="text-center max-w-6xl p-12 glass-panel rounded-xl animate-fade w-full relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/ancient-map.png')]"></div>
+            
+            <h3 class="text-[var(--gold)] text-2xl md:text-4xl tracking-[0.6em] uppercase mb-8 font-title opacity-90">
+                ΗΡΟΔΟΤΟΣ
             </h3>
-            <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 font-title drop-shadow-[0_0_30px_rgba(212,175,55,0.6)]">
-                El Telar de Heródoto
+            <h1 class="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-12 font-title text-shine drop-shadow-[0_0_50px_rgba(212,175,55,0.5)]">
+                Historias
             </h1>
-            <p class="text-xl md:text-3xl text-gray-200 text-font mb-10 italic leading-relaxed px-4 md:px-12">
-                "Esta es la exposición de las investigaciones de Heródoto de Halicarnaso, para que los hechos de los hombres no se desvanezcan con el tiempo..."
+            <p class="text-2xl md:text-4xl text-gray-200 text-font mb-16 italic leading-relaxed px-4 md:px-16 relative z-10 font-light">
+                "Para que los hechos de los hombres no se desvanezcan con el tiempo, ni las obras grandes y maravillosas queden sin gloria..."
             </p>
             
-            <button onclick="Game.initMap()" class="btn-hellenic px-10 py-5 text-2xl md:text-3xl font-bold rounded shadow-[0_0_40px_rgba(212,175,55,0.3)]">
-                Desplegar el Mapa del Egeo
+            <button onclick="Game.initMap()" class="btn-hellenic px-16 py-6 text-3xl md:text-4xl font-bold rounded shadow-[0_0_60px_rgba(212,175,55,0.5)] relative z-10">
+                Desplegar el Egeo
             </button>
             
-            <div class="mt-10 flex flex-col md:flex-row items-center justify-center gap-4 text-[var(--gold)] font-sans tracking-widest uppercase text-xs md:text-sm">
-                <span class="flex items-center gap-2"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 18v-5m-4 0h8m-4-8a4 4 0 110 8 4 4 0 010-8z"/></svg> Textos Bilingües Reales</span>
-                <span class="hidden md:inline">|</span>
-                <span class="flex items-center gap-2"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg> Sintetizador de Lira</span>
-                <span class="hidden md:inline">|</span>
-                <span class="flex items-center gap-2"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg> Oráculo en Red (API)</span>
+            <div class="mt-16 flex flex-col md:flex-row items-center justify-center gap-8 text-[var(--gold)] font-sans tracking-widest uppercase text-sm relative z-10">
+                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 18v-5m-4 0h8m-4-8a4 4 0 110 8 4 4 0 010-8z"/></svg> Textos Masivos Bilingües</span>
+                <span class="hidden md:inline text-gray-600">|</span>
+                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg> El Aedo (Audiolibro)</span>
+                <span class="hidden md:inline text-gray-600">|</span>
+                <span class="flex items-center gap-3"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Leaflet Cinematográfico</span>
             </div>
         </div>
     </div>
 
     <!-- ==========================================================================
-         PANTALLA 2: EL MAPA INTERACTIVO DEL EGEO
+         PANTALLA 2: MAPA INTERACTIVO
          ========================================================================== -->
     <div id="screen-map" class="absolute inset-0 z-20 flex flex-col hidden opacity-0 transition-opacity duration-1000">
-        
-        <!-- UI Header -->
-        <header class="h-20 glass-panel flex items-center justify-between px-8 z-30 border-b border-[var(--gold)]">
-            <div class="flex items-center gap-6">
-                <div class="relative w-12 h-12 flex items-center justify-center">
-                    <svg class="w-full h-full text-[var(--gold)] animate-[spin_12s_linear_infinite]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="50" cy="50" r="45" stroke-dasharray="15 10"/>
-                        <circle cx="50" cy="50" r="35" stroke-dasharray="5 5" opacity="0.5"/>
+        <header class="h-28 glass-panel flex items-center justify-between px-12 z-30 border-b-2 border-[var(--gold)]">
+            <div class="flex items-center gap-8">
+                <div class="relative w-20 h-20 flex items-center justify-center">
+                    <svg class="w-full h-full text-[var(--gold)] animate-[spin_15s_linear_infinite]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="50" cy="50" r="46" stroke-dasharray="20 10"/>
+                        <polygon points="50,10 85,75 15,75" stroke-dasharray="5 5" opacity="0.6"/>
+                        <polygon points="50,90 15,25 85,25" stroke-dasharray="5 5" opacity="0.6"/>
                     </svg>
-                    <span id="relic-count" class="absolute text-2xl font-bold font-title text-white">0</span>
+                    <span id="relic-count" class="absolute text-4xl font-bold font-title text-white">0</span>
                 </div>
                 <div>
-                    <h2 class="font-title text-2xl text-[var(--gold)] tracking-widest m-0 leading-none">Reliquias</h2>
-                    <span class="text-gray-400 text-font italic text-lg">Resuelve los mitos para obtenerlas</span>
+                    <h2 class="font-title text-4xl text-[var(--gold)] tracking-widest m-0 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">El Telar de Heródoto</h2>
+                    <span class="text-gray-400 text-font italic text-2xl">Selecciona un enclave en el mapa</span>
                 </div>
             </div>
-            <div class="font-title text-3xl tracking-[0.3em] text-white opacity-50 hidden md:block">
-                ΘΑΛΑΣΣΑ
+            <div class="font-title text-6xl tracking-[0.4em] text-white opacity-10 hidden lg:block">
+                ΜΕΣΟΓΕΙΟΣ
             </div>
         </header>
 
-        <!-- Contenedor del Mapa SVG -->
-        <main class="flex-1 relative bg-[#040b12] overflow-hidden" id="map-container">
-            <!-- El mapa se renderiza por JS aquí -->
-        </main>
+        <main class="flex-1 relative" id="map-container"></main>
     </div>
 
     <!-- ==========================================================================
-         PANTALLA 3: EL CÓDICE BILINGÜE Y EL ORÁCULO
+         PANTALLA 3: EL CÓDICE Y EL AEDO
          ========================================================================== -->
-    <div id="screen-codex" class="absolute inset-0 z-40 bg-black/95 backdrop-blur-xl hidden opacity-0 transition-opacity duration-700 flex-col">
+    <div id="screen-codex" class="absolute inset-0 z-40 bg-black flex-col hidden opacity-0 transition-opacity duration-700">
         
-        <!-- Barra de herramientas del Códice -->
-        <div class="h-16 border-b border-[var(--gold)] bg-[#0a0a0f] flex items-center justify-between px-6 z-10 shrink-0">
-            <h2 id="codex-title" class="font-title text-2xl text-[var(--gold)]">Título</h2>
-            <div class="flex gap-4">
-                <button onclick="TTS.readSpanish()" class="btn-hellenic px-4 py-2 text-sm flex items-center gap-2" title="Escuchar traducción">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M8 12H4m12 0a8 8 0 11-16 0 8 8 0 0116 0z" /></svg>
-                    <span class="hidden md:inline">Escuchar</span>
+        <!-- Toolbar Superior -->
+        <div class="top-bar h-24 border-b-2 border-[var(--gold)] glass-panel flex items-center justify-between px-10 z-10 shrink-0 transition-opacity duration-500">
+            <h2 id="codex-title" class="font-title text-4xl text-[var(--gold)] tracking-[0.2em] drop-shadow-[0_2px_5px_rgba(0,0,0,1)]">Título</h2>
+            <div class="flex gap-6">
+                <button onclick="Game.toggleImmersive()" class="btn-hellenic px-6 py-3 text-xl flex items-center gap-2" title="Modo Lectura Inmersiva">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="hidden xl:inline">Zen</span>
                 </button>
-                <button onclick="Game.closeCodex()" class="text-gray-400 hover:text-white text-3xl font-bold cursor-pointer transition-colors px-2">✕</button>
+                <button onclick="Game.closeCodex()" class="btn-hellenic px-8 py-3 text-xl border-sparta-red text-sparta-red hover:bg-sparta-red hover:text-white hover:border-sparta-red">
+                    ✕ Mapa
+                </button>
             </div>
         </div>
 
-        <!-- Área Central del Códice -->
-        <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-            
-            <!-- PANEL IZQUIERDO: GRIEGO ANTIGUO -->
+        <!-- Área Central (Piedra Rosetta) -->
+        <div class="dual-codex w-full relative">
+            <!-- GRIEGO -->
             <div class="codex-pane pane-greek custom-scrollbar">
-                <h3 class="font-title text-[var(--gold)] text-center text-2xl mb-8 border-b border-[var(--gold)] pb-4">ΕΛΛΗΝΙΚΗ ΓΛΩΣΣΑ</h3>
-                <div id="text-greek" class="font-greek text-2xl md:text-3xl text-justify leading-loose">
-                    <!-- Texto Griego Inyectado -->
+                <h3 class="font-title text-[var(--gold)] text-center text-4xl mb-12 border-b-2 border-gray-800 pb-6 tracking-widest">ΕΛΛΗΝΙΚΟΝ ΠΡΩΤΟΤΥΠΟΝ</h3>
+                <div id="text-greek" class="font-greek text-3xl lg:text-4xl text-justify leading-loose">
+                    <!-- Texto Griego Masivo -->
                 </div>
             </div>
 
-            <!-- PANEL DERECHO: ESPAÑOL -->
-            <div class="codex-pane pane-spanish custom-scrollbar">
-                <h3 class="font-title text-[var(--aegean-blue)] text-center text-2xl mb-8 border-b border-[var(--aegean-blue)] pb-4">CASTELLANO</h3>
-                <div id="text-spanish" class="text-font text-xl md:text-2xl text-justify leading-loose">
-                    <!-- Texto Español Inyectado -->
+            <!-- ESPAÑOL -->
+            <div class="codex-pane pane-spanish parchment-panel custom-scrollbar">
+                <h3 class="font-title text-[var(--sparta-red)] text-center text-4xl mb-12 border-b-2 border-gray-400 pb-6 tracking-widest">VERSIÓN CASTELLANA</h3>
+                <div id="text-spanish" class="text-font text-3xl lg:text-4xl text-justify leading-relaxed">
+                    <!-- Texto Español Masivo -->
                 </div>
-
-                <!-- API FETCH: ORÁCULO DE WIKIPEDIA -->
-                <div class="mt-12 p-6 bg-[#e8e2d5] border-l-4 border-[var(--aegean-blue)] rounded shadow-inner">
-                    <div class="flex items-center gap-3 mb-4">
-                        <svg class="w-8 h-8 text-[var(--aegean-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        <h4 class="font-title text-[var(--aegean-blue)] font-bold text-xl uppercase">El Oráculo de la Red (Contexto)</h4>
-                    </div>
-                    <div id="wiki-context" class="text-font text-lg text-gray-800 italic">
-                        Invocando los saberes del éter...
-                    </div>
-                </div>
+                
+                <div class="h-48"></div> <!-- Espacio para no tapar texto con el reproductor -->
             </div>
             
-            <!-- PANEL FLOTANTE INFERIOR: EL PUZLE -->
-            <div class="absolute bottom-0 left-0 right-0 glass-panel border-t border-[var(--gold)] p-6 z-20 transform translate-y-full transition-transform duration-500" id="puzzle-drawer">
-                <div class="max-w-4xl mx-auto text-center">
-                    <h3 class="font-title text-[var(--gold)] text-2xl mb-2">El Juicio de las Moiras</h3>
-                    <p id="puzzle-desc" class="text-font text-xl text-white mb-6">Lee ambas lenguas y responde al acertijo.</p>
+            <!-- EL CAJÓN DEL ACERTIJO -->
+            <div class="absolute bottom-0 left-0 right-0 glass-panel border-t-4 border-[var(--gold)] p-12 z-20 transform translate-y-full transition-transform duration-700 shadow-[0_-20px_50px_rgba(0,0,0,0.9)]" id="puzzle-drawer">
+                <div class="max-w-6xl mx-auto text-center">
+                    <h3 class="font-title text-[var(--gold-light)] text-5xl mb-6 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">El Oráculo de Delfos</h3>
+                    <p id="puzzle-desc" class="text-font text-3xl text-white mb-12">...</p>
                     
-                    <div class="flex flex-col md:flex-row justify-center items-center gap-4">
-                        <input type="text" id="puzzle-input" class="oracle-input md:w-1/2" placeholder="Respuesta..." autocomplete="off" spellcheck="false">
-                        <button onclick="Puzzle.check()" class="btn-hellenic px-8 py-3 text-xl w-full md:w-auto">Sellar Destino</button>
+                    <div class="flex flex-col lg:flex-row justify-center items-center gap-8">
+                        <input type="text" id="puzzle-input" class="oracle-input lg:w-2/3" placeholder="Ofrenda tu respuesta..." autocomplete="off" spellcheck="false">
+                        <button onclick="Puzzle.check()" class="btn-hellenic px-12 py-5 text-3xl w-full lg:w-auto bg-[var(--gold)] text-black hover:bg-white hover:text-black">Sellar Destino</button>
                     </div>
-                    <p id="puzzle-feedback" class="h-6 text-[var(--sparta-red)] text-lg font-bold mt-4"></p>
+                    <p id="puzzle-feedback" class="h-10 text-[var(--sparta-red)] text-2xl font-bold mt-8"></p>
                 </div>
             </div>
             
-            <!-- Botón para subir el cajón del puzle -->
-            <button onclick="Puzzle.toggleDrawer()" id="btn-toggle-puzzle" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 btn-hellenic px-8 py-3 text-lg z-10 shadow-[0_0_20px_rgba(212,175,55,0.5)] animate-float">
+            <!-- BOTÓN ENFRENTAR ACERTIJO -->
+            <button onclick="Puzzle.toggleDrawer()" id="btn-toggle-puzzle" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 btn-hellenic px-12 py-5 text-2xl z-10 shadow-[0_0_40px_rgba(212,175,55,0.8)] bg-[var(--aegean-blue)] animate-float">
                 Enfrentar el Acertijo ▼
             </button>
-
+        </div>
+        
+        <!-- REPRODUCTOR "EL AEDO" (AUDIOBOOK) -->
+        <div id="audio-player" class="audio-player">
+            <div class="flex flex-col">
+                <span class="font-title text-[var(--gold)] text-lg uppercase tracking-widest mb-1">El Aedo (Voz)</span>
+                <div class="flex items-center gap-3">
+                    <button onclick="TTS.toggleLang()" id="btn-tts-lang" class="text-sm border border-gray-500 rounded px-2 py-1 text-gray-300 hover:text-white hover:border-white transition-colors w-16 text-center">
+                        🇪🇸 ESP
+                    </button>
+                    <button onclick="TTS.togglePlay()" id="btn-tts-play" class="text-white hover:text-[var(--gold)] transition-colors transform hover:scale-110">
+                        <svg width="36" height="36" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>
+                    </button>
+                    <button onclick="TTS.stop()" class="text-gray-400 hover:text-white transition-colors">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path d="M5 5h10v10H5z"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="visualizer" class="visualizer flex items-end gap-1 h-8 px-2 border-l border-gray-700 ml-2">
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+            </div>
         </div>
     </div>
+
+    <!-- BOTÓN SALIR MODO INMERSIVO (Oculto por defecto) -->
+    <button onclick="Game.toggleImmersive()" id="btn-exit-zen" class="fixed top-8 right-8 z-[100] btn-hellenic px-6 py-3 text-xl bg-black/50 hidden">
+        Salir del Modo Zen
+    </button>
 
 
     <!-- ==========================================================================
          MOTOR DEL JUEGO (JAVASCRIPT)
          ========================================================================== -->
     <script>
-        // --- 1. BASE DE DATOS BILINGÜE: HERÓDOTO (10 Historias Épicas) ---
-        // Contiene el título, coordenadas del mapa, texto en griego (auténtico), español, el término de Wikipedia a invocar, y el puzle.
+        // --- 1. BASE DE DATOS LITERARIA MASIVA ---
+        // Textos sustancialmente expandidos. Incluyen múltiples párrafos, discursos directos y detalles jugosos.
         const HERODOTUS_DB = [
             {
-                id: 'creso', title: 'Creso y Solón', x: 75, y: 40, wiki: 'Creso', pass: 'felicidad',
-                greek: "«Σόλων, τίς ὀλβιώτατος;» Ὁ δὲ Σόλων οὐδὲν ὑποθωπεύσας, ἀλλὰ τῷ ἐόντι χρησάμενος λέγει· «Ὦ βασιλεῦ, Τέλλος ὁ Ἀθηναῖος.»... σκοπέειν δὲ χρὴ παντὸς χρήματος τὴν τελευτήν, κῇ ἀποβήσεται· πολλοῖσι γὰρ δὴ ὑποδέξας ὄλβον ὁ θεὸς προῤῥίζους ἀνέτρεψε.",
-                spanish: "Creso, rey de Lidia, mostrando sus inmensos tesoros al sabio ateniense Solón, le preguntó: «Solón, ¿quién es el hombre más feliz que has conocido?». Solón, sin adularle en absoluto y ateniéndose a la verdad, respondió: «Oh rey, Telo de Atenas»... Y añadió: «Es necesario observar el final de cada cosa, cómo terminará; pues a muchos la divinidad les ha mostrado la dicha para luego arruinarlos de raíz».",
-                puzzle: "¿Cuál es el concepto central sobre el que debaten Creso y Solón? (Pista: Lo que Creso creía tener gracias a su oro, pero Solón mide al final de la vida)."
+                id: 'creso', title: 'Creso y Solón', lat: 38.48, lng: 28.04, pass: 'felicidad',
+                greek: `«Σόλων, τίς ὀλβιώτατος;» Ὁ δὲ Σόλων οὐδὲν ὑποθωπεύσας, ἀλλὰ τῷ ἐόντι χρησάμενος λέγει· «Ὦ βασιλεῦ, Τέλλος ὁ Ἀθηναῖος.» Ἀποθωμάσας δὲ Κροῖσος τὸ λεχθὲν εἴρετο ἐπιστρεφέως· «Κοίῃ δὴ κρίνεις Τέλλον εἶναι ὀλβιώτατον;»<br><br>
+                Ὁ δὲ εἶπε· «Τέλλῳ τοῦτο μὲν τῆς πόλιος εὖ ἡκούσης παῖδες ἦσαν καλοί τε κἀγαθοί, καί σφι εἶδε ἅπασι τέκνα ἐκγενόμενα καὶ πάντα παραμείναντα· τοῦτο δὲ τοῦ βίου εὖ ἥκοντι, ὡς τὰ παρ’ ἡμῖν, τελευτὴ τοῦ βίου λαμπροτάτη ἐπεγένετο· γενομένης γὰρ Ἀθηναίοισι μάχης πρὸς τοὺς ἀστυγείτονας ἐν Ἐλευσῖνι, βοηθήσας καὶ τροπὴν ποιήσας τῶν πολεμίων ἀπέθανε κάλλιστα, καί μιν Ἀθηναῖοι δημοσίῃ τε ἔθαψαν αὐτοῦ τῇ περ ἔπεσε καὶ ἐτίμησαν μεγάλως.»<br><br>
+                Ὡς δὲ τὰ κατὰ τὸν Τέλλον προετρέψατο ὁ Σόλων τὸν Κροῖσον εἴπας πολλὰ καὶ ὄλβια, ἐπειρώτα τίνα δεύτερον μετ' ἐκεῖνον ἴδοι, δοκέων πάγχυ δευτερεῖα γῶν οἴσεσθαι. Ὁ δ' εἶπε· «Κλέοβίν τε καὶ Βίτωνα.»<br><br>
+                Τούτοισι γὰρ ἐοῦσι γένος Ἀργείοισι βίος τε ἀρκέων ὑπῆν, καὶ πρὸς τούτῳ ῥώμη σώματος τοιήδε· ἀεθλοφόροι τε ἀμφότεροι ὁμοίως ἦσαν, καὶ δὴ καὶ λέγεται ὅδε ὁ λόγος. Ἐούσης ὁρτῆς τῇ Ἥρῃ τοῖσι Ἀργείοισι ἔδεε πάντως τὴν μητέρα αὐτῶν ζεύγεϊ κομισθῆναι ἐς τὸ ἱρόν, οἱ δέ σφι βόες ἐκ τοῦ ἀγροῦ οὐ παρεγίνοντο ἐν ὥρῃ· ἐκκληϊόμενοι δὲ τῇ ὥρῃ οἱ νεηνίαι ὑποδύντες αὐτοὶ ὑπὸ τὴν ζεύγλην εἷλκον τὴν ἅμαξαν, ἐπὶ τῆς ἁμάξης δέ σφι ὠχέετο ἡ μήτηρ, σταδίους δὲ πέντε καὶ τεσσεράκοντα διακομίσαντες ἀπίκοντο ἐς τὸ ἱρόν.<br><br>
+                Σκοπέειν δὲ χρὴ παντὸς χρήματος τὴν τελευτήν, κῇ ἀποβήσεται· πολλοῖσι γὰρ δὴ ὑποδέξας ὄλβον ὁ θεὸς προῤῥίζους ἀνέτρεψε.`,
+                spanish: `Creso, rey de Lidia, creyéndose el hombre más dichoso de la tierra por sus inmensas riquezas, ordenó a sus sirvientes que mostraran todos sus tesoros al sabio ateniense Solón. Tras la visita, le preguntó: «Solón, huésped ateniense, dime: ¿quién es el hombre más feliz que has conocido en tus viajes?». Solón, sin adularle en absoluto y ateniéndose estrictamente a la verdad, respondió: «Oh rey, Telo de Atenas». Creso, asombrado e indignado por la respuesta, le preguntó con viveza: «¿Por qué juzgas que un simple ciudadano como Telo es el más feliz?».<br><br>
+                Solón respondió: «Porque, en primer lugar, en una ciudad próspera y libre, tuvo hijos hermosos y virtuosos, y vio nacer nietos de todos ellos, y todos le sobrevivieron; y, en segundo lugar, tras gozar de una vida próspera según la medida humana, tuvo un final gloriosísimo. Pues durante una batalla de los atenienses contra sus vecinos en Eleusis, acudió en ayuda de los suyos, puso en fuga a los enemigos y murió en el campo de batalla de la forma más heroica. Los atenienses lo enterraron a expensas públicas en el mismo lugar donde cayó y le rindieron honores inmortales».<br><br>
+                Creso, pensando que al menos obtendría el segundo lugar, preguntó quién era el siguiente. Solón respondió: «Cleobis y Bitón. Eran de Argos, tenían medios suficientes para vivir y una fuerza física extraordinaria, habiendo ganado ambos premios en los juegos. Durante la festividad de Hera, su madre debía ser llevada al templo en un carro, pero los bueyes no llegaron a tiempo del campo. Los jóvenes, viendo que se hacía tarde, se uncieron ellos mismos al yugo y tiraron del carro durante cuarenta y cinco estadios (unos 8 kilómetros) hasta el templo».<br><br>
+                «Toda la multitud alabó su fuerza, y las mujeres felicitaron a la madre. Ella, llena de orgullo, se plantó ante la estatua de la diosa y rogó que concediera a sus hijos el mayor bien que un mortal pudiera recibir. Tras la oración y el banquete, los jóvenes se quedaron dormidos en el mismo templo y ya no despertaron. Los dioses demostraron así que la muerte es mejor que la vida para el ser humano».<br><br>
+                Solón concluyó ante un estupefacto Creso: «Es necesario, pues, observar el final de cada vida, cómo terminará; pues a muchos hombres la divinidad les ha mostrado un destello de dicha para luego arruinarlos de raíz».`,
+                puzzle: "Creso creía que su inmenso oro le garantizaba el primer puesto en la lista de Solón. ¿Qué concepto central (aquello que anhela el ser humano y que Solón mide sólo al final de la vida) están debatiendo?"
             },
             {
-                id: 'leonidas', title: 'Leónidas en las Termópilas', x: 45, y: 45, wiki: 'Batalla_de_las_Termópilas', pass: 'espartanos',
-                greek: "Ὦ ξεῖν', ἀγγέλλειν Λακεδαιμονίοις ὅτι τῇδε κείμεθα τοῖς κείνων ῥήμασι πειθόμενοι. Διηνέκης ὁ Σπαρτιάτης, πυθόμενος ὅτι ἐπεὰν οἱ Μῆδοι τοξεύωσι τὸν ἥλιον ὑπὸ τοῦ πλήθεος τῶν ὀϊστῶν ἀποκρύπτουσι, εἶπε· «ἀγαθὸν τὸ ἄγγελμα· ὑπὸ σκιῇ γὰρ ἡ μάχη ἔσται.»",
-                spanish: "El epitafio grabado en la piedra rezaba: «Extranjero, anuncia a los lacedemonios (espartanos) que aquí yacemos, obedeciendo sus leyes». Se cuenta que el espartano Diéneces, al escuchar a un traquinio decir que cuando los medos disparasen sus arcos ocultarían el sol por la multitud de flechas, no se inmutó y respondió: «Excelente noticia; así la batalla será a la sombra».",
-                puzzle: "¿A qué pueblo (lacedemonios) va dirigido el epitafio que ruega al extranjero que dé la noticia de su sacrificio?"
+                id: 'termopilas', title: 'La Resistencia de las Termópilas', lat: 38.80, lng: 22.55, pass: 'espartiatas',
+                greek: `Οἱ δὲ ἀμφὶ Λεωνίδην Ἕλληνες, ὡς τὴν ἐπὶ θανάτῳ ἔξοδον ποιεύμενοι, ἤδη πολλῷ μᾶλλον ἢ κατ' ἀρχὰς ἐπεξῄεσαν ἐς τὸ εὐρύτερον τοῦ αὐχένος. Τὸ μὲν γὰρ ἔρυμα τοῦ τείχεος ἐφυλάσσετο, οἱ δὲ ἀνὰ τὰς προτέρας ἡμέρας ὑπεξιόντες ἐς τὰ στεινόπορα ἐμάχοντο· τότε δὲ συμμίσγοντες ἔξω τῶν στεινῶν ἔπιπτον πλήθεϊ πολλοὶ τῶν βαρβάρων· ὄπισθε γὰρ οἱ ἡγεμόνες τῶν τελέων ἔχοντες μάστιγας ἐῤῥάπιζον πάντα ἄνδρα, αἰεὶ ἐς τὸ πρόσω ἐποτρύνοντες.<br><br>
+                Πολλοὶ μὲν δὴ ἐσέπιπτον αὐτῶν ἐς τὴν θάλασσαν καὶ διεφθείροντο, πολλῷ δ' ἔτι πλεῦνες κατεπατέοντο ζωοὶ ὑπ' ἀλλήλων· ἦν δ' λόγος οὐδεὶς τοῦ ἀπολλυμένου. Ἅτε γὰρ ἐπιστάμενοι τὸν μέλλοντα σφι ἔσεσθαι θάνατον ἐκ τῶν περιιόντων τὸ ὄρος, ἀπεδείκνυντο ῥώμης ὅσον εἶχον μέγιστον ἐς τοὺς βαρβάρους, παραχρεώμενοί τε καὶ ἀτέοντες.<br><br>
+                Δόρατα μέν νυν τοῖσι πλέοσι αὐτῶν τηνικαῦτα ἤδη ἐτύγχανε κατεηγότα, οἱ δὲ τοῖσι ξίφεσι ἔργοντο τοὺς Πέρσας. Καὶ Λεωνίδης τε ἐν τούτῳ τῷ πόνῳ πίπτει ἀνὴρ γενόμενος ἄριστος, καὶ μετ' αὐτοῦ ἄλλοι Σπαρτιητέων ὀνομαστοί.<br><br>
+                Ὦ ξεῖν', ἀγγέλλειν Λακεδαιμονίοις ὅτι τῇδε κείμεθα τοῖς κείνων ῥήμασι πειθόμενοι.`,
+                spanish: `Los griegos al mando de Leónidas, sabiendo que su salida era hacia una muerte segura, avanzaron mucho más que al principio hacia la parte más ancha del desfiladero. Hasta entonces habían defendido el muro protector y hacían salidas tácticas hacia la parte más estrecha; pero en ese momento, lanzándose fuera de la estrechez, se enfrentaron en campo abierto. Caían grandes multitudes de bárbaros, pues detrás de ellos los comandantes de los escuadrones, armados con látigos, azotaban a cada hombre, empujándolos incesantemente hacia adelante.<br><br>
+                Muchos de los persas caían al mar y se ahogaban, pero muchísimos más morían pisoteados vivos por sus propios compañeros; a nadie le importaba el que caía. Los griegos, puesto que sabían que la muerte les llegaría ineludiblemente a manos de los que estaban rodeando la montaña guiados por el traidor Efialtes, desplegaron contra los bárbaros toda la fuerza que tenían, luchando con una furia desesperada y temeraria.<br><br>
+                Para la mayoría de ellos, sus lanzas ya se habían hecho pedazos en ese punto del combate, así que comenzaron a masacrar a los persas con sus espadas cortas. Fue en esta feroz carnicería donde cayó Leónidas, habiendo demostrado ser el más excelente de los hombres, y junto a él cayeron otros renombrados guerreros de Esparta. Se libró entonces una lucha colosal sobre el cadáver de Leónidas, hasta que los griegos, por su puro valor, lograron rescatarlo y repeler a los persas cuatro veces.<br><br>
+                Sobre su tumba, y la de los trescientos que allí cayeron, se grabó después el famoso epitafio: «Oh extranjero, ve y anuncia a los lacedemonios que aquí yacemos, fieles a sus leyes».`,
+                puzzle: "El texto relata la furia de los griegos y la muerte de Leónidas junto a otros renombrados guerreros de su ciudad. ¿Con qué gentilicio se conoce comúnmente a estos célebres guerreros («Σπαρτιητέων»)?"
             },
             {
-                id: 'rampsinito', title: 'El Ladrón de Rampsinito', x: 80, y: 85, wiki: 'Rampsinito', pass: 'cabeza',
-                greek: "Βασιλέα Ραμψίνιτον... τοῦ δὲ ἑτέρου ἐγκαταλειπομένου καὶ ὡς ἐπύθετο ἐν οἵῳ κακῷ ἦν, ἰθὺς καλέσαντα τὸν ἀδελφεὸν λέγειν μιν τάδε... «τάμον μου τὴν κεφαλήν.»",
-                spanish: "El faraón Rampsinito mandó construir una cámara de piedra inexpugnable. Pero dos hermanos ladrones entraron. Cuando uno quedó atrapado en el lazo del rey, viendo en qué desgracia se hallaba, llamó a su hermano y le dijo: «Para que no me reconozcan y te maten a ti también, córtame la cabeza y llévatela».",
-                puzzle: "Traduce o deduce del texto español: ¿Qué es lo que el hermano atrapado pide que le corten («τὴν κεφαλήν») para salvar a su cómplice?"
+                id: 'artemisia', title: 'La Astucia de Artemisia', lat: 37.95, lng: 23.50, pass: 'hombres',
+                greek: `Κατὰ δὲ Ἀρτεμισίην τάδε ἐγένετο, ἀπ' ὧν εὐδοκίμησε μᾶλλον ἔτι πρὸς βασιλέος. Ἐπειδὴ γὰρ ἐς θόρυβον ἀπίκετο τὰ βασιλέος πρήγματα, ἐν τούτῳ τῷ καιρῷ ἡ νηῦς ἡ Ἀρτεμισίης ἐδιώκετο ὑπὸ νεὸς Ἀττικῆς· καὶ ἣ οὐκ ἔχουσα διαφυγεῖν (ἔμπροσθε γὰρ αὐτῆς ἦσαν ἄλλαι νέες φίλιαι, ἡ δὲ αὐτῆς πρὸς τοὺς πολεμίους μάλιστα ἐτύγχανε ἐοῦσα) ἔδοξέ οἱ τόδε ποιῆσαι, τὸ καὶ συνήνεικε ποιησάσῃ.<br><br>
+                Διωκομένη γὰρ ὑπὸ τῆς Ἀττικῆς φέρουσα ἐνέβαλε νηὶ φιλίῃ ἀνδρῶν τε Καλυνδέων καὶ αὐτοῦ ἐπιπλέοντος τοῦ Καλυνδέων βασιλέος Δαμασιθύμου. Εἰ μὲν καί τι νεῖκος πρὸς αὐτὸν ἐγεγόνεε ἔτι περὶ Ἑλλήσποντον ἐόντων, οὐ μέντοι ἔγωγε ἔχω εἰπεῖν οὔτε εἰ ἐκ προνοίης ταῦτα ἐποίησε, οὔτε εἰ συνεκύρησε ἡ τῶν Καλυνδέων νηῦς παραπεσοῦσα.<br><br>
+                Ὡς δὲ ἐνέβαλέ τε καὶ κατέδυσε, εὐτυχίῃ χρησαμένη διπλᾶ ἑωυτὴν ἀγαθὰ ἐργάσατο. Ὅ τε γὰρ τῆς Ἀττικῆς νεὸς τριήραρχος ὡς εἶδέ μιν ἐμβάλλουσαν νηὶ ἀνδρῶν βαρβάρων, νομίσας τὴν νέα τὴν Ἀρτεμισίης ἢ Ἑλληνίδα εἶναι ἢ αὐτομολέειν ἐκ τῶν βαρβάρων καὶ αὐτοῖσι ἀμύνειν, ἀποστρέψας πρὸς ἄλλας ἐτράπετο.<br><br>
+                Τοῦτο μὲν τοιοῦτο αὐτῇ συνήνεικε γενέσθαι διαφυγεῖν τε καὶ μὴ ἀπολέσθαι, τοῦτο δὲ συνέβη ὥστε κακὸν ἐργασαμένην ἀπὸ τούτων αὐτὴν μάλιστα εὐδοκιμῆσαι παρὰ Ξέρξῃ. Ξέρξης δὲ εἶπε· «Οἱ μὲν ἄνδρες γεγόνασί μοι γυναῖκες, αἱ δὲ γυναῖκες ἄνδρες.»`,
+                spanish: `Con respecto a la reina Artemisia en la batalla de Salamina, sucedió un episodio por el cual adquirió aún más prestigio ante el rey Jerjes. Cuando la armada persa llegó a una situación de confusión y pánico, la nave de Artemisia se vio perseguida tenazmente por un trirreme ateniense. Al ver que no tenía escapatoria (pues su nave estaba en vanguardia, bloqueada por otras naves amigas), decidió ejecutar una maniobra audaz que, al final, le resultó inmensamente provechosa.<br><br>
+                Acosada por los griegos, dirigió su proa a toda velocidad y embistió brutalmente a una nave amiga, tripulada por hombres de Calinda y comandada por su propio rey, Damasítimo. Ignoro si Artemisia lo hizo por una antigua rencilla que arrastraban desde su estancia en el Helesponto, o si simplemente el barco de Calinda tuvo la mala suerte de cruzarse en su camino. Lo cierto es que lo partió por la mitad.<br><br>
+                Al hundir la nave aliada sin dejar supervivientes, logró un doble golpe de suerte. El capitán ateniense, al verla embestir un barco bárbaro, pensó lógicamente que la nave de Artemisia era griega o que había desertado del bando persa para ayudarles. Así que ordenó virar y la dejó escapar para perseguir a otros.<br><br>
+                Por un lado, Artemisia salvó su vida mediante este acto de traición; pero además, Jerjes, que observaba la batalla desde un trono en el monte Egaleo, vio el impacto. Sus cortesanos, creyendo que la nave hundida era griega, alabaron el coraje de la reina. Jerjes, viendo la cobardía del resto de su flota en contraste con la supuesta heroicidad de Artemisia, exclamó para la historia: «Mis hombres se han convertido en mujeres, y mis mujeres en varones».`,
+                puzzle: "Jerjes, asombrado por la violencia de la reina al hundir el barco, proclama que sus guerreros varones se han vuelto mujeres, y sus mujeres se han convertido en..."
             },
             {
-                id: 'hipoclides', title: 'La Boda de Hipoclides', x: 55, y: 60, wiki: 'Hipoclides', pass: 'boda',
-                greek: "Ὁ δὲ Ἱπποκλείδης... ἐκέλευσε τὸν αὐλητὴν αὐλῆσαι ἐμμέλειαν... ὀρχέετο. Κλεισθένης δὲ εἶπε· «Ὦ παῖ Τισάνδρου, ἀπορχήσαό γε μὲν τὸν γάμον.» Ὁ δὲ Ἱπποκλείδης ὑπολαβὼν εἶπε· «Οὐ φροντὶς Ἱπποκλείδῃ.»",
-                spanish: "Hipoclides, el pretendiente favorito, tras beber en exceso, ordenó al flautista tocar una melodía y se puso a bailar sobre la mesa, e incluso hizo gestos con las piernas en el aire. El tirano Clístenes, enfurecido por tal falta de decoro, gritó: «¡Hijo de Tisandro, has bailado y perdido tu matrimonio!». A lo que él, desde el suelo, contestó la famosa frase: «¡A Hipoclides le da igual!»",
-                puzzle: "El verbo «ἀπορχήσαό» significa 'perder bailando'. ¿Qué es exactamente lo que perdió Hipoclides («τὸν γάμον») por su ridículo baile?"
+                id: 'maraton', title: 'La Carga de Maratón', lat: 38.15, lng: 23.95, pass: 'locura',
+                greek: `Ἀθηναῖοι δὲ ἐπείτε ἀπείθησαν καὶ ἔθυον τὰ σφάγια, ἐνθαῦτα δρόμῳ ἵεντο ἐς τοὺς βαρβάρους. Ἦσαν δὲ τὸ μεταίχμιον αὐτῶν στάδιοι οὐκ ἐλάσσονες ὀκτώ.<br><br>
+                Πέρσαι δὲ ὁρέοντες δρόμῳ ἐπιόντας παρεσκευάζοντο ὡς δεξόμενοι, μανίην τε τοῖσι Ἀθηναίοισι ἐπέφερον καὶ πάγχυ ὀλεθρίην, ὁρέοντες αὐτοὺς ὀλίγους καὶ τούτους δρόμῳ ἐπειγομένους οὔτε ἵππου ὑπαρχούσης σφι οὔτε τοξευμάτων. Ταῦτα μέν νυν οἱ βάρβαροι κατείκαζον·<br><br>
+                Ἀθηναῖοι δὲ ἐπείτε ἀθρόοι προσέμιξαν τοῖσι βαρβάροισι, ἐμάχοντο ἀξίως λόγου. Πρῶτοι μὲν γὰρ Ἑλλήνων πάντων τῶν ἡμεῖς ἴδμεν δρόμῳ ἐς πολεμίους ἐχρήσαντο, πρῶτοι δὲ ἀνέσχοντο ἐσθῆτά τε Μηδικὴν ὁρέοντες καὶ τοὺς ἄνδρας ταύτην ἐσθημένους· τέως δὲ ἦν τοῖσι Ἕλλησι καὶ τὸ οὔνομα τὸ Μήδων φόβος ἀκοῦσαι.<br><br>
+                Μαχομένων δὲ ἐν τῷ Μαραθῶνι χρόνος ἐγίνετο πολλός. Καὶ τὸ μὲν μέσον τοῦ στρατοπέδου ἐνίκων οἱ βάρβαροι, τῇ Πέρσαι τε αὐτοὶ καὶ Σάκαι ἐτετάχατο... τὸ δὲ κέρας ἑκάτερον ἐνίκων Ἀθηναῖοί τε καὶ Πλαταιέες.`,
+                spanish: `Cuando las falanges atenienses se desplegaron y los sacrificios a los dioses resultaron favorables, Milcíades dio la orden y se lanzaron a la carrera contra las líneas bárbaras. El espacio o "tierra de nadie" que los separaba no era menor de ocho estadios (aproximadamente kilómetro y medio).<br><br>
+                Los persas, al ver la nube de bronce acercándose a la carrera, se posicionaron para recibir el impacto, pero se burlaban atribuyendo a los atenienses una locura destructiva y suicida, pues veían que los griegos eran escasísimos en número y, sin embargo, cargaban al trote sin contar con el apoyo de caballería ni arqueros para cubrir su avance. Esto es lo que imaginaban los bárbaros con arrogancia.<br><br>
+                Sin embargo, los atenienses, cuando chocaron en bloque como una muralla de escudos contra los bárbaros, lucharon de forma absolutamente memorable. Fueron los primeros de todos los griegos que conocemos que emplearon la táctica de cargar corriendo contra el enemigo, y los primeros que osaron mirar de frente los ropajes y a los guerreros medos; pues hasta aquel día, para los griegos, el simple nombre de los medos inspiraba terror absoluto.<br><br>
+                La batalla en la llanura de Maratón duró largo tiempo. En el centro de la línea, los persas de élite y los saces rompieron la formación griega y los persiguieron tierra adentro. Pero en ambas alas (los flancos), los atenienses y los plateeos resultaron victoriosos, aplastando las alas persas y cerrando una maniobra de tenaza sobre el centro enemigo que cambió la historia de Occidente.`,
+                puzzle: "¿Qué defecto mental o enfermedad destructiva («μανίην») creyeron los persas que sufrían los griegos al verlos cargar a pie, corriendo y siendo tan pocos?"
             },
             {
-                id: 'policrates', title: 'El Anillo de Polícrates', x: 80, y: 65, wiki: 'Polícrates_de_Samos', pass: 'anillo',
-                greek: "Πολυκράτης... σφρηγὶς ἣν ἐφόρεε χρυσόδετος, σμαράγδου μὲν λίθου ἐοῦσα... ταύτην δὴ ὦν ἐδόκεέ οἱ ἀποβαλεῖν. Ἀναγαγὼν δὲ ἐς τὸ πέλαγος περιελόμενος τὴν σφρηγῖδα ῥίπτει ἐς τὴν θάλασσαν.",
-                spanish: "El tirano Polícrates de Samos tenía una suerte tan antinatural que su aliado le aconsejó deshacerse de lo que más valoraba para evitar la envidia de los dioses. Él eligió su sello, que llevaba engarzado en oro y era de esmeralda. Embarcándose mar adentro, se quitó el sello y lo arrojó al mar. Pero días después, un pescador le regaló un gran pez al tirano. Al abrirlo, los cocineros hallaron la joya en su estómago.",
-                puzzle: "La palabra griega «σφρηγὶς» (sphregis) se refiere a la joya que Polícrates arrojó al mar. ¿De qué objeto se trata en la historia?"
+                id: 'anillo', title: 'El Anillo de Polícrates', lat: 37.75, lng: 26.98, pass: 'pez',
+                greek: `Πολυκράτης δὲ ταῦτα ἐπιλεξάμενος καὶ νόῳ λαβὼν ὥς οἱ εὖ ὑπετίθετο Ἄμασις, ἐδίζητο ἐπ' ᾧ ἂν μάλιστα τὴν ψυχὴν ἀσηθείη ἀπολομένῳ τῶν κειμηλίων· διζήμενος δὲ εὕρισκε τόδε· ἦν οἱ σφρηγὶς ἣν ἐφόρεε χρυσόδετος, σμαράγδου μὲν λίθου ἐοῦσα, ἔργον δὲ ἦν Θεοδώρου τοῦ Τηλεκλέος Σαμίου.<br><br>
+                Ταύτην δὴ ὦν ἐδόκεέ οἱ ἀποβαλεῖν, καὶ ἐποίεε ὧδε· πεντηκόντερον πληρώσας ἀνδρῶν ἐσέβη ἐς αὐτήν, μετὰ δὲ ἀναγαγεῖν ἐκέλευε ἐς τὸ πέλαγος. Ὡς δὲ ἀπὸ τῆς νήσου ἑκὰς ἐγένετο, περιελόμενος τὴν σφρηγῖδα πάντων ὁρεόντων τῶν συμπλόων ῥίπτει ἐς τὴν θάλασσαν. Τοῦτο δὲ ποιήσας ἀπέπλεε, ἀπικόμενος δὲ ἐς τὰ οἰκία συμφορῇ ἐχρᾶτο.<br><br>
+                Πέμπτῃ δὲ ἢ ἕκτῃ ἡμέρῃ ἀπὸ τούτων τάδε οἱ συνήνεικε γενέσθαι· ἀνὴρ ἁλιεὺς λαβὼν ἰχθὺν μέγαν τε καὶ καλὸν ἠξίου μιν Πολυκράτεϊ δῶρον δοθῆναι. Λαβὼν δὲ ἦιε ἐπὶ τὰς θύρας, ἐς ὄψιν τε ἔφη ἐθέλειν ἐλθεῖν Πολυκράτεϊ· χωρήσαντος δέ οἱ τούτου ἔλεγε διδοὺς τὸν ἰχθύν· «Ὦ βασιλεῦ, ἐγὼ τοῦτον ἑλὼν οὐκ ἐδικαίωσα φέρειν ἐς ἀγορήν... ἀλλά μοι ἐδόκεε σεῦ τε εἶναι ἄξιος καὶ τῆς σῆς ἀρχῆς· σοὶ δὴ ὦν φέρων αὐτὸν δίδωμι.»<br><br>
+                Ὁ δὲ ἡσθεὶς τοῖσι ἔπεσι ἀμείβεται τοῖσιδε· «Κάρτα τε εὖ ἐποίησας καὶ χάρις διπλῆ τῶν τε λόγων καὶ τοῦ δώρου· καί σε ἐπὶ δεῖπνον καλέομεν.» Ὁ μὲν δὴ ἁλιεὺς μέγα ποιεύμενος ταῦτα ἤιε ἐς τὰ οἰκία, οἱ δὲ θεράποντες τάμνοντες τὸν ἰχθὺν εὑρίσκουσι ἐν τῇ νηδύϊ αὐτοῦ ἐνεοῦσαν τὴν Πολυκράτεος σφρηγῖδα.`,
+                spanish: `Polícrates, el tirano de Samos, leía la carta de su aliado el rey de Egipto, Amasis, quien le advertía de que una suerte humana tan ininterrumpida y antinatural sólo podía acabar en desgracia divina. Amasis le aconsejaba desprenderse dolorosamente de aquello que más amara. Polícrates lo meditó y buscó entre sus tesoros el que más le dolería perder: eligió su sello personal. Era una joya engarzada en oro con una esmeralda tallada por el célebre artesano Teodoro de Samos.<br><br>
+                Decidido a desprenderse de él, mandó equipar una nave de cincuenta remos y ordenó remar mar adentro. Cuando estuvieron muy lejos de la isla, se quitó el sello a la vista de toda la tripulación y lo arrojó a las aguas profundas. Hecho el sacrificio, regresó al palacio y se sumió en una profunda aflicción por la pérdida.<br><br>
+                Pero al quinto o sexto día ocurrió lo siguiente: un humilde pescador atrapó un pez de un tamaño y belleza tan extraordinarios que lo consideró indigno del mercado y decidió regalárselo en persona a Polícrates. Al llegar a las puertas del palacio, el pescador fue admitido y ofreció el animal: «Oh rey, he pescado esto y me pareció digno de ti y de tu inmenso imperio; te lo traigo como presente».<br><br>
+                Polícrates, complacido por las palabras, le invitó a cenar. Mientras el pescador se sentía el hombre más afortunado, los cocineros bajaron a las cocinas para limpiar y preparar el banquete. Pero, al abrir el vientre del gigantesco pez, los sirvientes hallaron, intacto en sus entrañas, el mismísimo sello de esmeralda de Polícrates. Los dioses habían rechazado su sacrificio.`,
+                puzzle: "Amasis dedujo que los dioses destruirían a Polícrates porque rechazaban sus intentos de sufrir infortunios. ¿Dentro de qué animal concreto apareció asombrosamente la esmeralda que había arrojado al mar?"
             },
             {
-                id: 'arion', title: 'Arión y el Delfín', x: 45, y: 65, wiki: 'Arión_de_Lesbos', pass: 'musica',
-                greek: "Ἀρίονα τὸν Μηθυμναῖον... κιθαρῳδὸν τῶν τότε ἐόντων οὐδενὸς δεύτερον... Τὸν δὲ ἐνδύντα τε πᾶσαν τὴν σκευὴν καὶ λαβόντα τὴν κιθάρην... ῥῖψαι μιν ἐς τὴν θάλασσαν ἑωυτόν. Καὶ τοὺς μὲν ἀποπλεῖν, τὸν δὲ δελφῖνα λέγουσι ὑπολαβόντα ἐξενεῖκαι ἐπὶ Ταίναρον.",
-                spanish: "Arión de Metimna, un citaredo (tañedor de cítara) que no era segundo de nadie en su tiempo, fue asaltado por los marineros de su propio barco para robarle. Pidió como último deseo cantar una vez más. Vestido con sus mejores galas y tomando su lira, cantó majestuosamente y luego se arrojó al mar. Pero, según cuentan, un delfín, atraído por la belleza del canto, lo recogió en su lomo y lo llevó a salvo a Ténaro.",
-                puzzle: "¿Qué disciplina artística dominaba Arión, cuyo poder fue capaz de atraer incluso a las bestias del mar para salvarlo?"
+                id: 'rampsinito', title: 'La Trampa del Faraón', lat: 29.97, lng: 31.13, pass: 'cabeza',
+                greek: `Βασιλέα Ραμψίνιτον... τοῦ δὲ ἑτέρου ἐγκαταλειπομένου καὶ ὡς ἐπύθετο ἐν οἵῳ κακῷ ἦν, ἰθὺς καλέσαντα τὸν ἀδελφεὸν λέγειν μιν τάδε· «Ἐπείτε γάρ με κατάειλε ἡ πάγη, σὺ δὲ εἴσελθε τὴν ταχίστην καὶ τάμον μου τὴν κεφαλήν, μή κοτε ὀφθεὶς καὶ γνωρισθεὶς ὃς εἴην προσαπολέσω καὶ σέ.» Τῷ δὲ ἔδοξε εὖ λέγειν καὶ ἐποίησε ταῦτα πεισθείς, καὶ καταρμόσας τὸν λίθον ἀπίετο ἐπ' οἴκου φέρων τὴν κεφαλὴν τοῦ ἀδελφεοῦ.<br><br>
+                Ὡς δὲ ἡμέρη ἐγένετο, ἐσελθόντα τὸν βασιλέα ἐς τὸ οἴκημα ἐκπεπλῆχθαι, ὁρέοντα τὸ σῶμα τοῦ φωρὸς ἐν τῇ πάγῃ ἄνευ τῆς κεφαλῆς ἐόν, τὸ δὲ οἴκημα ἀσινὲς καὶ οὔτε ἔσοδον οὔτε ἔκδυσιν οὐδεμίαν ἔχον. Ἀπορέοντα δέ μιν τάδε ποιῆσαι λέγουσι· τοῦ φωρὸς τὸν νέκυν ἐκ τοῦ τείχεος κατακρεμάσαι, φυλάκους δὲ αὐτοῦ καταστήσαντα ἐντείλασθαί σφι, τὸν ἂν ἴδωνται ἀποκλαύσαντα ἢ κατοικτισάμενον, συλλαβόντας ἄγειν πρὸς ἑωυτόν.<br><br>
+                Ἀνακρεμαμένου δὲ τοῦ νέκυος, τὴν μητέρα δεινῶς φέρειν...`,
+                spanish: `El faraón Rampsinito, poseedor de inmensas riquezas, mandó construir una cámara del tesoro con muros de piedra inexpugnables. Pero el arquitecto, de forma astuta, dejó una piedra exterior suelta y reveló el secreto a sus dos hijos antes de morir. Los hermanos comenzaron a colarse por las noches para robar. El faraón, al notar que los sellos estaban intactos pero el oro menguaba, instaló una trampa de lazos mortales junto a los cofres.<br><br>
+                A la noche siguiente, uno de los hermanos entró y quedó atrapado irremediablemente por el mecanismo. Al darse cuenta de su espantosa situación, llamó a su hermano que estaba fuera y le dijo: «El lazo me ha cazado. Entra rápido, saca tu cuchillo y córtame la cabeza. Si los guardias entran mañana y reconocen mi rostro, sabrán quién es mi familia y te torturarán y matarán a ti también». El hermano reconoció la fría lógica de aquellas palabras; obedeciendo con inmenso dolor, lo decapitó, volvió a colocar la piedra en el muro y huyó llevándose la cabeza para que no lo identificaran.<br><br>
+                Al amanecer, cuando el faraón entró en la cámara herméticamente sellada, quedó absolutamente atónito al ver un cuerpo humano sin rostro atrapado en la trampa, mientras que el edificio no mostraba señales de entrada ni salida. Desesperado por descubrir al cómplice, el rey ordenó colgar el cuerpo decapitado del ladrón en la muralla pública y apostó guardias, dándoles la orden de arrestar inmediatamente a cualquier persona que se acercara a llorar o mostrar piedad por el cadáver, sabiendo que sería su madre o su hermano.`,
+                puzzle: "El hermano atrapado hace un sacrificio atroz para evitar que la identidad de su familia sea descubierta. ¿Qué es lo que pide que le corten («τὴν κεφαλήν») antes de huir?"
             },
             {
-                id: 'giges', title: 'Giges y Candaules', x: 85, y: 45, wiki: 'Giges_de_Lidia', pass: 'reina',
-                greek: "Κανδαύλης ἤρα τῆς ἑωυτοῦ γυναικός... Γύγῃ τῷ Δασκύλου (οὗτος γάρ οἱ ἦν τῶν αἰχμοφόρων ἀρεσκόμενος μάλιστα)... «Γύγη, οὐ γάρ σε δοκέω πείθεσθαί μοι λέγοντι περὶ τοῦ εἴδεος τῆς γυναικός... ποίεε ὅκως ἐκείνην θεήσεαι γυμνήν.»",
-                spanish: "El rey Candaules estaba locamente enamorado de su propia esposa. Pensando que era la mujer más hermosa del mundo, se lo comentaba a Giges, su guardia de mayor confianza. Un día le dijo: «Giges, como creo que no me crees cuando te hablo de la belleza de la reina, haré que la veas desnuda a escondidas». La reina lo descubrió, y obligó a Giges a elegir: o morir, o matar al rey y quedarse con ella y el trono.",
-                puzzle: "Candaules obligó a Giges a ver desnuda a su esposa, lo que provocó su perdición. ¿Cuál es el título real o estatus de esta mujer traicionada?"
+                id: 'artabano', title: 'El Consejo de Artábano', lat: 40.11, lng: 26.40, pass: 'mar',
+                greek: `Ἀρτάβανος δὲ ὁ πάτρως, ὃς τὸ πρῶτον γνώμην ἀπεδέξατο ἐλευθέρως οὐ συμβουλεύων Ξέρξῃ στρατεύεσθαι ἐπὶ τὴν Ἑλλάδα... εἶπε· «Ὦ βασιλεῦ, ὅρα ὡς οὐκ ἔστι τοι πιστὸν οὐδὲν τῶν ἐν τῇ Ἀσίῃ... Δύο γάρ τοι τὰ μέγιστα πάντων ἐστὶ πολεμιώτατα.»<br><br>
+                Ξέρξης δὲ ἀμείβεται τοῖσιδε· «Δαιμόνιε ἀνδρῶν Ἀρτάβανε, κοῖα ταῦτα λέγεις εἶναι δύο μοι πολεμιώτατα; κότερα τὸν πεζὸν μεμφόμενος ὡς πλῆθος ἐνδεέστερον ἐὸν τοῦ Ἑλληνικοῦ;... Εἰ γάρ τοι ταῦτα φαίνεται ἐνδεέστερα εἶναι, ἄλλον ἂν στρατὸν ἀγείροιμι ὡς τάχιστα.»<br><br>
+                Ὃ δὲ ἀμείβετο λέγων· «Ὦ βασιλεῦ, οὔτε τὸν στρατὸν τοῦτον ὅστις γε σύνεσιν ἔχει μέμφοιτ' ἂν οὔτε τῶν νεῶν τὸ πλῆθος... τὰ δὲ δύο τοι τὰ λέγω ἐστὶ πολεμιώτατα γῆ τε καὶ θάλασσα. Οὔτε γὰρ τῆς θαλάσσης ἐστὶ λιμὴν τοσοῦτος οὐδαμόθι, ὡς ἐγὼ εἰκάζω, ὅστις ἐγειρομένου χειμῶνος δεξάμενός σευ τὸ ναυτικὸν φερέγγυος ἔσται διασῶσαι τὰς νέας... Ἡ δὲ δὴ γῆ σύμμαχος ὧδέ τοι γίγνεται· εἰ θέλει τοι μηδὲν ἀντίξοον καταστῆναι, τοσούτῳ τοι γίγνεται πολεμιωτέρη ὅσῳ ἂν προβαίνῃς ἑκαστέρω... λιμῷ τέλεος γίγνεται.»`,
+                spanish: `Mientras el gigantesco ejército persa cruzaba el Helesponto hacia Grecia, Artábano (el tío del rey Jerjes, quien desde el principio había aconsejado libremente no invadir Grecia) se acercó a su sobrino y le dijo: «Oh rey, aunque veo la inmensidad de tu ejército, he de advertirte que las dos cosas más grandes del mundo son tus peores enemigos».<br><br>
+                Jerjes, sorprendido, le respondió: «Extraño Artábano, ¿cuáles dices que son esos dos formidables enemigos? ¿Acaso crees que mi infantería es inferior en número a la de los griegos? ¿O crees que nuestra flota es débil? Si te parece que nos falta poder, ordenaré reunir otro ejército más grande de inmediato».<br><br>
+                Artábano le replicó con sabiduría: «Oh rey, ningún hombre en su sano juicio criticaría el tamaño de este ejército ni el número de tus naves; al contrario, si los aumentas, esos dos enemigos de los que te hablo se volverán aún más peligrosos. Me refiero a la Tierra y al Mar.<br><br>
+                Primero, porque en toda la costa griega no existe, que yo sepa, ningún puerto natural lo bastante gigantesco como para albergar tus miles de naves si se desata una tormenta; y sin puertos seguros, la furia de los elementos destrozará tu flota. Segundo, porque la Tierra misma se volverá en tu contra: cuanto más avances sin encontrar resistencia, más te adentrarás en territorio desconocido, alargando tus líneas de suministro. Al no tener ejércitos a los que robar comida de forma continuada, el propio tamaño de tu ejército provocará que tus soldados mueran irremediablemente de hambre. El tiempo y la distancia son enemigos que no puedes matar con espadas».`,
+                puzzle: "Artábano advierte a Jerjes de que su arrogancia ciega no le deja ver a sus dos verdaderos e invencibles enemigos: La Tierra (que los matará de hambre por las distancias) y el..."
             },
             {
-                id: 'maraton', title: 'La Batalla de Maratón', x: 60, y: 55, wiki: 'Batalla_de_Maratón', pass: 'atenienses',
-                greek: "Ἀθηναῖοι δὲ ἐπείτε ἀπείθησαν... δρόμῳ ἵεντο ἐς τοὺς βαρβάρους. Πέρσαι δὲ ὁρέοντες δρόμῳ ἐπιόντας παρεσκευάζοντο ὡς δεξόμενοι... μανίην τε τοῖσι Ἀθηναίοισι ἐπέφερον καὶ πάγχυ ὀλεθρίην, ὁρέοντες αὐτοὺς ὀλίγους καὶ τούτους δρόμῳ ἐπειγομένους οὔτε ἵππου ὑπαρχούσης.",
-                spanish: "Cuando los atenienses recibieron la orden de ataque en la llanura de Maratón, se lanzaron a la carrera contra los bárbaros persas. Los persas, al verlos avanzar a la carrera, se prepararon para recibirlos, pero pensaron que los griegos estaban poseídos por una locura destructiva, pues veían que eran pocos, avanzaban corriendo y no tenían caballería. Sin embargo, los griegos chocaron con tal fiereza que ganaron la batalla.",
-                puzzle: "¿A qué ciudadanos o ejército (nacionalidad) creyeron locos los persas por atacar corriendo y sin caballería en Maratón?"
-            },
-            {
-                id: 'artemisia', title: 'Artemisia en Salamina', x: 85, y: 65, wiki: 'Artemisia_I_de_Caria', pass: 'hombres',
-                greek: "Ξέρξης... μαθὼν τὸ ἔργον... εἶπε· «Οἱ μὲν ἄνδρες γεγόνασί μοι γυναῖκες, αἱ δὲ γυναῖκες ἄνδρες.» Ταῦτα μὲν Ξέρξην φασὶ εἰπεῖν.",
-                spanish: "Durante la gran batalla naval de Salamina, la reina Artemisia, que luchaba del lado persa, se vio acorralada. Con gran astucia, hundió una nave de su propio bando para que los griegos creyeran que ella era aliada y la dejaran escapar. El rey persa Jerjes, viendo a lo lejos cómo Artemisia hundía un barco (creyendo que era enemigo), exclamó maravillado de su valor: «Mis hombres se han convertido en mujeres, y mis mujeres en varones».",
-                puzzle: "Jerjes, asombrado por el supuesto valor de Artemisia, exclama que sus soldados varones se han convertido en mujeres, y sus mujeres en..."
-            },
-            {
-                id: 'cambises', title: 'La Locura de Cambises', x: 80, y: 90, wiki: 'Cambises_II', pass: 'dios',
-                greek: "Καμβύσης δὲ... ἐσπασμένος τὸ ἐγχειρίδιον, παίειν βουλόμενος τὸν Ἆπιν τὴν γαστέρα... καί μιν ἐπιγελάσας εἶπε· «Ὦ κακαὶ κεφαλαί, τοιοῦτοι θεοὶ γίνονται, ἔναιμοί τε καὶ σαρκώδεες καὶ ἐπαΐοντες σιδήρου;»",
-                spanish: "El rey persa Cambises, habiendo enloquecido en Egipto, sacó su espada y, queriendo golpear en el vientre al toro Apis (el dios viviente de los egipcios), le hirió en el muslo. Luego, echándose a reír, les dijo a los sacerdotes: «¡Miserables!, ¿acaso los dioses son así, de carne y hueso, y vulnerables al hierro?». El toro murió, y los egipcios afirmaron que, por este sacrilegio, Cambises se volvió completamente demente.",
-                puzzle: "El toro Apis no era un animal cualquiera para los egipcios. Cambises se burla de ellos preguntando si los de carne y hueso pueden ser un..."
+                id: 'giges', title: 'La Traición de Candaules', lat: 38.56, lng: 28.02, pass: 'reina',
+                greek: `Οὗτος δὴ ὦν ὁ Κανδαύλης ἤρα τῆς ἑωυτοῦ γυναικός, ἐρασθεὶς δὲ ἐνόμιζέ οἱ εἶναι γυναῖκα πολλὸν πασέων καλλίστην... ὥστε ταῦτα νομίζων, ἦν γάρ οἱ τῶν αἰχμοφόρων Γύγης ὁ Δασκύλου ἀρεσκόμενος μάλιστα, τούτῳ τῷ Γύγῃ καὶ τὰ σπουδαιέστερα τῶν πρηγμάτων ὑπερετίθετο ὁ Κανδαύλης καὶ δὴ καὶ τὸ εἶδος τῆς γυναικός ὑπερεπαινέων.<br><br>
+                Χρόνου δὲ οὐ πολλοῦ διελθόντος... ἔλεγε πρὸς τὸν Γύγην τοιάδε· «Γύγη, οὐ γάρ σε δοκέω πείθεσθαί μοι λέγοντι περὶ τοῦ εἴδεος τῆς γυναικός... ποίεε ὅκως ἐκείνην θεήσεαι γυμνήν.» Ὁ δὲ μέγα ἀμβώσας εἶπε· «Δέσποτα, τίνα λέγεις λόγον οὐκ ὑγιέα, κελεύων με δέσποιναν τὴν ἐμὴν θεήσασθαι γυμνήν; Ἅμα δὲ κιθῶνι ἐκδυομένῳ συνεκδύεται καὶ τὴν αἰδῶ γυνή...»<br><br>
+                Ὡς δὲ ἐδόκεε ὥρη τῆς κοίτης εἶναι, ἤγαγε τὸν Γύγην ἐς τὸ οἴκημα, καὶ μετὰ ταῦτα αὐτίκα παρῆν καὶ ἡ γυνή. Ἐσελθοῦσαν δὲ καὶ τιθεῖσαν τὰ εἵματα ἐθηεῖτο ὁ Γύγης. Ὡς δὲ κατὰ νώτου ἐγένετο ἰούσης τῆς γυναικὸς ἐς τὴν κοίτην, ὑπεκδὺς ἐχώρεε ἔξω. Καὶ ἡ γυνὴ ἐπορᾷ μιν ἐξιόντα.<br><br>
+                Μαθοῦσα δὲ τὸ ποιηθὲν ἐκ τοῦ ἀνδρὸς οὔτε ἀνέβωσε αἰσχυνθεῖσα οὔτε ἔδοξε μαθεῖν, ἐν νόῳ ἔχουσα τίσεσθαι τὸν Κανδαύλην.`,
+                spanish: `El rey de Lidia, Candaules, estaba profunda y obsesivamente enamorado de su propia esposa. En su pasión, creía firmemente que poseía a la mujer más hermosa de la tierra. Candaules solía confiar todos sus asuntos importantes a Giges, el capitán de su guardia personal, y no paraba de alabar ante él la belleza de su mujer de forma exagerada.<br><br>
+                Al cabo de un tiempo (pues el destino dictaba que Candaules debía acabar mal), le dijo a Giges: «Giges, me doy cuenta de que no me crees cuando te hablo del cuerpo de mi mujer, pues los oídos de los hombres son menos de fiar que sus ojos. Así que debes ingeniártelas para verla completamente desnuda». Giges, horrorizado, exclamó: «¡Señor! ¿Qué locura me pides? ¿Me ordenas que espíe desnuda a mi propia señora? Recuerda el viejo dicho: la mujer, al quitarse la túnica, se despoja también de su pudor. No me obligues a cometer tal deshonra».<br><br>
+                Pero el rey, ignorando sus súplicas, tramó un plan: escondió a Giges detrás de la puerta del dormitorio. La esposa entró, se desvistió frente a la silla dejándola a la vista de Giges, y cuando ella caminó hacia el lecho dándole la espalda, el guardia salió a hurtadillas. Sin embargo, la mujer logró ver de reojo la silueta de Giges escapando.<br><br>
+                Comprendiendo al instante la humillante traición que había urdido su propio marido para exhibirla, la mujer no gritó de vergüenza ni hizo notar que se había dado cuenta. Guardó un silencio sepulcral en la cama, pero en su mente ya había decidido una venganza atroz: a la mañana siguiente, llamaría a Giges y le obligaría a elegir entre ser decapitado en el acto, o asesinar a Candaules mientras dormía, casarse con ella y convertirse en el nuevo rey.`,
+                puzzle: "Candaules pierde su trono y su vida por obligar a su vasallo a cometer un sacrilegio contra la dignidad de la mujer más poderosa del reino. ¿Cuál es el título o rango de esta mujer?"
             }
         ];
 
-        // --- 2. SISTEMA DE AUDIO (Lira de Apolo - Web Audio API) ---
+        // --- 2. SISTEMA DE AUDIO EXPERTO (El Aedo / Synthesizer) ---
         const AudioFX = {
-            ctx: null, isReady: false,
+            ctx: null, isReady: false, droneOsc: null,
             init() {
                 try {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -321,183 +419,224 @@
                     }
                 } catch(e) { console.warn("Audio no soportado"); }
             },
-            // Síntesis matemática de una cuerda percutida (Lira)
             playLyre(freq, vol = 0.5) {
                 if(!this.isReady || !this.ctx) return;
-                const dur = 2.5;
+                const dur = 3.5;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 
-                // Mezcla de Sawtooth y Sine para imitar cuerda antigua
+                // Emular Lira usando mezcla y filtro
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
                 
-                // Envolvente tipo "Pluck" (Percusión aguda, cola larga)
                 gain.gain.setValueAtTime(0, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.02);
+                gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.015);
                 gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
                 
-                // Filtro para suavizar
                 const filter = this.ctx.createBiquadFilter();
                 filter.type = "lowpass";
-                filter.frequency.setValueAtTime(2000, this.ctx.currentTime);
-                filter.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + dur);
+                filter.frequency.setValueAtTime(3000, this.ctx.currentTime);
+                filter.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + dur);
                 
                 osc.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
                 osc.start(); osc.stop(this.ctx.currentTime + dur);
             },
-            click() { this.playLyre(440, 0.2); }, // A4
-            hover() { this.playLyre(587.33, 0.05); }, // D5 (muy suave)
-            success() { 
-                this.playLyre(440, 0.3); // A4
-                setTimeout(() => this.playLyre(554.37, 0.3), 150); // C#5
-                setTimeout(() => this.playLyre(659.25, 0.5), 300); // E5
-            },
-            error() { this.playLyre(150, 0.4); setTimeout(()=>this.playLyre(140, 0.4), 150); }
-        };
-
-        // --- 3. MOTOR VISUAL: CONSTELACIONES Y POLVO ESPACIAL ---
-        const VisualFX = {
-            canvas: null, ctx: null, particles: [], animId: null,
-            init() {
-                this.canvas = document.getElementById('constellation-canvas');
-                if(!this.canvas) return;
-                this.ctx = this.canvas.getContext('2d');
-                this.resize(); window.addEventListener('resize', () => this.resize());
-                for(let i=0; i<60; i++) this.particles.push(this.createParticle());
-                this.loop();
-            },
-            resize() { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; },
-            createParticle() {
-                return {
-                    x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height,
-                    vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
-                    r: Math.random() * 2 + 0.5
-                };
-            },
-            loop() {
-                if(!this.ctx) return;
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.ctx.fillStyle = "rgba(212, 175, 55, 0.8)";
-                this.ctx.strokeStyle = "rgba(212, 175, 55, 0.15)";
-                this.ctx.lineWidth = 1;
-
-                for(let i=0; i<this.particles.length; i++) {
-                    let p = this.particles[i];
-                    p.x += p.vx; p.y += p.vy;
-                    if(p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
-                    if(p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
-                    
-                    this.ctx.beginPath(); this.ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); this.ctx.fill();
-                    
-                    // Conectar partículas cercanas (Efecto Constelación)
-                    for(let j=i+1; j<this.particles.length; j++) {
-                        let p2 = this.particles[j];
-                        let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                        if(dist < 150) {
-                            this.ctx.globalAlpha = 1 - (dist / 150);
-                            this.ctx.beginPath(); this.ctx.moveTo(p.x, p.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
-                        }
-                    }
-                }
-                this.ctx.globalAlpha = 1; // reset
-                this.animId = requestAnimationFrame(() => this.loop());
-            }
-        };
-
-        // --- 4. MOTOR LÓGICO DEL JUEGO ---
-        const State = {
-            relics: [], currentStory: null
-        };
-
-        const MapEngine = {
-            render() {
-                const container = document.getElementById('map-container');
-                let svg = `<svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));">`;
+            playDrone() {
+                if(!this.isReady || !this.ctx || this.droneOsc) return;
+                this.droneOsc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                this.droneOsc.type = 'sine';
+                this.droneOsc.frequency.setValueAtTime(55, this.ctx.currentTime); // A1 profundo
                 
-                // Silueta abstracta estilizada del Egeo (Grecia, Asia Menor, Creta, Egipto)
-                svg += `
-                    <!-- Mar -->
-                    <rect width="100" height="100" fill="var(--aegean-blue)" opacity="0.4"/>
-                    <!-- Tierra Firme (Grecia/Macedonia) -->
-                    <path d="M 0 0 L 40 0 L 50 30 L 45 40 L 30 45 L 20 60 L 40 65 L 50 80 L 10 90 L 0 90 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
-                    <!-- Asia Menor -->
-                    <path d="M 100 0 L 70 0 L 65 20 L 75 40 L 85 60 L 100 70 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
-                    <!-- Peloponeso -->
-                    <path d="M 30 70 L 40 65 L 55 75 L 45 85 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
-                    <!-- Creta -->
-                    <path d="M 50 90 L 60 88 L 70 92 L 55 95 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
-                    <!-- Egipto (Abajo derecha) -->
-                    <path d="M 70 100 L 100 80 L 100 100 Z" fill="rgba(15, 25, 35, 0.9)" stroke="var(--gold)" stroke-width="0.2" opacity="0.7"/>
-                `;
+                gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + 3);
+                
+                this.droneOsc.connect(gain); gain.connect(this.ctx.destination);
+                this.droneOsc.start();
+            },
+            stopDrone() {
+                if(this.droneOsc && this.ctx) {
+                    this.droneOsc.stop(this.ctx.currentTime + 1);
+                    this.droneOsc = null;
+                }
+            },
+            click() { this.playLyre(440, 0.3); }, // A4
+            hover() { this.playLyre(587.33, 0.08); }, // D5
+            success() { this.playLyre(440, 0.4); setTimeout(() => this.playLyre(554.37, 0.4), 150); setTimeout(() => this.playLyre(659.25, 0.6), 300); },
+            error() { this.playLyre(150, 0.5); setTimeout(()=>this.playLyre(140, 0.5), 150); }
+        };
 
-                // Renderizar los Nodos (Historias)
+        // --- 3. MOTOR DEL MAPA LEAFLET (FLY-TO CINEMATOGRÁFICO) ---
+        const MapEngine = {
+            map: null, markers: {}, pathLayer: null,
+            init() {
+                this.map = L.map('map-container', { zoomControl: false, attributionControl: false }).setView([38.5, 25.5], 6);
+                
+                // Capa satélite hiperrealista o base oscura (Esri World Imagery)
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 9, minZoom: 5, opacity: 0.6
+                }).addTo(this.map);
+
+                // Tintado oscuro de los océanos encima del satélite
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 9, minZoom: 5, opacity: 0.8
+                }).addTo(this.map);
+
+                this.renderMarkers();
+            },
+            renderMarkers() {
                 HERODOTUS_DB.forEach(story => {
                     const isCompleted = State.relics.includes(story.id);
-                    const statusClass = isCompleted ? 'completed' : '';
-                    svg += `
-                        <g class="map-node ${statusClass}" transform="translate(${story.x}, ${story.y})" onclick="Game.openStory('${story.id}')" onmouseenter="AudioFX.hover()">
-                            ${!isCompleted ? `<circle cx="0" cy="0" r="15" fill="none" stroke="var(--gold)" stroke-width="0.5" class="pulse-ring"/>` : ''}
-                            <circle cx="0" cy="0" r="${isCompleted ? '6' : '4'}" fill="${isCompleted ? 'var(--gold)' : '#fff'}"/>
-                            <text x="0" y="-12" fill="var(--marble)" font-family="Cinzel Decorative" font-size="3" text-anchor="middle" opacity="0.9" style="text-shadow: 0 2px 4px #000;">${story.title}</text>
-                        </g>
+                    const markerHtml = `
+                        <div class="custom-marker ${isCompleted ? 'completed' : ''}" onmouseenter="AudioFX.hover()"></div>
+                        <div class="marker-label">${story.title}</div>
                     `;
+                    
+                    const icon = L.divIcon({ className: 'clear-marker', html: markerHtml, iconSize: [28, 28], iconAnchor: [14, 14] });
+                    const marker = L.marker([story.lat, story.lng], { icon: icon }).addTo(this.map);
+                    
+                    marker.on('click', () => { 
+                        AudioFX.click();
+                        // Cinematic FlyTo antes de abrir
+                        this.map.flyTo([story.lat, story.lng], 8, { duration: 1.5, easeLinearity: 0.25 });
+                        setTimeout(() => Codex.open(story.id), 1500);
+                    });
+                    this.markers[story.id] = marker;
                 });
-
-                svg += `</svg>`;
-                container.innerHTML = svg;
+                this.drawConstellationPath();
+            },
+            drawConstellationPath() {
+                if(this.pathLayer) this.map.removeLayer(this.pathLayer);
+                if(State.relics.length > 1) {
+                    const latlngs = State.relics.map(id => {
+                        const s = HERODOTUS_DB.find(x => x.id === id);
+                        return [s.lat, s.lng];
+                    });
+                    this.pathLayer = L.polyline(latlngs, { className: 'story-path' }).addTo(this.map);
+                }
+            },
+            updateMarkers() {
+                if(this.map) {
+                    Object.values(this.markers).forEach(m => this.map.removeLayer(m));
+                    this.renderMarkers();
+                }
             }
         };
+
+        // --- 4. AUDIOBOOK (EL AEDO) Y SÍNTESIS DE VOZ ---
+        const TTS = {
+            isPlaying: false, currentLang: 'es', // 'es' o 'gr'
+            init() {
+                if(!window.speechSynthesis) console.warn("TTS no soportado");
+            },
+            toggleLang() {
+                AudioFX.click();
+                this.currentLang = this.currentLang === 'es' ? 'gr' : 'es';
+                const btn = document.getElementById('btn-tts-lang');
+                btn.innerHTML = this.currentLang === 'es' ? '🇪🇸 ESP' : '🏛️ GR';
+                if(this.isPlaying) {
+                    this.stop(); setTimeout(() => this.play(), 200);
+                }
+            },
+            togglePlay() {
+                AudioFX.click();
+                if(this.isPlaying) this.pause();
+                else this.play();
+            },
+            play() {
+                if(!State.currentStory || !window.speechSynthesis) return;
+                
+                // Si estaba pausado, reanudar
+                if(window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                    this.setPlayingState(true);
+                    return;
+                }
+
+                window.speechSynthesis.cancel(); 
+                
+                let textToRead = "";
+                let voiceLang = "";
+                
+                if(this.currentLang === 'es') {
+                    textToRead = State.currentStory.spanish.replace(/<[^>]*>?/gm, '');
+                    voiceLang = 'es-ES';
+                } else {
+                    textToRead = State.currentStory.greek.replace(/<[^>]*>?/gm, '');
+                    voiceLang = 'el-GR';
+                }
+
+                const utterance = new SpeechSynthesisUtterance(textToRead);
+                utterance.lang = voiceLang;
+                utterance.pitch = 0.8; utterance.rate = 0.85; // Tono grave de narrador épico
+                
+                utterance.onend = () => this.setPlayingState(false);
+                utterance.onerror = () => this.setPlayingState(false);
+                
+                window.speechSynthesis.speak(utterance);
+                this.setPlayingState(true);
+            },
+            pause() {
+                if(window.speechSynthesis) {
+                    window.speechSynthesis.pause();
+                    this.setPlayingState(false);
+                }
+            },
+            stop() {
+                AudioFX.click();
+                if(window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                    this.setPlayingState(false);
+                }
+            },
+            setPlayingState(isPlaying) {
+                this.isPlaying = isPlaying;
+                const vis = document.getElementById('visualizer');
+                const btn = document.getElementById('btn-tts-play');
+                if(isPlaying) {
+                    vis.classList.add('playing');
+                    btn.innerHTML = '<svg width="36" height="36" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg>'; // Pause icon
+                } else {
+                    vis.classList.remove('playing');
+                    btn.innerHTML = '<svg width="36" height="36" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4l10 6-10 6V4z"/></svg>'; // Play icon
+                }
+            },
+            showPlayer(show) {
+                const player = document.getElementById('audio-player');
+                if(show) player.classList.add('visible');
+                else { player.classList.remove('visible'); this.stop(); }
+            }
+        };
+
+        // --- 5. MOTOR LÓGICO Y CÓDICE ---
+        const State = { relics: [], currentStory: null };
 
         const Codex = {
             async open(storyId) {
                 const story = HERODOTUS_DB.find(s => s.id === storyId);
                 State.currentStory = story;
 
-                // Configurar textos
+                // Set Text
                 document.getElementById('codex-title').innerText = story.title;
                 document.getElementById('text-greek').innerHTML = `<p class="drop-cap-greek">${story.greek.charAt(0)}</p><p>${story.greek.substring(1)}</p>`;
                 document.getElementById('text-spanish').innerHTML = `<p class="drop-cap-spanish">${story.spanish.charAt(0)}</p><p>${story.spanish.substring(1)}</p>`;
                 
-                // Configurar puzle
+                // Set Puzzle
                 document.getElementById('puzzle-desc').innerText = story.puzzle;
                 document.getElementById('puzzle-input').value = "";
                 document.getElementById('puzzle-feedback').innerText = "";
                 
-                // Ocultar cajón del puzle
+                // UI Toggle
                 document.getElementById('puzzle-drawer').classList.add('translate-y-full');
                 document.getElementById('btn-toggle-puzzle').style.display = 'block';
-
-                // Mostrar pantalla
                 document.getElementById('screen-map').classList.add('hidden', 'opacity-0');
+                
                 const screenCodex = document.getElementById('screen-codex');
                 screenCodex.style.display = 'flex';
                 setTimeout(() => screenCodex.classList.remove('opacity-0'), 50);
 
-                AudioFX.playLyre(329.63, 0.4); // E4 acorde apertura
-
-                // ================= API FETCH: WIKIPEDIA =================
-                const wikiContainer = document.getElementById('wiki-context');
-                wikiContainer.innerHTML = '<span class="animate-pulse">Invocando a los oráculos de la red...</span>';
-                
-                try {
-                    const url = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(story.wiki)}&format=json&origin=*`;
-                    const res = await fetch(url);
-                    const data = await res.json();
-                    const pages = data.query.pages;
-                    const pageId = Object.keys(pages)[0];
-                    
-                    if (pageId !== "-1" && pages[pageId].extract) {
-                        // Tomamos solo las primeras 2-3 frases (aprox 300 caracteres)
-                        let extract = pages[pageId].extract;
-                        let shortExtract = extract.substring(0, 350) + "...";
-                        wikiContainer.innerHTML = `<strong>${pages[pageId].title}:</strong> ${shortExtract} <br><span class="text-xs text-gray-500 mt-2 block">Fuente: Wikipedia API</span>`;
-                    } else {
-                        wikiContainer.innerHTML = "Los oráculos guardan silencio sobre este nombre.";
-                    }
-                } catch(e) {
-                    wikiContainer.innerHTML = "El éter está perturbado. No se pudo contactar con el Oráculo (Error de Red).";
-                }
+                AudioFX.playLyre(329.63, 0.4);
+                TTS.showPlayer(true);
             }
         };
 
@@ -507,15 +646,11 @@
                 const drawer = document.getElementById('puzzle-drawer');
                 drawer.classList.toggle('translate-y-full');
                 document.getElementById('btn-toggle-puzzle').style.display = drawer.classList.contains('translate-y-full') ? 'block' : 'none';
-                if(!drawer.classList.contains('translate-y-full')) {
-                    setTimeout(()=>document.getElementById('puzzle-input').focus(), 300);
-                }
+                if(!drawer.classList.contains('translate-y-full')) setTimeout(()=>document.getElementById('puzzle-input').focus(), 300);
             },
             check() {
                 const story = State.currentStory;
                 const input = document.getElementById('puzzle-input').value.trim().toLowerCase();
-                
-                // Normalizar acentos
                 const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
                 if (normalize(input).includes(normalize(story.pass))) {
@@ -525,15 +660,15 @@
                         document.getElementById('relic-count').innerText = State.relics.length;
                     }
                     
-                    const feedback = document.getElementById('puzzle-feedback');
-                    feedback.innerText = "¡RESPUESTA REVELADA! El hilo del destino ha sido hilado.";
-                    feedback.style.color = "var(--ghost-green)";
+                    const fb = document.getElementById('puzzle-feedback');
+                    fb.innerText = "¡SABIDURÍA REVELADA! El Destino ha sido hilado.";
+                    fb.style.color = "var(--gold-light)";
                     
-                    setTimeout(() => Game.closeCodex(), 2000);
+                    setTimeout(() => Game.closeCodex(), 2500);
                 } else {
                     AudioFX.error();
                     const fb = document.getElementById('puzzle-feedback');
-                    fb.innerText = "Los dioses rechazan tu ofrenda. Lee de nuevo.";
+                    fb.innerText = "Los dioses rechazan tu ofrenda. Lee de nuevo, mortal.";
                     fb.style.color = "var(--sparta-red)";
                     
                     const drawer = document.getElementById('puzzle-drawer');
@@ -543,49 +678,32 @@
             }
         };
 
-        const TTS = {
-            readSpanish() {
-                if(!State.currentStory) return;
-                AudioFX.click();
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel(); // Parar audios anteriores
-                    const utterance = new SpeechSynthesisUtterance(State.currentStory.spanish);
-                    utterance.lang = 'es-ES';
-                    utterance.pitch = 0.9;
-                    utterance.rate = 0.95; // Voz calmada y narrativa
-                    window.speechSynthesis.speak(utterance);
-                } else {
-                    alert("Tu navegador no soporta la lectura en voz alta.");
-                }
-            }
-        };
-
         const Game = {
-            init() {
-                VisualFX.init();
-            },
+            isImmersive: false,
             initMap() {
-                AudioFX.init();
-                AudioFX.success(); // Acorde de inicio
-                
+                AudioFX.init(); AudioFX.success(); 
                 const intro = document.getElementById('screen-intro');
                 intro.classList.add('opacity-0');
                 
                 setTimeout(() => {
                     intro.style.display = 'none';
-                    MapEngine.render();
                     const mapScreen = document.getElementById('screen-map');
                     mapScreen.style.display = 'flex';
-                    setTimeout(() => mapScreen.classList.remove('opacity-0', 'hidden'), 50);
+                    MapEngine.init();
+                    TTS.init();
+                    setTimeout(() => {
+                        mapScreen.classList.remove('opacity-0', 'hidden');
+                        MapEngine.map.invalidateSize(); 
+                    }, 100);
                 }, 1000);
             },
-            openStory(id) {
-                AudioFX.click();
-                Codex.open(id);
+            openStory(id) { 
+                Codex.open(id); 
             },
             closeCodex() {
                 AudioFX.click();
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel(); // Callar TTS si está hablando
+                TTS.showPlayer(false);
+                if(this.isImmersive) this.toggleImmersive(); // Resetea la vista
 
                 const screenCodex = document.getElementById('screen-codex');
                 screenCodex.classList.add('opacity-0');
@@ -593,41 +711,55 @@
                     screenCodex.style.display = 'none';
                     const screenMap = document.getElementById('screen-map');
                     screenMap.classList.remove('hidden');
-                    MapEngine.render(); // Refrescar nodos (por si hay completados)
+                    
+                    // Alejar la cámara para ver progreso
+                    MapEngine.map.flyTo([38.5, 25.5], 6, { duration: 1 });
+                    MapEngine.updateMarkers();
+                    
                     setTimeout(() => screenMap.classList.remove('opacity-0'), 50);
                     
-                    // Comprobar victoria final
-                    if(State.relics.length === HERODOTUS_DB.length) {
-                        setTimeout(() => this.triggerVictory(), 1000);
-                    }
+                    if(State.relics.length === HERODOTUS_DB.length) setTimeout(() => this.triggerVictory(), 2000);
                 }, 700);
+            },
+            toggleImmersive() {
+                AudioFX.click();
+                this.isImmersive = !this.isImmersive;
+                const codex = document.getElementById('screen-codex');
+                const btnZen = document.getElementById('btn-exit-zen');
+                
+                if(this.isImmersive) {
+                    codex.classList.add('immersive-mode');
+                    btnZen.style.display = 'block';
+                    AudioFX.playDrone();
+                } else {
+                    codex.classList.remove('immersive-mode');
+                    btnZen.style.display = 'none';
+                    AudioFX.stopDrone();
+                }
             },
             triggerVictory() {
                 AudioFX.success(); setTimeout(()=>AudioFX.success(), 1000);
                 document.body.innerHTML = `
-                    <div class="absolute inset-0 bg-black flex flex-col items-center justify-center p-10 text-center animate-fade z-50">
-                        <h1 class="text-6xl md:text-9xl text-[var(--gold)] font-title mb-8 drop-shadow-[0_0_50px_rgba(212,175,55,1)]">
+                    <div class="absolute inset-0 bg-black flex flex-col items-center justify-center p-10 text-center animate-fade z-[100] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
+                        <h1 class="text-7xl md:text-9xl text-[var(--gold)] font-title mb-8 drop-shadow-[0_0_60px_rgba(212,175,55,1)]">
                             ΙΣΤΟΡΙΑΙ
                         </h1>
-                        <h2 class="text-3xl md:text-5xl text-white font-title mb-6">El Telar ha sido Completado</h2>
-                        <p class="text-xl md:text-2xl text-gray-300 font-greek max-w-4xl leading-relaxed italic">
-                            Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te saludan.
+                        <h2 class="text-4xl md:text-6xl text-white font-title mb-8 text-shine">El Telar ha sido Completado</h2>
+                        <p class="text-2xl md:text-4xl text-gray-300 font-greek max-w-5xl leading-relaxed italic">
+                            Has viajado por el Egeo, descifrado la lengua de los antiguos y desvelado la historia. Los dioses del Olimpo te otorgan la Inmortalidad de la Memoria.
                         </p>
-                        <button onclick="location.reload()" class="mt-12 btn-hellenic px-10 py-4 text-2xl">Reiniciar Ciclo</button>
+                        <button onclick="location.reload()" class="mt-16 btn-hellenic px-16 py-6 text-3xl font-bold bg-white text-black hover:bg-[var(--gold)]">
+                            Regresar a la Modernidad
+                        </button>
                     </div>
                 `;
             }
         };
 
-        // Inputs globales
+        // Inputs globales para comodidad en el aula
         document.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter' && !document.getElementById('puzzle-drawer').classList.contains('translate-y-full')) {
-                Puzzle.check();
-            }
+            if(e.key === 'Enter' && !document.getElementById('puzzle-drawer').classList.contains('translate-y-full')) Puzzle.check();
         });
-
-        // Inicializar
-        window.addEventListener('DOMContentLoaded', () => Game.init());
 
     </script>
 </body>
